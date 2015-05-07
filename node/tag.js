@@ -6,24 +6,25 @@ var applyAttrs = require("./setter/apply-attrs");
 /**
  * The Virtual Tag constructor.
  *
- * @param  Object context  The virtual node definition.
+ * @param  String tagName  The tag name.
+ * @param  Object config   The virtual node definition.
  * @param  Array  children An array for children.
- * @param  Array  key      The node key.
  */
-function Tag(tagName, context, children) {
+function Tag(tagName, config, children) {
   this.tagName = tagName || "div";
-  this.c = context = context || {};
+  config = config || {};
   this.children = children || [];
-  this.c.props = context.props || undefined;
-  this.c.attrs = context.attrs || undefined;
-  this.c.events = context.events || undefined;
-  this.c.callbacks = context.callbacks || undefined;
-  this.c.parent = undefined;
-  this.c.element = undefined;
-  this.attrs = this.c.attrs;
-  this.key = context.key != null ? context.key : undefined;
+  this.props = config.props;
+  this.attrs = config.attrs;
+  this.events = config.events;
+  this.callbacks = config.callbacks;
+  this.data = config.data;
+  this.element = undefined;
+  this.parent = undefined;
 
-  this.namespace = context.namespace || "";
+  this.key = config.key != null ? config.key : undefined;
+
+  this.namespace = config.namespace || "";
   if (this.namespace) {
     return
   }
@@ -33,6 +34,11 @@ function Tag(tagName, context, children) {
     this.namespace = "http://www.w3.org/1998/Math/MathML";
   }
 };
+
+/**
+ * Field names to forward on patch.
+ */
+Tag.prototype.forward = ["props", "callbacks", "data", "element", "parent"];
 
 /**
  * Creates and return the corresponding DOM node.
@@ -46,11 +52,11 @@ Tag.prototype.create = function() {
   } else {
     element = document.createElementNS(this.namespace, this.tagName);
   }
-  if (this.c.props) {
-    applyProps(this, element, {}, this.c.props);
+  if (this.props) {
+    applyProps(this, element, {}, this.props);
   }
-  if (this.c.attrs) {
-    applyAttrs(this, element, {}, this.c.attrs);
+  if (this.attrs) {
+    applyAttrs(this, element, {}, this.attrs);
   }
 
   return element;
@@ -64,17 +70,16 @@ Tag.prototype.create = function() {
  * @return Object         A root DOM node.
  */
 Tag.prototype.render = function(parent, inSvg) {
-  var context = this.c;
-  context.element = this.create();
-  if (context.events) {
-    context.element._vtreenode = this;
+  this.element = this.create();
+  if (this.events) {
+    this.element._vtreenode = this;
   }
-  context.parent = parent;
-  create(context.element, this.children, this, inSvg || context.element.tagName === "SVG");
-  if (context.callbacks && context.callbacks.created) {
-    context.callbacks.created(this);
+  this.parent = parent;
+  create(this.element, this.children, this, inSvg || this.element.tagName === "SVG");
+  if (this.callbacks && this.callbacks.created) {
+    this.callbacks.created(this);
   }
-  return context.element;
+  return this.element;
 };
 
 /**
@@ -85,14 +90,15 @@ Tag.prototype.render = function(parent, inSvg) {
  */
 Tag.prototype.patch = function(to) {
   if (this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
-    to.c = this.c;
     this.remove(false);
     return to.render();
   }
-  var element = this.c.element;
-  patch(element, this.children, to.children);
-  applyAttrs(to, element, this.attrs, to.attrs);
-  return element;
+  for (var i = 0, len = this.forward.length; i < len; i++) {
+    to[this.forward[i]] = this[this.forward[i]];
+  }
+  patch(this.element, this.children, to.children);
+  applyAttrs(to, this.element, this.attrs, to.attrs);
+  return this.element;
 }
 
 /**
@@ -109,8 +115,8 @@ Tag.prototype.remove = function(destroy) {
  * Destroys the DOM node attached to the virtual node.
  */
 Tag.prototype.destroy = function() {
-  var context = this.c;
-  var element = context.element;
+  var element = this.element;
+
   if (!element) {
     return;
   }
@@ -118,10 +124,10 @@ Tag.prototype.destroy = function() {
   if (!parentNode) {
     return;
   }
-  if (!context.callbacks || !context.callbacks.destroy) {
+  if (!this.callbacks || !this.callbacks.destroy) {
     return parentNode.removeChild(element);
   }
-  return context.callbacks.destroy(element, function() {
+  return this.callbacks.destroy(element, function() {
     return parentNode.removeChild(element);
   });
 };
@@ -133,9 +139,8 @@ function broadcastRemove(node) {
   if (!node.children) {
     return;
   }
-  var context = node.c;
-  if (context.callbacks && context.callbacks.remove) {
-    context.callbacks.remove(node, node.element);
+  if (node.callbacks && node.callbacks.remove) {
+    node.callbacks.remove(node, node.element);
   }
   for(var i = 0, len = node.children.length; i < len; i++) {
     broadcastRemove(node.children[i]);

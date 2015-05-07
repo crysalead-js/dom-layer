@@ -65,7 +65,7 @@ function patch(container, fromChildren, toChildren) {
  * @return Object           The corresponding DOMElement.
  */
 patch.node = function(from, to) {
-  var element = from.c.element;
+  var element = from.element;
 
   if (from === to) {
     return element;
@@ -110,7 +110,7 @@ function updateChildren(fromChildren, toChildren) {
       free.push(fromItem);
     } else if (toKeys[fromItem.key] !== undefined) {
       toIndex = toKeys[fromItem.key];
-      keys[fromItem.key] = fromItem.c.element;
+      keys[fromItem.key] = fromItem.element;
       toItem = toChildren[toIndex];
       patch.node(fromItem, toItem);
       direction = direction + (toIndex - i > 0 ? 1 : -1);
@@ -132,8 +132,7 @@ function updateChildren(fromChildren, toChildren) {
   }
 
   for (i = 0, len = free.length; i < len; i++) {
-    patch.node(free[i], toChildren[toFree[i]]);
-    free[i] = free[i].c.element;
+    free[i] = patch.node(free[i], toChildren[toFree[i]]);
   }
 
   return { keys: keys, free: free, direction: direction };

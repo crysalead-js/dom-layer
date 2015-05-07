@@ -38,7 +38,7 @@ describe("patch", function() {
 
   });
 
-  it("can patch text with vnode", function() {
+  it("can patch text node with tag node", function() {
 
     var from = new Text("hello");
     var to = h({ tagName: "span" }, ["good bye"]);
@@ -49,13 +49,12 @@ describe("patch", function() {
 
   });
 
-  it("can patch vnode with vtext", function() {
+  it("can patch tag node with text node", function() {
 
     var from = h({}, [h()]);
     var to = h({}, ["text"]);
 
     var rootNode = from.render();
-
     expect(rootNode.childNodes.length).toBe(1);
     expect(rootNode.childNodes[0].nodeType).toBe(1);
 
@@ -67,7 +66,7 @@ describe("patch", function() {
 
   });
 
-  it("can patch embedded text by vnode", function() {
+  it("can patch embedded text node by tag node", function() {
 
     var from = h({}, ["hello"]);
     var to = h({}, [h({ tagName: "span" }, ["good bye"])]);
@@ -89,7 +88,7 @@ describe("patch", function() {
 
   });
 
-  it("inserts an additionnal vnode", function() {
+  it("inserts an additionnal tag node", function() {
 
     var from = h({}, [h({ tagName: "span" }, ["hello"])]);
     var to = h({}, [h({ tagName: "span" }, ["hello"]), h({ tagName: "span" }, ["to"])]);

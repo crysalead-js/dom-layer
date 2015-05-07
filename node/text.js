@@ -1,11 +1,14 @@
-
+/**
+ * The Virtual Text constructor.
+ *
+ * @param  String tagName  The tag name.
+ * @param  String key      The key identifier.
+ * @param  Array  children An array for children.
+ */
 function Text(text, key) {
   this.text = text;
   this.key = key;
-  this.c = {
-    element: undefined,
-    parent: undefined
-  };
+  this.element = undefined;
 }
 
 /**
@@ -20,12 +23,10 @@ Text.prototype.create = function() {
 /**
  * Renders virtual text node.
  *
- * @param  Object parent A parent node.
- * @param  Object vtext  A previously rendered virtual text node to overwrite.
  * @return Object        A text node.
  */
-Text.prototype.render = function(parent) {
-  return this.c.element = this.create();
+Text.prototype.render = function() {
+  return this.element = this.create();
 }
 
 /**
@@ -36,15 +37,14 @@ Text.prototype.render = function(parent) {
  */
 Text.prototype.patch = function(to) {
   if (to.tagName !== undefined) {
-    to.c = this.c;
     this.remove(false);
     return to.render();
   }
-  var element = this.c.element;
+  to.element = this.element;
   if (this.text !== to.text) {
-    element.replaceData(0, element.length, to.text);
+    this.element.replaceData(0, this.element.length, to.text);
   }
-  return element;
+  return this.element;
 }
 
 /**
@@ -60,9 +60,8 @@ Text.prototype.remove = function(destroy) {
  * Destroys the DOM node attached to the virtual node.
  */
 Text.prototype.destroy = function() {
-  var context = this.c;
   var parentNode = context.element.parentNode;
-  return parentNode.removeChild(context.element);
+  return parentNode.removeChild(this.element);
 };
 
 module.exports = Text;
