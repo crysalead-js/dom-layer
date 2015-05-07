@@ -1,14 +1,15 @@
 {
   "name": "dom-layer",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Virtual DOM implementation.",
   "repository": {
     "type": "git",
-    "url": "http://github.com/crysalead/dom-layer.git"
+    "url": "http://github.com/crysalead-js/dom-layer.git"
   },
   "dependencies": {
     "dom-collection": "^1.0.1",
     "dom-element": "^1.1.1",
+    "dom-query": "^1.0.1",
     "is-empty": "0.0.1"
   },
   "devDependencies": {
