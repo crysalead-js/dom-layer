@@ -13,8 +13,8 @@ var isArray = Array.isArray;
  * @param Array  toChildren   The array of children to take the order from.
  * @param Object container    The container.
  */
-function patch(container, fromChildren, toChildren) {
-  var indexes = updateChildren(fromChildren, toChildren);
+function patch(container, fromChildren, toChildren, parent, inSvg) {
+  var indexes = updateChildren(fromChildren, toChildren, inSvg);
   var direction = indexes.direction;
   var fromKeys = indexes.keys;
   var fromFree = indexes.free;
@@ -31,14 +31,14 @@ function patch(container, fromChildren, toChildren) {
     direction = -1;
   }
 
-  // Reordering nodes
+  // Reorder & Add missing nodes
   for (var i = 0, len = toChildren.length; i < len; i++) {
     toItem = toChildren[toIndex];
     if (toItem.key !== undefined) {
       if (fromKeys[toItem.key] !== undefined) {
         domCollection.moveAt(fromKeys[toItem.key], targetIndex, container);
       } else {
-        domCollection.insertAt(toItem.render(), Math.max(targetIndex, 0), container);
+        domCollection.insertAt(toItem.render(parent, inSvg), Math.max(targetIndex, 0), container);
         targetIndex += unshift;
       }
     } else if (freeLength > 0) {
@@ -46,7 +46,7 @@ function patch(container, fromChildren, toChildren) {
       freeLength--;
       freeIndex += direction;
     } else {
-      domCollection.insertAt(toItem.render(), Math.max(targetIndex, 0), container);
+      domCollection.insertAt(toItem.render(parent, inSvg), Math.max(targetIndex, 0), container);
       targetIndex += unshift;
     }
     targetIndex += direction;
@@ -64,13 +64,13 @@ function patch(container, fromChildren, toChildren) {
  * @param  Object container The container.
  * @return Object           The corresponding DOMElement.
  */
-patch.node = function(from, to) {
+patch.node = function(from, to, inSvg) {
   var element = from.element;
 
   if (from === to) {
     return element;
   }
-  var next = from.patch(to);
+  var next = from.patch(to, inSvg);
 
   var container = element.parentNode;
   if (container && next !== element) {
@@ -97,7 +97,7 @@ patch.node = function(from, to) {
  *                               direction < 1 means mainly unshift based moves.
  *                               direction > 1 means mainly shift based moves.
  */
-function updateChildren(fromChildren, toChildren) {
+function updateChildren(fromChildren, toChildren, inSvg) {
   var i, len;
   var fromItem, toItem, fromIndex = 0, toIndex, direction = 0;
   var indexes = indexChildren(toChildren);
@@ -112,7 +112,7 @@ function updateChildren(fromChildren, toChildren) {
       toIndex = toKeys[fromItem.key];
       keys[fromItem.key] = fromItem.element;
       toItem = toChildren[toIndex];
-      patch.node(fromItem, toItem);
+      patch.node(fromItem, toItem, inSvg);
       direction = direction + (toIndex - i > 0 ? 1 : -1);
     } else {
       fromItem.remove();
@@ -132,7 +132,7 @@ function updateChildren(fromChildren, toChildren) {
   }
 
   for (i = 0, len = free.length; i < len; i++) {
-    free[i] = patch.node(free[i], toChildren[toFree[i]]);
+    free[i] = patch.node(free[i], toChildren[toFree[i]], inSvg);
   }
 
   return { keys: keys, free: free, direction: direction };

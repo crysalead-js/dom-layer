@@ -1,20 +1,19 @@
-var applyAttrs = require("./apply-attrs");
-
 function applyProps(node, element, previous, props) {
-  var name, value;
+  var name;
   previous = previous || {};
   props = props || {};
 
-  for (var name in props) {
-    var value = props[name];
-    if (name === "attributes") {
-      applyAttrs(node, element, previous[name], value);
+  for (name in previous) {
+    if (props[name] === undefined) {
+      element[name] = undefined;
+    }
+  }
+
+  for (name in props) {
+    if (previous[name] === props[name]) {
       continue;
     }
-    if (previous[name] === value) {
-      continue;
-    }
-    element[name] = value;
+    element[name] = props[name];
   }
 }
 

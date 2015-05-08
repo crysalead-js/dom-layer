@@ -2,7 +2,7 @@ var isArray = Array.isArray;
 
 function create(container, nodes, parent, inSvg) {
   if (typeof nodes === "function") {
-    nodes = nodes();
+    nodes = nodes(container, parent);
   }
   if (nodes == null) {
     return;

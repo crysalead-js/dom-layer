@@ -2,9 +2,9 @@ var patch = require("./patch/patch");
 
 var isArray = Array.isArray;
 
-function update(container, fromNodes, toNodes) {
+function update(container, fromNodes, toNodes, parent, inSvg) {
   if (typeof toNodes === "function") {
-    toNodes = toNodes();
+    toNodes = toNodes(container, parent);
   }
   if (toNodes == null) {
     return;
@@ -12,7 +12,7 @@ function update(container, fromNodes, toNodes) {
   if (!isArray(toNodes)) {
     toNodes = [toNodes];
   }
-  return patch(container, fromNodes, toNodes);
+  return patch(container, fromNodes, toNodes, parent, inSvg);
 }
 
 module.exports = update;

@@ -1,5 +1,5 @@
 var create = require("../tree/create");
-var patch = require("../tree/patch/patch");
+var update = require("../tree/update");
 var applyProps = require("./setter/apply-props");
 var applyAttrs = require("./setter/apply-attrs");
 
@@ -36,11 +36,6 @@ function Tag(tagName, config, children) {
 };
 
 /**
- * Field names to forward on patch.
- */
-Tag.prototype.forward = ["props", "callbacks", "data", "element", "parent"];
-
-/**
  * Creates and return the corresponding DOM node.
  *
  * @return Object A DOM node.
@@ -52,13 +47,8 @@ Tag.prototype.create = function() {
   } else {
     element = document.createElementNS(this.namespace, this.tagName);
   }
-  if (this.props) {
-    applyProps(this, element, {}, this.props);
-  }
-  if (this.attrs) {
-    applyAttrs(this, element, {}, this.attrs);
-  }
-
+  applyProps(this, element, {}, this.props);
+  applyAttrs(this, element, {}, this.attrs);
   return element;
 };
 
@@ -77,7 +67,7 @@ Tag.prototype.render = function(parent, inSvg) {
   this.parent = parent;
   create(this.element, this.children, this, inSvg || this.element.tagName === "SVG");
   if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this);
+    this.callbacks.created(this, this.element);
   }
   return this.element;
 };
@@ -88,16 +78,15 @@ Tag.prototype.render = function(parent, inSvg) {
  * @param  Object to A new node representation.
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
-Tag.prototype.patch = function(to) {
+Tag.prototype.patch = function(to, inSvg) {
   if (this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
     this.remove(false);
     return to.render();
   }
-  for (var i = 0, len = this.forward.length; i < len; i++) {
-    to[this.forward[i]] = this[this.forward[i]];
-  }
-  patch(this.element, this.children, to.children);
-  applyAttrs(to, this.element, this.attrs, to.attrs);
+  to.element = this.element;
+  update(to.element, this.children, to.children, to, inSvg || to.element.tagName === "SVG");
+  applyProps(to, to.element, this.props, to.props);
+  applyAttrs(to, to.element, this.attrs, to.attrs);
   return this.element;
 }
 
