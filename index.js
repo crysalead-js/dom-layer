@@ -72,7 +72,9 @@ Layer.prototype.unmount = function(selector) {
 Layer.prototype.update = function(mountId) {
   if (arguments.length) {
     var mount = this._mounted[mountId];
-    mount.children = tree.update(mount.container, mount.children, mount.factory, null, null, mount.inSvg);
+    if (mount) {
+      mount.children = tree.update(mount.container, mount.children, mount.factory, null, mount.inSvg);
+    }
     return;
   }
   for (mountId in self._mounted) {

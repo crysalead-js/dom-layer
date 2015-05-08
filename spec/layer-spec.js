@@ -70,6 +70,12 @@ describe("Layer", function() {
 
   });
 
+  it("ignores updates with invalid id", function() {
+
+    layer.update("invalid_id");
+
+  });
+
   it("returns the definition of a mount", function() {
 
     var children = h({}, ["#1", "#2", "#3"]);
