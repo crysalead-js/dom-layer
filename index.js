@@ -7,7 +7,15 @@ function Layer() {
   this._mounted = Object.create(null);
 }
 
-Layer.prototype.mount = function(selector, factory, options) {
+/**
+ * Mounts a virtual tree into a passed selector.
+ *
+ * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
+ * @param Object          data     Some extra data to attach to the mount.
+ */
+Layer.prototype.mount = function(selector, factory, data) {
+  data = data || {};
   this.unmount(selector);
   var containers = query.all(selector);
   if (!containers.length) {
@@ -22,14 +30,19 @@ Layer.prototype.mount = function(selector, factory, options) {
   this._mountedIndex++;
   var mountId = "" + this._mountedIndex;
 
-  options.container = container;
-  options.factory = factory;
-  options.inSvg = container.tagName === "svg";
-  options.children = tree.create(container, factory, null);
-  this._mounted[mountId] = options;
+  data.container = container;
+  data.factory = factory;
+  data.inSvg = container.tagName === "svg";
+  data.children = tree.create(container, factory, null);
+  this._mounted[mountId] = data;
   return container.domLayerId = mountId;
 }
 
+/**
+ * Unmounts a virtual tree.
+ *
+ * @param String|Object selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ */
 Layer.prototype.unmount = function(selector) {
   var containers = query.all(selector);
   if (!containers.length) {
@@ -51,10 +64,11 @@ Layer.prototype.unmount = function(selector) {
   delete container.domLayerId;
 }
 
-Layer.prototype.mounted = function() {
-  return this._mounted;
-}
-
+/**
+ * Updates a mount (ie. run the factory function and updates the DOM according to occured changes).
+ *
+ * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
+ */
 Layer.prototype.update = function(mountId) {
   if (arguments.length) {
     var mount = this._mounted[mountId];
@@ -64,6 +78,19 @@ Layer.prototype.update = function(mountId) {
   for (mountId in self._mounted) {
     this.update(mountId);
   }
+}
+
+/**
+ * Returns the definition of a mounted tree all of them if no `mountId` is provided.
+ *
+ * @param  String mountId A mount identifier or none to get all mounts.
+ * @return Object         A mount definition or all of them indexed by their id.
+ */
+Layer.prototype.mounted = function(mountId) {
+  if (arguments.length) {
+    return this._mounted[mountId];
+  }
+  return this._mounted;
 }
 
 module.exports = Layer;
