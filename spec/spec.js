@@ -9,4 +9,4 @@ require('./node/render-spec.js');
 require('./node/patch-spec.js');
 require('./node/setter/apply-props-spec');
 require('./node/setter/apply-attrs-spec');
-require('./tree/patch/patch-spec');
+require('./tree/patch-spec');

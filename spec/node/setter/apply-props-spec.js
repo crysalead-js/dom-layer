@@ -1,6 +1,6 @@
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
-var patch = require("../../../tree/patch/patch");
+var patch = require("../../../tree/patch");
 
 describe("applyProps", function() {
 

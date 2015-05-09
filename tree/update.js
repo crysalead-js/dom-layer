@@ -1,4 +1,4 @@
-var patch = require("./patch/patch");
+var patch = require("./patch");
 
 var isArray = Array.isArray;
 

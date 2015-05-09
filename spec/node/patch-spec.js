@@ -1,7 +1,7 @@
 var h = require("../helper/h");
 var _ = require("../helper/util");
 var Text = require("../../node/text");
-var patch = require("../../tree/patch/patch");
+var patch = require("../../tree/patch");
 
 describe("patch", function() {
 
