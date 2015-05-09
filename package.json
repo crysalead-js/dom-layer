@@ -1,6 +1,6 @@
 {
   "name": "dom-layer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Virtual DOM implementation.",
   "repository": {
     "type": "git",
@@ -13,7 +13,13 @@
     "is-empty": "0.0.1"
   },
   "devDependencies": {
+    "browserify": "^10.1.3",
     "jasmine": "^2.2.1",
-    "jsdom": "3.1.2"
+    "jsdom": "3.1.2",
+    "uglify-js": "^2.4.21"
+  },
+  "scripts": {
+    "test": "jasmine",
+    "dist": "browserify --s domLayer index.js > dist/dom-layer.js && browserify --s domLayer index.js | uglifyjs > dist/dom-layer.min.js"
   }
 }
