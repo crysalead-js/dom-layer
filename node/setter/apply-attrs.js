@@ -1,7 +1,7 @@
 var domElement = require("dom-element");
 var applyStyle = require("./apply-style");
 
-function applyAttrs(node, element, previous, attrs, inSvg) {
+function applyAttrs(node, element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -23,8 +23,6 @@ function applyAttrs(node, element, previous, attrs, inSvg) {
       applyStyle(element, previous[name], value);
     } else if (name === "value") {
       domElement.value(element, value);
-    } else if (inSvg && name === "href") { // HACK
-      element.setAttributeNS("http://www.w3.org/1999/xlink", "href", value);
     } else {
       element.setAttribute(name, value);
     }

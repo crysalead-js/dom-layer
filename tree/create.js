@@ -1,6 +1,6 @@
 var isArray = Array.isArray;
 
-function create(container, nodes, parent, inSvg) {
+function create(container, nodes, parent) {
   if (typeof nodes === "function") {
     nodes = nodes(container, parent);
   }
@@ -12,7 +12,7 @@ function create(container, nodes, parent, inSvg) {
   }
   for (var i = 0, len = nodes.length; i < len; i++) {
     if (nodes[i]) {
-      container.appendChild(nodes[i].render(parent, !!inSvg));
+      container.appendChild(nodes[i].render(parent));
     }
   }
   return nodes;

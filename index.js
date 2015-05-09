@@ -32,7 +32,6 @@ Layer.prototype.mount = function(selector, factory, data) {
 
   data.container = container;
   data.factory = factory;
-  data.inSvg = container.tagName === "svg";
   data.children = tree.create(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerId = mountId;
@@ -73,7 +72,7 @@ Layer.prototype.update = function(mountId) {
   if (arguments.length) {
     var mount = this._mounted[mountId];
     if (mount) {
-      mount.children = tree.update(mount.container, mount.children, mount.factory, null, mount.inSvg);
+      mount.children = tree.update(mount.container, mount.children, mount.factory, null);
     }
     return;
   }

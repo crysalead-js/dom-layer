@@ -13,8 +13,8 @@ var isArray = Array.isArray;
  * @param Array  toChildren   The array of children to take the order from.
  * @param Object container    The container.
  */
-function patch(container, fromChildren, toChildren, parent, inSvg) {
-  var indexes = updateChildren(fromChildren, toChildren, inSvg);
+function patch(container, fromChildren, toChildren, parent) {
+  var indexes = updateChildren(fromChildren, toChildren);
   var direction = indexes.direction;
   var fromKeys = indexes.keys;
   var fromFree = indexes.free;
@@ -38,7 +38,7 @@ function patch(container, fromChildren, toChildren, parent, inSvg) {
       if (fromKeys[toItem.key] !== undefined) {
         domCollection.moveAt(fromKeys[toItem.key], targetIndex, container);
       } else {
-        domCollection.insertAt(toItem.render(parent, inSvg), Math.max(targetIndex, 0), container);
+        domCollection.insertAt(toItem.render(parent), Math.max(targetIndex, 0), container);
         targetIndex += unshift;
       }
     } else if (freeLength > 0) {
@@ -46,7 +46,7 @@ function patch(container, fromChildren, toChildren, parent, inSvg) {
       freeLength--;
       freeIndex += direction;
     } else {
-      domCollection.insertAt(toItem.render(parent, inSvg), Math.max(targetIndex, 0), container);
+      domCollection.insertAt(toItem.render(parent), Math.max(targetIndex, 0), container);
       targetIndex += unshift;
     }
     targetIndex += direction;
@@ -64,13 +64,13 @@ function patch(container, fromChildren, toChildren, parent, inSvg) {
  * @param  Object container The container.
  * @return Object           The corresponding DOMElement.
  */
-patch.node = function(from, to, inSvg) {
+patch.node = function(from, to) {
   var element = from.element;
 
   if (from === to) {
     return element;
   }
-  var next = from.patch(to, inSvg);
+  var next = from.patch(to);
 
   var container = element.parentNode;
   if (container && next !== element) {
@@ -97,7 +97,7 @@ patch.node = function(from, to, inSvg) {
  *                               direction < 1 means mainly unshift based moves.
  *                               direction > 1 means mainly shift based moves.
  */
-function updateChildren(fromChildren, toChildren, inSvg) {
+function updateChildren(fromChildren, toChildren) {
   var i, len;
   var fromItem, toItem, fromIndex = 0, toIndex, direction = 0;
   var indexes = indexChildren(toChildren);
@@ -112,7 +112,7 @@ function updateChildren(fromChildren, toChildren, inSvg) {
       toIndex = toKeys[fromItem.key];
       keys[fromItem.key] = fromItem.element;
       toItem = toChildren[toIndex];
-      patch.node(fromItem, toItem, inSvg);
+      patch.node(fromItem, toItem);
       direction = direction + (toIndex - i > 0 ? 1 : -1);
     } else {
       fromItem.remove();
@@ -132,7 +132,7 @@ function updateChildren(fromChildren, toChildren, inSvg) {
   }
 
   for (i = 0, len = free.length; i < len; i++) {
-    free[i] = patch.node(free[i], toChildren[toFree[i]], inSvg);
+    free[i] = patch.node(free[i], toChildren[toFree[i]]);
   }
 
   return { keys: keys, free: free, direction: direction };

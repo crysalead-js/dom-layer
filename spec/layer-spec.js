@@ -87,7 +87,6 @@ describe("Layer", function() {
 
     expect(mounted.container).toBe(mountPoint);
     expect(mounted.factory).toBe(children);
-    expect(mounted.inSvg).toBe(false);
     expect(mounted.custom).toBe("custom");
 
   });
@@ -103,7 +102,6 @@ describe("Layer", function() {
 
     expect(mounted[mountId].container).toBe(mountPoint);
     expect(mounted[mountId].factory).toBe(children);
-    expect(mounted[mountId].inSvg).toBe(false);
     expect(mounted[mountId].custom).toBe("custom");
 
   });
