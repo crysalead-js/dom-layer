@@ -64,7 +64,7 @@ Tag.prototype.create = function() {
 Tag.prototype.render = function(parent) {
   this.element = this.create();
   if (this.events) {
-    this.element._vtreenode = this;
+    this.element.domLayerNode = this;
   }
   this.parent = parent;
   create(this.element, this.children, this);
