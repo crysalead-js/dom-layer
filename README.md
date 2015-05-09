@@ -10,11 +10,11 @@ This library is a Virtual DOM implementation ala React. If this implementation i
 
 ### The different type of nodes
 
-Out of the box, two objects `Tag` and `Text` are available for representing DOM elements. But since this objects control their rendering, you should be able to build your custom "widget" based on the `Tag` one, but you will probably don't ever need it.
+Out of the box, two objects `Tag` and `Text` are available for representing DOM elements. But you should be able to build your custom "widget" based on the `Tag` one thought you probably won't need it.
 
 #### Example
 
-Let's build the virtual representation of `<div id="message">Hello World</div>`.
+As an example, let's build the virtual representation of `<div id="message">Hello World</div>`.
 
 ```js
 var Tag = require("dom-layer/node/tag");
@@ -23,13 +23,13 @@ var Text = require("dom-layer/node/text");
 var root = new Tag("div", { props: { id: "message" } }, [new Text('Hello World')]);
 ```
 
-`Tag` takes as first parameter the tag name you wan't to represent. The second parameter is an options object and the last parameter is an array of children (it can also be a factory function which returns a children array).
+`Tag` takes as first parameter the tag name to represent. The second parameter is an options object and the last parameter is an array of children (but can also be a function which returns a children array).
 
-This is the verbose way to build a virtual tree but you can build your how abstraction on top of it to generete such trees in a painless way. React uses JSX for example but it would be also possible to make it work with some old school html templating.
+This is the verbose way to build a virtual tree but you can now build your own abstraction on top of it. React uses JSX for example but it would be possible to make it work with some old school html templating.
 
 ### The `Tag`'s options parameter
 
-The `Tag` node is configurable with the `options` parameter and the configurable options are the following:
+The `Tag` node is configurable with the `options` parameter and the values are the following:
 
 ```js
 {
@@ -45,7 +45,7 @@ The `Tag` node is configurable with the `options` parameter and the configurable
 
 - `props`: allows to set some DOM Element properties like `onclick`, `id`.
 - `attrs`: is dedicated to attributes like `title`, `class`.
-- `style`: contains all dynamic CSS definitions.
+- `style`: contains CSS definitions.
 - `events`: allows to store some event's callback (require an additionnal library to work).
 - `callbacks`: are are executed during the virtual node lifetime (e.g `'created'`, '`remove`')
 - `data`: is optional but can contain some user's extra data.
@@ -66,13 +66,13 @@ var tree = new Tag("div", { props: { id: "message" } }, [new Text('Hello World')
 var mountId = layer.mount("#mount-point", tree);
 ```
 
-Then to update the virtual tree a simple call to the `update()` method with the id of the mount is enough.
+When a virtual tree is mounted, a call to the `update()` method will update it.
 
 ```js
 layer.update(mountId);
 ```
 
-At this step the update has no real value since the virtual tree doesn't change. Let's make it a bit more interesting by creating a "trivial" component. Let's start with a simple `Component` function which have a `render()`.
+At this step the update has no real value since the passed virtual tree is an object so nothing is going to be updated. So let's make it a bit more interesting by creating a "trivial" component. Let's start with a `Component` function with a `render()` method like the following.
 
 ```js
 
@@ -92,7 +92,7 @@ Component.prototype.render = function() {
 };
 ```
 
-So according to the `order` value, the text will be displayed either sorted or reversed depending on its value. So now we have something more dynamic we can do the following:
+So according to the `order` value, the text will be displayed either sorted or reversed depending on its value. Now we have something more "dynamic" we can do the following:
 
 ```js
 var component = new Component();
@@ -101,13 +101,13 @@ var factory = component.render.bind(component); // We are now using a function
 var mountId = layer.mount("#mount-point", factory);
 var mountPoint = document.getElementById("mount-point");
 
-component.order = "desc";
-layer.update(mountId); // Update the DOM
+component.order = "desc"; //Changing the order
+layer.update(mountId); // Update the DOM to see the result
 ```
 
-During the update, the `factory` function is executed again which generate another virtual tree, and then the DOM is patched according to changes.
+During the update, the "factory" (i.e the passed function) is executed again which generate another virtual tree. Then the DOM is patched according to changes.
 
-The example above is rudimentary but shows how to deal with this library to build a higher abtraction.
+The example above is rudimentary but shows how to build a higher abtraction.
 
 Finally to unmount a virtual tree, the `unmount()` function need to be called with a selector. For example:
 
@@ -117,9 +117,9 @@ layer.unmount("#mount-point");
 
 ## The rendering loop
 
-Due to some architecture choices, the rendering loop has been leaved up to a higer level of abstraction. Indeed the rerendering need to be based on either a component is dirty or not and the relationship between the component and its childs and ancestors, to rerender the minimum of virtual trees.
+Since the rerendering need to be based on either a component is "dirty" or not and which depend mainly on the choosed architecture, the rendering loop has been leaved up to a higer level of abstraction.
 
-However it still possible build a rudimentary one like the following for custom experimentations:
+However it still possible to build a rudimentary one for custom experimentations like the following:
 
 ```js
 
@@ -132,4 +132,4 @@ function tick() {
 raf(tick);
 ```
 
-Be careful that this kind of rendering loop is time consuming and will quickly become an issue when the rendering time will exceed a specific threshold.
+Be careful, this kind of rendering loop is time consuming and will quickly become an issue when the rendering time exceed a specific threshold.
