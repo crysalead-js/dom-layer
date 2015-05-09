@@ -41,6 +41,7 @@ The `Tag` node is configurable with the `options` parameter and the configurable
   callbacks: {} // The callbacks to call during the node life cycle.
   data: {}      // Some custom data you want to embed with your virtual node.
 }
+```
 
 - `props`: allows to set some DOM Element properties like `onclick`, `id`.
 - `attrs`: is dedicated to attributes like `title`, `class`.
