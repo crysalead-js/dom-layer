@@ -57,7 +57,7 @@ Tree.prototype.unmount = function(selector) {
   }
   var container = containers[0];
   var mountId = container.domLayerTreeId;
-  if (!mountId) {
+  if (!this._mounted[mountId]) {
     return;
   }
 

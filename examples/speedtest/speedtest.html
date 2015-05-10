@@ -1,0 +1,58 @@
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script src="http://underscorejs.org/underscore-min.js"></script>
+  <script src="http://backbonejs.org/backbone-min.js"></script>
+  <script src="https://rawgit.com/Bobris/Bobril/f21cfcd6f86f1b0cb93c4ce746a130eba8c5d192/src/bobril.js"></script>
+  <script src="https://rawgit.com/joelrich/citojs/1002744a9e7d4e95140c331f7cba8785b15fc37e/dist/cito.js"></script>
+  <script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-v1.3.0.js"></script>
+  <script src="https://rawgit.com/ebryn/0bbe6639da1166bef3ee/raw/c5f715bbee4200d328065fdb34b0bb49f2d748cf/ember-htmlbars-dont-use-me-anywhere-else.prod.js"></script>
+  <script src="http://cdn.jsdelivr.net/mithril/0.2.0/mithril.js"></script>
+  <script src="http://fb.me/react-0.13.2.js"></script>
+  <script src="https://rawgit.com/Matt-Esch/virtual-dom/v2.0.1/dist/virtual-dom.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/0.11.10/vue.js"></script>
+  <script src="../../dist/dom-layer.js"></script>
+  <link rel="stylesheet" type="text/css" href="./speedtest.css" media="screen" />
+</head>
+<body>
+  <p>
+    This is a fork of <a href="http://jsfiddle.net/jashkenas/CGSd5/" target="_top">jashkenas's Ember/Backbone</a> with 500 circles and some stats around.
+  </p>
+
+  <p>VDOM based:</p>
+  <button onclick="runDomLayer()">DomLayer</button>
+  <button onclick="runBobril()">Bobril 3.0.0</button>
+  <button onclick="runCito()">Cito 0.0.1</button>
+  <button onclick="runMithril()">Mithril 0.2.0</button>
+  <button onclick="runReact()">React 0.13.2</button>
+  <button onclick="runVirtualDom()">Virtual Dom 2.0.1</button>
+  <button onclick="benchmark.reset()">Stop</button>
+  <p>DOM based:</p>
+  <button onclick="runBackbone()">Backbone</button>
+  <button onclick="runEmber()">Ember+HTMLBars</button>
+  <button onclick="runVue()">Vue 0.11.10</button>
+  <button onclick="runVanilla()">vanilla JS</button>
+  <button onclick="benchmark.reset()">Stop</button>
+
+  <p id="timing">&nbsp;</p>
+  <div id="grid"></div>
+
+  <script type="text/x-htmlbars" id="htmlbars-box">
+      <div class="box" id="{{number}}" style="{{style}}"> {{content}}</div>
+  </script>
+
+  <script src="./js/benchmark.js"></script>
+  <script src="./js/backbone.js"></script>
+  <script src="./js/bobril.js"></script>
+  <script src="./js/cito.js"></script>
+  <script src="./js/dom-layer.js"></script>
+  <script src="./js/ember.js"></script>
+  <script src="./js/mithril.js"></script>
+  <script src="./js/react.js"></script>
+  <script src="./js/virtual-dom.js"></script>
+  <script src="./js/vue.js"></script>
+  <script src="./js/vanilla.js"></script>
+</body>
+</html>
