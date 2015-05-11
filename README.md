@@ -4,7 +4,7 @@
 
 **Warning: work in progress**
 
-This library is a Virtual DOM implementation ala React. If this implementation is not the fasted one (though faster than the React and Mithril and with similar performances with Virtual DOM), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
+This library is a Virtual DOM implementation ala React. If this implementation is not the fasted one (though faster than the React and Mithril and with similar performances with Virtual DOM according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
 
 *You can however see some live benchmark in the [examples/speedtest](http://rawgit.com/crysalead-js/dom-layer/master/examples/speedtest/speedtest.html) directory.*
 

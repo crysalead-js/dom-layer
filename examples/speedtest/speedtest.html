@@ -21,6 +21,14 @@
     This is a fork of <a href="http://jsfiddle.net/jashkenas/CGSd5/" target="_top">jashkenas's Ember/Backbone</a> with 500 circles and some stats around.
   </p>
 
+  <p>
+    Note: speed differences are more visible using Chrome.
+  </p>
+
+  <p>
+    Note2: since Bobril delegates the computing to `window.requestAnimationFrame()` under the wood, the benchmark is not accurate for it.
+  </p>
+
   <p>VDOM based:</p>
   <button onclick="runDomLayer()">DomLayer</button>
   <button onclick="runBobril()">Bobril 3.0.0</button>
