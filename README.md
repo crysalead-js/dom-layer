@@ -22,7 +22,7 @@ As an example, let's build the virtual representation of `<div id="message">Hell
 var Tag = require("dom-layer").Tag;
 var Text = require("dom-layer").Text;
 
-var root = new Tag("div", { props: { id: "message" } }, [new Text('Hello World')]);
+var root = new Tag("div", { attrs: { id: "message" } }, [new Text('Hello World')]);
 ```
 
 `Tag` takes as first parameter the tag name to represent. The second parameter is an options object and the last parameter is an array of children (but can also be a function which returns a children array).
