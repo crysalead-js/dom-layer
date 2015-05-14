@@ -131,20 +131,16 @@ describe("patch", function() {
 
   it("patches if different namespaces", function() {
 
-    if (!_.hasNamespace() || (typeof module !== 'undefined' && module.exports)) {
-        return;
-    }
-
-    var from = h({ properties: { attributes: { xmlns: "testing" } } });
-    var to = h({ properties: { attributes: { xmlns: "undefined" } } });
+    var from = h({ namespace: "testing" });
+    var to = h({ namespace: "undefined" });
 
     var rootNode = from.render();
-    expect(rootNode.tagName).toBe("DIV");
+    expect(rootNode.tagName).toBe("div");
     expect(rootNode.namespaceURI).toBe("testing");
 
-    rootNode = to.update(from);
+    rootNode = patch.node(from, to);
 
-    expect(rootNode.tagName).toBe("DIV");
+    expect(rootNode.tagName).toBe("div");
     expect(rootNode.namespaceURI).toBe("undefined");
 
   });
