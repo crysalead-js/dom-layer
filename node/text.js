@@ -2,12 +2,10 @@
  * The Virtual Text constructor.
  *
  * @param  String tagName  The tag name.
- * @param  String key      The key identifier.
  * @param  Array  children An array for children.
  */
-function Text(text, key) {
+function Text(text) {
   this.text = text;
-  this.key = key;
   this.element = undefined;
 }
 
