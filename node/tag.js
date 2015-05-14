@@ -49,9 +49,9 @@ Tag.prototype.create = function() {
   } else {
     element = document.createElementNS(this.namespace, this.tagName);
   }
-  applyProps(this, element, {}, this.props);
-  applyAttrs(this, element, {}, this.attrs);
-  applyAttrsNS(this, element, {}, this.attrsNS);
+  applyProps(element, {}, this.props);
+  applyAttrs(element, {}, this.attrs);
+  applyAttrsNS(element, {}, this.attrsNS);
   return element;
 };
 
@@ -87,9 +87,9 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  applyProps(to, to.element, this.props, to.props);
-  applyAttrs(to, to.element, this.attrs, to.attrs);
-  applyAttrsNS(this, to.element, this.attrsNS, to.attrsNS);
+  applyProps(to.element, this.props, to.props);
+  applyAttrs(to.element, this.attrs, to.attrs);
+  applyAttrsNS(to.element, this.attrsNS, to.attrsNS);
   return this.element;
 }
 

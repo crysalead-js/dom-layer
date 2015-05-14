@@ -1,7 +1,7 @@
 var domElement = require("dom-element");
 var applyStyle = require("./apply-style");
 
-function applyAttrs(node, element, previous, attrs) {
+function applyAttrs(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }

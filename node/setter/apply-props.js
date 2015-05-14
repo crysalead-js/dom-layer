@@ -1,4 +1,4 @@
-function applyProps(node, element, previous, props) {
+function applyProps(element, previous, props) {
   var name;
   previous = previous || {};
   props = props || {};
