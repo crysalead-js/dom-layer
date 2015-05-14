@@ -2,7 +2,7 @@
 var domElement = require("dom-element");
 var applyStyle = require("./apply-style");
 
-function applyAttrsNS(node, element, previous, attrs) {
+function applyAttrsNS(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -47,7 +47,7 @@ module.exports = applyAttrsNS;
 var domElement = require("dom-element");
 var applyStyle = require("./apply-style");
 
-function applyAttrs(node, element, previous, attrs) {
+function applyAttrs(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -79,7 +79,7 @@ function applyAttrs(node, element, previous, attrs) {
 module.exports = applyAttrs;
 
 },{"./apply-style":4,"dom-element":8}],3:[function(require,module,exports){
-function applyProps(node, element, previous, props) {
+function applyProps(element, previous, props) {
   var name;
   previous = previous || {};
   props = props || {};
@@ -181,9 +181,9 @@ Tag.prototype.create = function() {
   } else {
     element = document.createElementNS(this.namespace, this.tagName);
   }
-  applyProps(this, element, {}, this.props);
-  applyAttrs(this, element, {}, this.attrs);
-  applyAttrsNS(this, element, {}, this.attrsNS);
+  applyProps(element, {}, this.props);
+  applyAttrs(element, {}, this.attrs);
+  applyAttrsNS(element, {}, this.attrsNS);
   return element;
 };
 
@@ -219,9 +219,9 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  applyProps(to, to.element, this.props, to.props);
-  applyAttrs(to, to.element, this.attrs, to.attrs);
-  applyAttrsNS(this, to.element, this.attrsNS, to.attrsNS);
+  applyProps(to.element, this.props, to.props);
+  applyAttrs(to.element, this.attrs, to.attrs);
+  applyAttrsNS(to.element, this.attrsNS, to.attrsNS);
   return this.element;
 }
 
@@ -278,12 +278,10 @@ module.exports = Tag;
  * The Virtual Text constructor.
  *
  * @param  String tagName  The tag name.
- * @param  String key      The key identifier.
  * @param  Array  children An array for children.
  */
-function Text(text, key) {
+function Text(text) {
   this.text = text;
-  this.key = key;
   this.element = undefined;
 }
 
@@ -336,7 +334,7 @@ Text.prototype.remove = function(destroy) {
  * Destroys the DOM node attached to the virtual node.
  */
 Text.prototype.destroy = function() {
-  var parentNode = context.element.parentNode;
+  var parentNode = this.element.parentNode;
   return parentNode.removeChild(this.element);
 };
 
@@ -1183,7 +1181,7 @@ Tree.prototype.unmount = function(selector) {
   }
   var container = containers[0];
   var mountId = container.domLayerTreeId;
-  if (!mountId) {
+  if (!this._mounted[mountId]) {
     return;
   }
 
@@ -1205,9 +1203,9 @@ Tree.prototype.update = function(mountId) {
     }
     return;
   }
-  // for (mountId in this._mounted) {
-  //   this.update(mountId);
-  // }
+  for (mountId in this._mounted) {
+    this.update(mountId);
+  }
 }
 
 /**

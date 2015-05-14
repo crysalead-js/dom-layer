@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.0.6 (2015-05-14)
+
+  * **Bugfix:** fixes a couple of bugs and remove some deprecated parameters.
+
 ## 0.0.5 (2015-05-11)
 
   * **Add:** updates the README & fixes CHANGELOG.
