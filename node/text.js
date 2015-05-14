@@ -60,7 +60,7 @@ Text.prototype.remove = function(destroy) {
  * Destroys the DOM node attached to the virtual node.
  */
 Text.prototype.destroy = function() {
-  var parentNode = context.element.parentNode;
+  var parentNode = this.element.parentNode;
   return parentNode.removeChild(this.element);
 };
 
