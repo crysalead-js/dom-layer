@@ -1,6 +1,6 @@
 {
   "name": "dom-layer",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Virtual DOM implementation.",
   "repository": {
     "type": "git",

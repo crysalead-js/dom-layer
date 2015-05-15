@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.0.8 (2015-05-15)
+
+  * **Bugfix:** fixes the release according to the source.
+
 ## 0.0.7 (2015-05-15)
 
   * **Bugfix:** parent namespace need to be propagated to children in SVG.

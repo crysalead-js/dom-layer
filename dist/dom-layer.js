@@ -193,8 +193,8 @@ Tag.prototype.render = function(parent) {
       this.namespace = "http://www.w3.org/2000/svg";
     } else if (this.tagName === "math") {
       this.namespace = "http://www.w3.org/1998/Math/MathML";
-    } else {
-      this.namespace = this.parent.namespace;
+    } else if (parent) {
+      this.namespace = parent.namespace;
     }
   }
 
