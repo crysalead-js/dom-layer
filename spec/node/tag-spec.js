@@ -21,12 +21,24 @@ describe("Tag", function() {
 
   it("respects default SVG namespace", function() {
     var tag = h({ tagName: "svg" });
+    var element = tag.render();
     expect(tag.namespace).toBe("http://www.w3.org/2000/svg");
+    expect(element.namespaceURI).toBe("http://www.w3.org/2000/svg");
   });
 
   it("respects default MathML namespace", function() {
     var tag = h({ tagName: "math" });
+    var element = tag.render();
     expect(tag.namespace).toBe("http://www.w3.org/1998/Math/MathML");
+    expect(element.namespaceURI).toBe("http://www.w3.org/1998/Math/MathML");
+  });
+
+  it("assures children use the parent namespace by default", function() {
+    var circle = h({ tagName: "circle" });
+    var tag = h({ tagName: "svg" }, [circle]);
+    var element = tag.render();
+    expect(circle.namespace).toBe("http://www.w3.org/2000/svg");
+    expect(element.childNodes[0].namespaceURI).toBe("http://www.w3.org/2000/svg");
   });
 
 });
