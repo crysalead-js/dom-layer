@@ -159,14 +159,6 @@ function Tag(tagName, config, children) {
   this.key = config.key != null ? config.key : undefined;
 
   this.namespace = config.namespace || "";
-  if (this.namespace) {
-    return
-  }
-  if (this.tagName === "svg" ) {
-    this.namespace = "http://www.w3.org/2000/svg";
-  } else if (this.tagName === "math") {
-    this.namespace = "http://www.w3.org/1998/Math/MathML";
-  }
 };
 
 /**
@@ -194,11 +186,22 @@ Tag.prototype.create = function() {
  * @return Object         A root DOM node.
  */
 Tag.prototype.render = function(parent) {
+  this.parent = parent;
+
+  if (!this.namespace) {
+    if (this.tagName === "svg" ) {
+      this.namespace = "http://www.w3.org/2000/svg";
+    } else if (this.tagName === "math") {
+      this.namespace = "http://www.w3.org/1998/Math/MathML";
+    } else {
+      this.namespace = this.parent.namespace;
+    }
+  }
+
   this.element = this.create();
   if (this.events) {
     this.element.domLayerNode = this;
   }
-  this.parent = parent;
   create(this.element, this.children, this);
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, this.element);
