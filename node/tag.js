@@ -41,9 +41,6 @@ Tag.prototype.create = function() {
   } else {
     element = document.createElementNS(this.namespace, this.tagName);
   }
-  applyProps(element, {}, this.props);
-  applyAttrs(element, {}, this.attrs);
-  applyAttrsNS(element, {}, this.attrsNS);
   return element;
 };
 
@@ -66,15 +63,20 @@ Tag.prototype.render = function(parent) {
     }
   }
 
-  this.element = this.create();
+  var element = this.element = this.create();
   if (this.events) {
-    this.element.domLayerNode = this;
+    element.domLayerNode = this;
   }
-  create(this.element, this.children, this);
+  create(element, this.children, this);
+
+  applyProps(element, {}, this.props);
+  applyAttrs(element, {}, this.attrs);
+  applyAttrsNS(element, {}, this.attrsNS);
+
   if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, this.element);
+    this.callbacks.created(this, element);
   }
-  return this.element;
+  return element;
 };
 
 /**
