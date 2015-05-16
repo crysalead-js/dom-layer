@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.0.9 (2015-05-16)
+
+  * **Bugfix:** rendering properties and attributes were applied before children rendering.
+
 ## 0.0.8 (2015-05-15)
 
   * **Bugfix:** fixes the release according to the source.
