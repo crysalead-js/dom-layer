@@ -39,17 +39,19 @@ The `Tag` node is configurable with the `options` parameter and the values are t
   attrs: {      // The attributes
     style:      // The style
   },
+  attrsNS: {},  // The namespaced attributes (for SVG elements only)
   events: {}    // Delegable event (require an additionnal library),
   callbacks: {} // The callbacks to call during the node life cycle.
   data: {}      // Some custom data you want to embed with your virtual node.
 }
 ```
 
-- `props`: allows to set some DOM Element properties like `onclick`, `id`.
-- `attrs`: is dedicated to attributes like `title`, `class`.
+- `props`: allows to set some DOM Element properties like `"onclick"`, `"id"`.
+- `attrs`: is dedicated to attributes like `title"`, `"class"`.
 - `style`: contains CSS definitions.
+- `attrsNS`: is dedicated to attributes with a namespace like `"xlink:href"`.
 - `events`: allows to store some event's callback (require an additionnal library to work).
-- `callbacks`: are are executed during the virtual node lifetime (e.g `'created'`, '`remove`')
+- `callbacks`: are are executed during the virtual node lifetime (e.g `'created'`, `'remove'`)
 - `data`: is optional but can contain some user's extra data.
 
 ## The mount/unmount API
