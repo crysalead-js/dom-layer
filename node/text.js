@@ -9,6 +9,8 @@ function Text(text) {
   this.element = undefined;
 }
 
+Text.prototype.type = "Text";
+
 /**
  * Creates and return the corresponding DOM node.
  *
@@ -34,7 +36,7 @@ Text.prototype.render = function() {
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Text.prototype.patch = function(to) {
-  if (to.tagName !== undefined) {
+  if (this.type !== to.type) {
     this.remove(false);
     return to.render();
   }

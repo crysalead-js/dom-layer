@@ -29,6 +29,8 @@ function Tag(tagName, config, children) {
   this.namespace = config.namespace || "";
 };
 
+Tag.prototype.type = "Tag";
+
 /**
  * Creates and return the corresponding DOM node.
  *
@@ -86,7 +88,7 @@ Tag.prototype.render = function(parent) {
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Tag.prototype.patch = function(to) {
-  if (this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
+  if (this.type !== to.type || this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
     this.remove(false);
     return to.render();
   }
