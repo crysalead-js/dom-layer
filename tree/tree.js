@@ -24,9 +24,7 @@ Tree.prototype.mount = function(selector, factory, data) {
     return;
   }
   if (containers.length > 1) {
-    return containers.map(function(container) {
-      return this.mount(container, mount);
-    });
+    throw new Error("The selector must identify an unique DOM element");
   }
   var container = containers[0];
   this._mountedIndex++;
@@ -50,10 +48,7 @@ Tree.prototype.unmount = function(selector) {
     return;
   }
   if (containers.length > 1) {
-    for(var i = 0, len = containers.length; i < len; i++) {
-      this.unmount(containers[i]);
-    }
-    return;
+    throw new Error("The selector must identify an unique DOM element");
   }
   var container = containers[0];
   var mountId = container.domLayerTreeId;
