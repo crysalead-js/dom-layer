@@ -3,6 +3,9 @@ var jsdom = require('jsdom');
 global.document = jsdom.jsdom();
 global.window = global.document.parentWindow;
 
+// Workaround for https://github.com/tmpvar/jsdom/issues/961
+document.defaultView.HTMLElement.prototype.dataset = {};
+
 require('./node/tag-spec');
 require('./node/render-spec');
 require('./node/patch-spec');

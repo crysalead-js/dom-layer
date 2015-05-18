@@ -16,9 +16,24 @@ describe("applyProps", function() {
 
     var a = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
     var rootNode = a.render();
-    var d1 = rootNode.dataset;
+
     expect(rootNode.dataset.foo).toBe("bar");
     expect(rootNode.dataset.bar).toBe("oops");
+
+  });
+
+  it("unsets dataset", function() {
+
+    var from = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
+    var rootNode = from.render();
+
+    var to = h({ tagName: "div", props: { dataset: { foo: "bar", baz: "hello" } } });
+    var newRoot = patch.node(from, to);
+
+    expect(rootNode).toEqual(newRoot);
+    expect(newRoot.dataset.foo).toBe("bar");
+    expect(newRoot.dataset.bar).toBe(undefined);
+    expect(newRoot.dataset.baz).toBe("hello");
 
   });
 
