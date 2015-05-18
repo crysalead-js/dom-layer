@@ -43,7 +43,7 @@ applyAttrsNS.namespaces = {
 
 module.exports = applyAttrsNS;
 
-},{"./apply-style":4,"dom-element":8}],2:[function(require,module,exports){
+},{"./apply-style":5,"dom-element":9}],2:[function(require,module,exports){
 var domElement = require("dom-element");
 var applyStyle = require("./apply-style");
 
@@ -78,29 +78,65 @@ function applyAttrs(element, previous, attrs) {
 
 module.exports = applyAttrs;
 
-},{"./apply-style":4,"dom-element":8}],3:[function(require,module,exports){
+},{"./apply-style":5,"dom-element":9}],3:[function(require,module,exports){
+function applyDataset(element, previous, dataset) {
+  if (!previous && !dataset) {
+    return dataset;
+  }
+  var name;
+  previous = previous || {};
+  dataset = dataset || {};
+
+  for (name in previous) {
+    if (dataset[name] === undefined) {
+      element.dataset[name] = undefined;
+    }
+  }
+
+  for (name in dataset) {
+    if (previous[name] === dataset[name]) {
+      continue;
+    }
+    element.dataset[name] = dataset[name];
+  }
+
+  return dataset;
+}
+
+module.exports = applyDataset;
+
+},{}],4:[function(require,module,exports){
+var applyDataset = require("./apply-dataset");
+
 function applyProps(element, previous, props) {
+  if (!previous && !props) {
+    return props;
+  }
   var name;
   previous = previous || {};
   props = props || {};
 
   for (name in previous) {
-    if (props[name] === undefined) {
+    if (name !== "dataset" && props[name] === undefined) {
       element[name] = undefined;
     }
   }
 
   for (name in props) {
-    if (previous[name] === props[name]) {
+    if (name === "dataset" || previous[name] === props[name]) {
       continue;
     }
     element[name] = props[name];
   }
+
+  applyDataset(element, previous["dataset"], props["dataset"]);
+
+  return props;
 }
 
 module.exports = applyProps;
 
-},{}],4:[function(require,module,exports){
+},{"./apply-dataset":3}],5:[function(require,module,exports){
 var domElement = require("dom-element");
 
 function applyStyle(element, previous, style) {
@@ -129,7 +165,7 @@ function applyStyle(element, previous, style) {
 
 module.exports = applyStyle;
 
-},{"dom-element":8}],5:[function(require,module,exports){
+},{"dom-element":9}],6:[function(require,module,exports){
 var create = require("../tree/create");
 var update = require("../tree/update");
 var applyProps = require("./setter/apply-props");
@@ -160,6 +196,8 @@ function Tag(tagName, config, children) {
 
   this.namespace = config.namespace || "";
 };
+
+Tag.prototype.type = "Tag";
 
 /**
  * Creates and return the corresponding DOM node.
@@ -218,7 +256,7 @@ Tag.prototype.render = function(parent) {
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Tag.prototype.patch = function(to) {
-  if (this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
+  if (this.type !== to.type || this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
     this.remove(false);
     return to.render();
   }
@@ -278,7 +316,7 @@ function broadcastRemove(node) {
 
 module.exports = Tag;
 
-},{"../tree/create":14,"../tree/update":18,"./setter/apply-attrs":2,"./setter/apply-attrs-n-s":1,"./setter/apply-props":3}],6:[function(require,module,exports){
+},{"../tree/create":15,"../tree/update":19,"./setter/apply-attrs":2,"./setter/apply-attrs-n-s":1,"./setter/apply-props":4}],7:[function(require,module,exports){
 /**
  * The Virtual Text constructor.
  *
@@ -289,6 +327,8 @@ function Text(text) {
   this.text = text;
   this.element = undefined;
 }
+
+Text.prototype.type = "Text";
 
 /**
  * Creates and return the corresponding DOM node.
@@ -315,7 +355,7 @@ Text.prototype.render = function() {
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Text.prototype.patch = function(to) {
-  if (to.tagName !== undefined) {
+  if (this.type !== to.type) {
     this.remove(false);
     return to.render();
   }
@@ -344,7 +384,7 @@ Text.prototype.destroy = function() {
 };
 
 module.exports = Text;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Index based collection manipulation methods for DOM childNodes.
  */
@@ -426,7 +466,7 @@ collection.extend = function(object) {
 
 module.exports = collection;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
 /**
@@ -718,7 +758,7 @@ module.exports = {
   toggleClass: toggleClass
 };
 
-},{"to-camel-case":9}],9:[function(require,module,exports){
+},{"to-camel-case":10}],10:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -743,7 +783,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":10}],10:[function(require,module,exports){
+},{"to-space-case":11}],11:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -768,7 +808,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":11}],11:[function(require,module,exports){
+},{"to-no-case":12}],12:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -843,7 +883,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -901,7 +941,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -931,7 +971,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -953,7 +993,7 @@ function create(container, nodes, parent) {
 }
 
 module.exports = create;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var isEmpty = require("is-empty");
 var domCollection = require("dom-collection");
 
@@ -1117,7 +1157,7 @@ function indexChildren(children) {
 
 module.exports = patch;
 
-},{"dom-collection":7,"is-empty":13}],16:[function(require,module,exports){
+},{"dom-collection":8,"is-empty":14}],17:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1126,7 +1166,7 @@ function remove(nodes, parent) {
 }
 
 module.exports = remove;
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var query = require("dom-query");
 var create = require("./create");
 var update = require("./update");
@@ -1228,7 +1268,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./create":14,"./remove":16,"./update":18,"dom-query":12}],18:[function(require,module,exports){
+},{"./create":15,"./remove":17,"./update":19,"dom-query":13}],19:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1248,7 +1288,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":15}],19:[function(require,module,exports){
+},{"./patch":16}],20:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var create = require("./tree/create");
 var update = require("./tree/update");
@@ -1267,5 +1307,5 @@ module.exports = {
   patch: patch
 };
 
-},{"./node/tag":5,"./node/text":6,"./tree/create":14,"./tree/patch":15,"./tree/remove":16,"./tree/tree":17,"./tree/update":18}]},{},[19])(19)
+},{"./node/tag":6,"./node/text":7,"./tree/create":15,"./tree/patch":16,"./tree/remove":17,"./tree/tree":18,"./tree/update":19}]},{},[20])(20)
 });

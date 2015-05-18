@@ -2,6 +2,11 @@
 
 ## HEAD
 
+## 0.0.10 (2015-05-18)
+
+  * **Add:** force rerendering when the type of nodes are different.
+  * **Bugfix:** dataset properties wasn't setted correctly.
+
 ## 0.0.9 (2015-05-16)
 
   * **Bugfix:** rendering properties and attributes were applied before children rendering.
