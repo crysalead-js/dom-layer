@@ -5,6 +5,8 @@ var remove = require("./tree/remove");
 var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
+var attrs = require("./node/util/attrs");
+var props = require("./node/util/props");
 
 module.exports = {
   Tree: Tree,
@@ -13,5 +15,7 @@ module.exports = {
   create: create,
   update: update,
   remove: remove,
-  patch: patch
+  patch: patch,
+  attrs: attrs,
+  props: props
 };

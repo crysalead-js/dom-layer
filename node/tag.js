@@ -1,8 +1,8 @@
 var create = require("../tree/create");
 var update = require("../tree/update");
-var applyProps = require("./setter/apply-props");
-var applyAttrs = require("./setter/apply-attrs");
-var applyAttrsNS = require("./setter/apply-attrs-n-s");
+var props = require("./util/props");
+var attrs = require("./util/attrs");
+var attrsNS = require("./util/attrs-n-s");
 
 /**
  * The Virtual Tag constructor.
@@ -71,9 +71,9 @@ Tag.prototype.render = function(parent) {
   }
   create(element, this.children, this);
 
-  applyProps(element, {}, this.props);
-  applyAttrs(element, {}, this.attrs);
-  applyAttrsNS(element, {}, this.attrsNS);
+  props.apply(element, {}, this.props);
+  attrs.apply(element, {}, this.attrs);
+  attrsNS.apply(element, {}, this.attrsNS);
 
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, element);
@@ -94,9 +94,9 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  applyProps(to.element, this.props, to.props);
-  applyAttrs(to.element, this.attrs, to.attrs);
-  applyAttrsNS(to.element, this.attrsNS, to.attrsNS);
+  props.apply(to.element, this.props, to.props);
+  attrs.apply(to.element, this.attrs, to.attrs);
+  attrsNS.apply(to.element, this.attrsNS, to.attrsNS);
   return this.element;
 }
 

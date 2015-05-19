@@ -1,4 +1,12 @@
-function applyDataset(element, previous, dataset) {
+/**
+ * Maintains state of element dataset.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of dataset.
+ * @param  Object dataset   The dataset to match on.
+ * @return Object dataset   The element dataset state.
+ */
+function apply(element, previous, dataset) {
   if (!previous && !dataset) {
     return dataset;
   }
@@ -22,4 +30,6 @@ function applyDataset(element, previous, dataset) {
   return dataset;
 }
 
-module.exports = applyDataset;
+module.exports = {
+  apply: apply
+};

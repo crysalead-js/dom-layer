@@ -1,6 +1,13 @@
 var domElement = require("dom-element");
 
-function applyStyle(element, previous, style) {
+/**
+ * Maintains state of element style attributes.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of style attributes.
+ * @param  Object style     The style attributes to match on.
+ */
+function apply(element, previous, style) {
   if (!previous && !style) {
     return style;
   }
@@ -24,4 +31,6 @@ function applyStyle(element, previous, style) {
   }
 }
 
-module.exports = applyStyle;
+module.exports = {
+  apply: apply
+};
