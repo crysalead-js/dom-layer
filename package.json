@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "dom-collection": "^1.0.1",
-    "dom-element": "^1.1.1",
+    "dom-element-value": "^1.0.1",
+    "dom-element-css": "^1.0.0",
     "dom-query": "^1.0.1",
     "is-empty": "0.0.1"
   },

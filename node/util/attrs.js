@@ -1,4 +1,4 @@
-var domElement = require("dom-element");
+var domElementValue = require("dom-element-value");
 var style = require("./style");
 
 /**
@@ -67,7 +67,7 @@ set.value = function(name, element, previous, attrs) {
   if (previous["multiple"] !== attrs["multiple"]) {
     element.setAttribute(name, attrs["multiple"]);
   }
-  domElement.value(element, attrs[name]);
+  domElementValue(element, attrs[name]);
 };
 
 /**

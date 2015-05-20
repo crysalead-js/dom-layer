@@ -1,4 +1,4 @@
-var domElement = require("dom-element");
+var domElementValue = require("dom-element-value");
 var dataset = require("./dataset");
 
 /**
@@ -67,7 +67,7 @@ set.value = function(element, previous, props) {
   if (previous["multiple"] !== props["multiple"]) {
     element.multiple = props["multiple"];
   }
-  domElement.value(element, newValue);
+  domElementValue(element, newValue);
 };
 
 /**
