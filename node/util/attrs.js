@@ -9,7 +9,7 @@ var style = require("./style");
  * @param  Object attrs     The attributes to match on.
  * @return Object attrs     The element attributes state.
  */
-function apply(element, previous, attrs) {
+function patch(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -74,11 +74,11 @@ set.value = function(name, element, previous, attrs) {
  * Custom set handler for the style attribute.
  */
 set.style = function(name, element, previous, attrs) {
-  style.apply(element, previous[name], attrs[name]);
+  style.patch(element, previous[name], attrs[name]);
 };
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   set: set,
   unset: unset
 };

@@ -4,7 +4,7 @@ var patch = require("../../../tree/patch");
 
 describe("props", function() {
 
-  describe(".apply()", function() {
+  describe(".patch()", function() {
 
     it("doesn't set undefined props", function() {
 

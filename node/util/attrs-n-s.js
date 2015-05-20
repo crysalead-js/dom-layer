@@ -15,7 +15,7 @@ var namespaces = {
  * @param  Object attrs     The attributes to match on.
  * @return Object attrs     The element attributes state.
  */
-function apply(element, previous, attrs) {
+function patch(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -49,6 +49,6 @@ function splitAttrName(attrName) {
 }
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   namespaces: namespaces
 };

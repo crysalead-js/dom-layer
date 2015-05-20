@@ -9,7 +9,7 @@ var dataset = require("./dataset");
  * @param  Object props     The properties to match on.
  * @return Object props     The element properties state.
  */
-function apply(element, previous, props) {
+function patch(element, previous, props) {
   if (!previous && !props) {
     return props;
   }
@@ -74,18 +74,18 @@ set.value = function(element, previous, props) {
  * Custom set handler for the dataset attribute.
  */
 set.dataset = function(name, element, previous, props) {
-  dataset.apply(element, previous[name], props[name]);
+  dataset.patch(element, previous[name], props[name]);
 };
 
 /**
  * Custom unset handler for the dataset attribute.
  */
 unset.dataset = function(name, element, previous) {
-  dataset.apply(element, previous[name], {});
+  dataset.patch(element, previous[name], {});
 };
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   set: set,
   unset: unset
 };

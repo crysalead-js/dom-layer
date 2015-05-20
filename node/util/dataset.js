@@ -6,7 +6,7 @@
  * @param  Object dataset   The dataset to match on.
  * @return Object dataset   The element dataset state.
  */
-function apply(element, previous, dataset) {
+function patch(element, previous, dataset) {
   if (!previous && !dataset) {
     return dataset;
   }
@@ -31,5 +31,5 @@ function apply(element, previous, dataset) {
 }
 
 module.exports = {
-  apply: apply
+  patch: patch
 };

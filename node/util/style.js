@@ -7,7 +7,7 @@ var domElementCss = require("dom-element-css");
  * @param  Object previous  The previous state of style attributes.
  * @param  Object style     The style attributes to match on.
  */
-function apply(element, previous, style) {
+function patch(element, previous, style) {
   if (!previous && !style) {
     return style;
   }
@@ -32,5 +32,5 @@ function apply(element, previous, style) {
 }
 
 module.exports = {
-  apply: apply
+  patch: patch
 };

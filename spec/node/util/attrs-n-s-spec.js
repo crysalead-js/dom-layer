@@ -7,7 +7,7 @@ var namespaces = attrsNS.namespaces;
 
 describe("attrsNS", function() {
 
-  describe(".apply()", function() {
+  describe(".patch()", function() {
 
     it("sets namespaced attributes", function() {
 

@@ -71,9 +71,9 @@ Tag.prototype.render = function(parent) {
   }
   create(element, this.children, this);
 
-  props.apply(element, {}, this.props);
-  attrs.apply(element, {}, this.attrs);
-  attrsNS.apply(element, {}, this.attrsNS);
+  props.patch(element, {}, this.props);
+  attrs.patch(element, {}, this.attrs);
+  attrsNS.patch(element, {}, this.attrsNS);
 
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, element);
@@ -94,9 +94,9 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  props.apply(to.element, this.props, to.props);
-  attrs.apply(to.element, this.attrs, to.attrs);
-  attrsNS.apply(to.element, this.attrsNS, to.attrsNS);
+  props.patch(to.element, this.props, to.props);
+  attrs.patch(to.element, this.attrs, to.attrs);
+  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
   return this.element;
 }
 

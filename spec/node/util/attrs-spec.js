@@ -4,7 +4,7 @@ var patch = require("../../../tree/patch");
 
 describe("attrs", function() {
 
-  describe(".apply()", function() {
+  describe(".patch()", function() {
 
     it("sets attributes", function() {
 
