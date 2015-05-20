@@ -2,6 +2,11 @@
 
 ## HEAD
 
+## 0.1.0 (2015-05-20)
+
+  * **BC break:** refactor properties/attributes API to allow custom handlers.
+  * **BC break:** `mount()` && `unmount()` can now only be done on a single DOM element.
+
 ## 0.0.10 (2015-05-18)
 
   * **Add:** force rerendering when the type of nodes are different.

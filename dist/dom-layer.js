@@ -1,176 +1,9 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var domElement = require("dom-element");
-var applyStyle = require("./apply-style");
-
-function applyAttrsNS(element, previous, attrs) {
-  if (!previous && !attrs) {
-    return attrs;
-  }
-  var attrName, ns, name, value, split;
-  previous = previous || {};
-  attrs = attrs || {};
-
-  for (attrName in previous) {
-    if (previous[attrName] && !attrs[attrName]) {
-      split = splitAttrName(attrName);
-      ns = applyAttrsNS.namespaces[split[0]];
-      name = split[1];
-      element.removeAttributeNS(ns, name);
-    }
-  }
-  for (attrName in attrs) {
-    value = attrs[attrName];
-    if (previous[attrName] === value) {
-      continue;
-    }
-    split = splitAttrName(attrName);
-    ns = applyAttrsNS.namespaces[split[0]];
-    name = split[1];
-    element.setAttributeNS(ns, name, value);
-  }
-  return attrs;
-}
-
-function splitAttrName(attrName) {
-  return attrName.split(':');
-}
-
-applyAttrsNS.namespaces = {
-  xlink: 'http://www.w3.org/1999/xlink',
-  xml: 'http://www.w3.org/XML/1998/namespace',
-  xmlns: 'http://www.w3.org/2000/xmlns/'
-};
-
-module.exports = applyAttrsNS;
-
-},{"./apply-style":5,"dom-element":9}],2:[function(require,module,exports){
-var domElement = require("dom-element");
-var applyStyle = require("./apply-style");
-
-function applyAttrs(element, previous, attrs) {
-  if (!previous && !attrs) {
-    return attrs;
-  }
-  var name, value;
-  previous = previous || {};
-  attrs = attrs || {};
-
-  for (name in previous) {
-    if (previous[name] && !attrs[name]) {
-      element.removeAttribute(name);
-    }
-  }
-  for (name in attrs) {
-    value = attrs[name];
-    if (previous[name] === value) {
-      continue;
-    }
-    if (name === "style") {
-      applyStyle(element, previous[name], value);
-    } else if (name === "value") {
-      domElement.value(element, value);
-    } else {
-      element.setAttribute(name, value);
-    }
-  }
-  return attrs;
-}
-
-module.exports = applyAttrs;
-
-},{"./apply-style":5,"dom-element":9}],3:[function(require,module,exports){
-function applyDataset(element, previous, dataset) {
-  if (!previous && !dataset) {
-    return dataset;
-  }
-  var name;
-  previous = previous || {};
-  dataset = dataset || {};
-
-  for (name in previous) {
-    if (dataset[name] === undefined) {
-      element.dataset[name] = undefined;
-    }
-  }
-
-  for (name in dataset) {
-    if (previous[name] === dataset[name]) {
-      continue;
-    }
-    element.dataset[name] = dataset[name];
-  }
-
-  return dataset;
-}
-
-module.exports = applyDataset;
-
-},{}],4:[function(require,module,exports){
-var applyDataset = require("./apply-dataset");
-
-function applyProps(element, previous, props) {
-  if (!previous && !props) {
-    return props;
-  }
-  var name;
-  previous = previous || {};
-  props = props || {};
-
-  for (name in previous) {
-    if (name !== "dataset" && props[name] === undefined) {
-      element[name] = undefined;
-    }
-  }
-
-  for (name in props) {
-    if (name === "dataset" || previous[name] === props[name]) {
-      continue;
-    }
-    element[name] = props[name];
-  }
-
-  applyDataset(element, previous["dataset"], props["dataset"]);
-
-  return props;
-}
-
-module.exports = applyProps;
-
-},{"./apply-dataset":3}],5:[function(require,module,exports){
-var domElement = require("dom-element");
-
-function applyStyle(element, previous, style) {
-  if (!previous && !style) {
-    return style;
-  }
-  var rule;
-  if (typeof style === "object") {
-    if (typeof previous === "object") {
-      for (rule in previous) {
-        if (!style[rule]) {
-          domElement.css(element, rule, null);
-        }
-      }
-      domElement.css(element, style);
-    } else {
-      if (previous) {
-        domElement.attr(element, "style", "");
-      }
-      domElement.css(element, style);
-    }
-  } else {
-    domElement.attr(element, "style", style || "");
-  }
-}
-
-module.exports = applyStyle;
-
-},{"dom-element":9}],6:[function(require,module,exports){
 var create = require("../tree/create");
 var update = require("../tree/update");
-var applyProps = require("./setter/apply-props");
-var applyAttrs = require("./setter/apply-attrs");
-var applyAttrsNS = require("./setter/apply-attrs-n-s");
+var props = require("./util/props");
+var attrs = require("./util/attrs");
+var attrsNS = require("./util/attrs-n-s");
 
 /**
  * The Virtual Tag constructor.
@@ -239,9 +72,9 @@ Tag.prototype.render = function(parent) {
   }
   create(element, this.children, this);
 
-  applyProps(element, {}, this.props);
-  applyAttrs(element, {}, this.attrs);
-  applyAttrsNS(element, {}, this.attrsNS);
+  props.apply(element, {}, this.props);
+  attrs.apply(element, {}, this.attrs);
+  attrsNS.apply(element, {}, this.attrsNS);
 
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, element);
@@ -262,9 +95,9 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  applyProps(to.element, this.props, to.props);
-  applyAttrs(to.element, this.attrs, to.attrs);
-  applyAttrsNS(to.element, this.attrsNS, to.attrsNS);
+  props.apply(to.element, this.props, to.props);
+  attrs.apply(to.element, this.attrs, to.attrs);
+  attrsNS.apply(to.element, this.attrsNS, to.attrsNS);
   return this.element;
 }
 
@@ -316,7 +149,7 @@ function broadcastRemove(node) {
 
 module.exports = Tag;
 
-},{"../tree/create":15,"../tree/update":19,"./setter/apply-attrs":2,"./setter/apply-attrs-n-s":1,"./setter/apply-props":4}],7:[function(require,module,exports){
+},{"../tree/create":16,"../tree/update":20,"./util/attrs":4,"./util/attrs-n-s":3,"./util/props":6}],2:[function(require,module,exports){
 /**
  * The Virtual Text constructor.
  *
@@ -384,7 +217,317 @@ Text.prototype.destroy = function() {
 };
 
 module.exports = Text;
-},{}],8:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+/**
+ * SVG namespaces.
+ */
+var namespaces = {
+  xlink: 'http://www.w3.org/1999/xlink',
+  xml: 'http://www.w3.org/XML/1998/namespace',
+  xmlns: 'http://www.w3.org/2000/xmlns/'
+};
+
+/**
+ * Maintains state of element namespaced attributes.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of attributes.
+ * @param  Object attrs     The attributes to match on.
+ * @return Object attrs     The element attributes state.
+ */
+function apply(element, previous, attrs) {
+  if (!previous && !attrs) {
+    return attrs;
+  }
+  var attrName, ns, name, value, split;
+  previous = previous || {};
+  attrs = attrs || {};
+
+  for (attrName in previous) {
+    if (previous[attrName] && !attrs[attrName]) {
+      split = splitAttrName(attrName);
+      ns = namespaces[split[0]];
+      name = split[1];
+      element.removeAttributeNS(ns, name);
+    }
+  }
+  for (attrName in attrs) {
+    value = attrs[attrName];
+    if (previous[attrName] === value) {
+      continue;
+    }
+    split = splitAttrName(attrName);
+    ns = namespaces[split[0]];
+    name = split[1];
+    element.setAttributeNS(ns, name, value);
+  }
+  return attrs;
+}
+
+function splitAttrName(attrName) {
+  return attrName.split(':');
+}
+
+module.exports = {
+  apply: apply,
+  namespaces: namespaces
+};
+
+},{}],4:[function(require,module,exports){
+var domElementValue = require("dom-element-value");
+var style = require("./style");
+
+/**
+ * Maintains state of element attributes.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of attributes.
+ * @param  Object attrs     The attributes to match on.
+ * @return Object attrs     The element attributes state.
+ */
+function apply(element, previous, attrs) {
+  if (!previous && !attrs) {
+    return attrs;
+  }
+  var name, value;
+  previous = previous || {};
+  attrs = attrs || {};
+
+  for (name in previous) {
+    if (!previous[name] || attrs[name]) {
+      continue;
+    }
+    unset(name, element, previous);
+  }
+  for (name in attrs) {
+    set(name, element, previous, attrs);
+  }
+  return attrs;
+}
+
+/**
+ * Sets an attribute.
+ *
+ * @param  String name      The attribute name to set.
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of attributes.
+ * @param  Object attrs     The attributes to match on.
+ */
+function set(name, element, previous, attrs) {
+  if (set[name]) {
+    set[name](name, element, previous, attrs);
+  } else if (previous[name] !== attrs[name]) {
+    element.setAttribute(name, attrs[name]);
+  }
+};
+
+/**
+ * Unsets an attribute.
+ *
+ * @param  String name      The attribute name to unset.
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of attributes.
+ */
+function unset(name, element, previous) {
+  if (unset[name]) {
+    unset[name](name, element, previous);
+  } else {
+    element.removeAttribute(name);
+  }
+};
+
+/**
+ * Custom set handler for the value attribute.
+ */
+set.value = function(name, element, previous, attrs) {
+  if (previous["multiple"] !== attrs["multiple"]) {
+    element.setAttribute(name, attrs["multiple"]);
+  }
+  domElementValue(element, attrs[name]);
+};
+
+/**
+ * Custom set handler for the style attribute.
+ */
+set.style = function(name, element, previous, attrs) {
+  style.apply(element, previous[name], attrs[name]);
+};
+
+module.exports = {
+  apply: apply,
+  set: set,
+  unset: unset
+};
+
+},{"./style":7,"dom-element-value":13}],5:[function(require,module,exports){
+/**
+ * Maintains state of element dataset.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of dataset.
+ * @param  Object dataset   The dataset to match on.
+ * @return Object dataset   The element dataset state.
+ */
+function apply(element, previous, dataset) {
+  if (!previous && !dataset) {
+    return dataset;
+  }
+  var name;
+  previous = previous || {};
+  dataset = dataset || {};
+
+  for (name in previous) {
+    if (dataset[name] === undefined) {
+      element.dataset[name] = undefined;
+    }
+  }
+
+  for (name in dataset) {
+    if (previous[name] === dataset[name]) {
+      continue;
+    }
+    element.dataset[name] = dataset[name];
+  }
+
+  return dataset;
+}
+
+module.exports = {
+  apply: apply
+};
+
+},{}],6:[function(require,module,exports){
+var domElementValue = require("dom-element-value");
+var dataset = require("./dataset");
+
+/**
+ * Maintains state of element properties.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of properties.
+ * @param  Object props     The properties to match on.
+ * @return Object props     The element properties state.
+ */
+function apply(element, previous, props) {
+  if (!previous && !props) {
+    return props;
+  }
+  var name, value;
+  previous = previous || {};
+  props = props || {};
+
+  for (name in previous) {
+    if (previous[name] === undefined || props[name] !== undefined) {
+      continue;
+    }
+    unset(name, element, previous);
+  }
+  for (name in props) {
+    set(name, element, previous, props);
+  }
+  return props;
+}
+
+/**
+ * Sets a property.
+ *
+ * @param  String name      The property name to set.
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of properties.
+ * @param  Object props     The properties to match on.
+ */
+function set(name, element, previous, props) {
+  if (set[name]) {
+    set[name](name, element, previous, props);
+  } else if (previous[name] !== props[name]) {
+    element[name] = props[name];
+  }
+};
+
+/**
+ * Unsets a property.
+ *
+ * @param  String name      The property name to unset.
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of properties.
+ */
+function unset(name, element, previous) {
+  if (unset[name]) {
+    unset[name](name, element, previous[name], previous);
+  } else {
+    element[name] = undefined;
+  }
+};
+
+/**
+ * Custom set handler for the value attribute.
+ */
+set.value = function(element, previous, props) {
+  if (previous["multiple"] !== props["multiple"]) {
+    element.multiple = props["multiple"];
+  }
+  domElementValue(element, newValue);
+};
+
+/**
+ * Custom set handler for the dataset attribute.
+ */
+set.dataset = function(name, element, previous, props) {
+  dataset.apply(element, previous[name], props[name]);
+};
+
+/**
+ * Custom unset handler for the dataset attribute.
+ */
+unset.dataset = function(name, element, previous) {
+  dataset.apply(element, previous[name], {});
+};
+
+module.exports = {
+  apply: apply,
+  set: set,
+  unset: unset
+};
+
+},{"./dataset":5,"dom-element-value":13}],7:[function(require,module,exports){
+var domElementCss = require("dom-element-css");
+
+/**
+ * Maintains state of element style attributes.
+ *
+ * @param  Object element   A DOM element.
+ * @param  Object previous  The previous state of style attributes.
+ * @param  Object style     The style attributes to match on.
+ */
+function apply(element, previous, style) {
+  if (!previous && !style) {
+    return style;
+  }
+  var rule;
+  if (typeof style === "object") {
+    if (typeof previous === "object") {
+      for (rule in previous) {
+        if (!style[rule]) {
+          domElementCss(element, rule, null);
+        }
+      }
+      domElementCss(element, style);
+    } else {
+      if (previous) {
+        element.setAttribute("style", "");
+      }
+      domElementCss(element, style);
+    }
+  } else {
+    element.setAttribute("style", style || "");
+  }
+}
+
+module.exports = {
+  apply: apply
+};
+
+},{"dom-element-css":9}],8:[function(require,module,exports){
 /**
  * Index based collection manipulation methods for DOM childNodes.
  */
@@ -469,68 +612,6 @@ module.exports = collection;
 },{}],9:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
-/**
- * DOM element manipulation functions.
- */
-
-/**
- * Gets/Sets a DOM element attribute.
- *
- * @param  Object element A DOM element.
- * @param  String name    The name of an attribute.
- * @param  String value   The value of the attribute to set, `undefined` to remove it or none
- *                        to get the current attribute value.
- * @return String         The current/new attribute value or `undefined` when removed.
- */
-function attr(element, name, value) {
-  name = toCamelCase(name === 'for' ? 'htmlFor' : name);
-  if (arguments.length === 2) {
-    return element.getAttribute(name);
-  }
-  if (value === undefined) {
-    return element.removeAttribute(name);
-  }
-  element.setAttribute(name, value);
-  return value;
-}
-
-/**
- * Gets/Sets a DOM element attribute with a specified namespace.
- *
- * @param  Object element A DOM element.
- * @param  String name    The name of an attribute.
- * @param  String value   The value of the attribute to set, `undefined` to remove it or none
- *                        to get the current attribute value.
- * @return String         The current/new attribute value or `undefined` when removed.
- */
-
-function attrNS(element, ns, name, value) {
-  name = toCamelCase(name);
-  if (arguments.length === 3) {
-    return element.getAttributeNS(ns, name);
-  }
-  if (value === undefined) {
-    return element.removeAttributeNS(ns, name);
-  }
-  element.setAttributeNS(ns, name, value);
-  return value;
-}
-
-/**
- * Gets/Sets a DOM element property.
- *
- * @param  Object element A DOM element.
- * @param  String name    The name of a property.
- * @param  String value   The value of the property to set, or none to get the current
- *                        property value.
- * @return String         The current/new property value.
- */
-function prop(element, name, value){
-  if (arguments.length === 2) {
-    return element[name];
-  }
-  return element[name] = value;
-}
 
 /**
  * Gets/Sets a DOM element property.
@@ -569,194 +650,7 @@ function css(element) {
   return style;
 }
 
-/**
- * Returns the type of a DOM element.
- *
- * @param  Object element A DOM element.
- * @return String         The DOM element type.
- */
-function type(element) {
-  var name = element.nodeName.toLowerCase();
-  if (name !== "input") {
-    if (name === "select" && element.multiple) {
-      return "select-multiple";
-    }
-    return name;
-  }
-  var type = element.getAttribute('type');
-  if (!type) {
-    return "text";
-  }
-  return type.toLowerCase();
-}
-
-/**
- * Gets/Sets a DOM element attribute.
- *
- * @param  Object element A DOM element.
- * @param  String name    The name of an attribute.
- * @param  String value   The value of the attribute to set, `null` to remove it or none
- *                        to get the current attribute value.
- * @return String         The current/new attribute value or `undefined` when removed.
- */
-function data(element, name, value) {
-  if (arguments.length === 3) {
-    return attr(element, "data-" + name, value);
-  }
-  return attr(element, "data-" + name);
-}
-
-/**
- * Gets/Sets a DOM element text content.
- *
- * @param  Object element A DOM element.
- * @param  String value   The text value to set or none to get the current text content value.
- * @return String         The current/new text content.
- */
-function text(element, value) {
-  var text = (element.textContent !== undefined ? 'textContent' : 'innerText')
-
-  if (arguments.length === 1) {
-    return element[text];
-  }
-  return element[text] = value
-}
-
-/**
- * Gets/sets DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object value   The value to set or none to get the current value.
- * @return mixed          The new/current DOM element value.
- */
-function value(element, value) {
-  if (arguments.length === 1) {
-    return get(element);
-  }
-  return set(element, value);
-}
-
-/**
- * Gets DOM element value.
- *
- * @param  Object element A DOM element
- * @return mixed          The DOM element value
- */
-function get(element) {
-  var name = type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      if (!element.checked) {
-        return false;
-      }
-      var value = element.getAttribute('value');
-      return value == null ? true : value;
-    case "select":
-    case "select-multiple":
-      var options = element.options;
-      var values = [];
-      for (var i = 0, len = options.length; i < len; i++) {
-        if (options[i].selected) {
-          values.push(options[i].value);
-        }
-      }
-      return name === "select-multiple" ? values : values[0];
-    default:
-      return element.value;
-  }
-}
-
-/**
- * Sets a DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object value   The value to set.
- * @return mixed          The new DOM element value.
- */
-function set(element, value) {
-  var name = type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      return element.checked = value ? true : false;
-    case "select":
-    case "select-multiple":
-      var found;
-      var options = element.options;
-      var values = Array.isArray(value) ? value : [value];
-      for (var i = 0, leni = options.length; i < leni; i++) {
-        found = 0;
-        for (var j = 0, lenj = values.length; j < lenj; j++) {
-          found |= values[j] === options[i].value;
-        }
-        options[i].selected = (found === 1);
-      }
-      if (name === "select") {
-        return value;
-      }
-      return Array.isArray(value) ? value: [value];
-    default:
-      return element.value = value;
-  }
-}
-
-/**
- * Checks if an element has a class.
- *
- * @param  Object  element A DOM element.
- * @param  String  name    A class name.
- * @return Boolean         Returns `true` if the element has the `name` class, `false` otherwise.
- */
-function hasClass(element, name) {
-  return element.classList.contains(name);
-}
-
-/**
- * Adds a class to an element.
- *
- * @param  Object  element A DOM element.
- * @param  String  name    The class to add.
- */
-function addClass(element, name) {
-  element.classList.add(name);
-}
-
-/**
- * Removes a class from an element.
- *
- * @param  Object  element A DOM element.
- * @param  String  name    The class to remove.
- */
-function removeClass(element, name) {
-  element.classList.remove(name);
-}
-
-/**
- * Toggles a class.
- *
- * @param  Object  element A DOM element.
- * @param  String  name    The class to toggle.
- */
-function toggleClass(element, name) {
-  var fn = hasClass(element, name) ? removeClass : addClass;
-  fn(element, name);
-}
-
-module.exports = {
-  attr: attr,
-  attrNS: attrNS,
-  prop: prop,
-  css: css,
-  type: type,
-  data: data,
-  text: text,
-  value: value,
-  hasClass: hasClass,
-  addClass: addClass,
-  removeClass: removeClass,
-  toggleClass: toggleClass
-};
+module.exports = css;
 
 },{"to-camel-case":10}],10:[function(require,module,exports){
 
@@ -884,6 +778,113 @@ function uncamelize (string) {
   });
 }
 },{}],13:[function(require,module,exports){
+/**
+ * DOM element value Getter/Setter.
+ */
+
+/**
+ * Gets/sets DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @param  Object val     The value to set or none to get the current value.
+ * @return mixed          The new/current DOM element value.
+ */
+function value(element, val) {
+  if (arguments.length === 1) {
+    return get(element);
+  }
+  return set(element, val);
+}
+
+/**
+ * Returns the type of a DOM element.
+ *
+ * @param  Object element A DOM element.
+ * @return String         The DOM element type.
+ */
+value.type = function(element) {
+  var name = element.nodeName.toLowerCase();
+  if (name !== "input") {
+    if (name === "select" && element.multiple) {
+      return "select-multiple";
+    }
+    return name;
+  }
+  var type = element.getAttribute('type');
+  if (!type) {
+    return "text";
+  }
+  return type.toLowerCase();
+}
+
+/**
+ * Gets DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @return mixed          The DOM element value
+ */
+function get(element) {
+  var name = value.type(element);
+  switch (name) {
+    case "checkbox":
+    case "radio":
+      if (!element.checked) {
+        return false;
+      }
+      var val = element.getAttribute('value');
+      return val == null ? true : val;
+    case "select":
+    case "select-multiple":
+      var options = element.options;
+      var values = [];
+      for (var i = 0, len = options.length; i < len; i++) {
+        if (options[i].selected) {
+          values.push(options[i].value);
+        }
+      }
+      return name === "select-multiple" ? values : values[0];
+    default:
+      return element.value;
+  }
+}
+
+/**
+ * Sets a DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @param  Object val     The value to set.
+ * @return mixed          The new DOM element value.
+ */
+function set(element, val) {
+  var name = value.type(element);
+  switch (name) {
+    case "checkbox":
+    case "radio":
+      return element.checked = val ? true : false;
+    case "select":
+    case "select-multiple":
+      var found;
+      var options = element.options;
+      var values = Array.isArray(val) ? val : [val];
+      for (var i = 0, leni = options.length; i < leni; i++) {
+        found = 0;
+        for (var j = 0, lenj = values.length; j < lenj; j++) {
+          found |= values[j] === options[i].value;
+        }
+        options[i].selected = (found === 1);
+      }
+      if (name === "select") {
+        return val;
+      }
+      return Array.isArray(val) ? val: [val];
+    default:
+      return element.value = val;
+  }
+}
+
+module.exports = value;
+
+},{}],14:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -941,7 +942,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -971,7 +972,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -993,7 +994,7 @@ function create(container, nodes, parent) {
 }
 
 module.exports = create;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var isEmpty = require("is-empty");
 var domCollection = require("dom-collection");
 
@@ -1157,7 +1158,7 @@ function indexChildren(children) {
 
 module.exports = patch;
 
-},{"dom-collection":8,"is-empty":14}],17:[function(require,module,exports){
+},{"dom-collection":8,"is-empty":15}],18:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1166,7 +1167,7 @@ function remove(nodes, parent) {
 }
 
 module.exports = remove;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var query = require("dom-query");
 var create = require("./create");
 var update = require("./update");
@@ -1193,9 +1194,7 @@ Tree.prototype.mount = function(selector, factory, data) {
     return;
   }
   if (containers.length > 1) {
-    return containers.map(function(container) {
-      return this.mount(container, mount);
-    });
+    throw new Error("The selector must identify an unique DOM element");
   }
   var container = containers[0];
   this._mountedIndex++;
@@ -1219,10 +1218,7 @@ Tree.prototype.unmount = function(selector) {
     return;
   }
   if (containers.length > 1) {
-    for(var i = 0, len = containers.length; i < len; i++) {
-      this.unmount(containers[i]);
-    }
-    return;
+    throw new Error("The selector must identify an unique DOM element");
   }
   var container = containers[0];
   var mountId = container.domLayerTreeId;
@@ -1268,7 +1264,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./create":15,"./remove":17,"./update":19,"dom-query":13}],19:[function(require,module,exports){
+},{"./create":16,"./remove":18,"./update":20,"dom-query":14}],20:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1288,7 +1284,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":16}],20:[function(require,module,exports){
+},{"./patch":17}],21:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var create = require("./tree/create");
 var update = require("./tree/update");
@@ -1296,6 +1292,8 @@ var remove = require("./tree/remove");
 var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
+var attrs = require("./node/util/attrs");
+var props = require("./node/util/props");
 
 module.exports = {
   Tree: Tree,
@@ -1304,8 +1302,10 @@ module.exports = {
   create: create,
   update: update,
   remove: remove,
-  patch: patch
+  patch: patch,
+  attrs: attrs,
+  props: props
 };
 
-},{"./node/tag":6,"./node/text":7,"./tree/create":15,"./tree/patch":16,"./tree/remove":17,"./tree/tree":18,"./tree/update":19}]},{},[20])(20)
+},{"./node/tag":1,"./node/text":2,"./node/util/attrs":4,"./node/util/props":6,"./tree/create":16,"./tree/patch":17,"./tree/remove":18,"./tree/tree":19,"./tree/update":20}]},{},[21])(21)
 });
