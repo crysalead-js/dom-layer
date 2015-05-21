@@ -6,7 +6,9 @@ var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
 var attrs = require("./node/util/attrs");
+var attrsNS = require("./node/util/attrs-n-s");
 var props = require("./node/util/props");
+var events = require("./events");
 
 module.exports = {
   Tree: Tree,
@@ -17,5 +19,7 @@ module.exports = {
   remove: remove,
   patch: patch,
   attrs: attrs,
-  props: props
+  attrsNS: attrsNS,
+  props: props,
+  events: events
 };

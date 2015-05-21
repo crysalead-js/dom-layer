@@ -40,7 +40,7 @@ The `Tag` node is configurable with the `options` parameter and the values are t
     style:      // The style
   },
   attrsNS: {},  // The namespaced attributes (for SVG elements only)
-  events: {}    // Delegable event (require an additionnal library),
+  events: {}    // Delegated events (requires to create an event manager),
   callbacks: {} // The callbacks to call during the node life cycle.
   data: {}      // Some custom data you want to embed with your virtual node.
 }
