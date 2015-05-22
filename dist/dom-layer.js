@@ -1,4 +1,41 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var domElementValue = require("dom-element-value");
+var EventManager = require("dom-event-manager");
+
+var eventManager;
+
+function eventHandler(name, e) {
+  var element = e.delegateTarget, eventName = "on" + name;
+  if (!element.domLayerNode || !element.domLayerNode.events || !element.domLayerNode.events[eventName]) {
+    return;
+  }
+
+  var value;
+  if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
+    value = domElementValue(element);
+  }
+  return element.domLayerNode.events[eventName](e, value);
+}
+
+function getManager() {
+  if (eventManager) {
+    return eventManager;
+  }
+  return eventManager = new EventManager(eventHandler);
+}
+
+function init() {
+  var em = getManager();
+  em.bindDefaultEvents();
+  return em;
+}
+
+module.exports = {
+  getManager: getManager(),
+  init: init
+};
+
+},{"dom-element-value":14,"dom-event-manager":15}],2:[function(require,module,exports){
 var create = require("../tree/create");
 var update = require("../tree/update");
 var props = require("./util/props");
@@ -72,9 +109,9 @@ Tag.prototype.render = function(parent) {
   }
   create(element, this.children, this);
 
-  props.apply(element, {}, this.props);
-  attrs.apply(element, {}, this.attrs);
-  attrsNS.apply(element, {}, this.attrsNS);
+  props.patch(element, {}, this.props);
+  attrs.patch(element, {}, this.attrs);
+  attrsNS.patch(element, {}, this.attrsNS);
 
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, element);
@@ -95,10 +132,15 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
   update(to.element, this.children, to.children, to);
-  props.apply(to.element, this.props, to.props);
-  attrs.apply(to.element, this.attrs, to.attrs);
-  attrsNS.apply(to.element, this.attrsNS, to.attrsNS);
-  return this.element;
+  props.patch(to.element, this.props, to.props);
+  attrs.patch(to.element, this.attrs, to.attrs);
+  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+  if (to.events) {
+    to.element.domLayerNode = to;
+  } else if (this.events) {
+    to.element.domLayerNode = undefined;
+  }
+  return to.element;
 }
 
 /**
@@ -149,7 +191,7 @@ function broadcastRemove(node) {
 
 module.exports = Tag;
 
-},{"../tree/create":16,"../tree/update":20,"./util/attrs":4,"./util/attrs-n-s":3,"./util/props":6}],2:[function(require,module,exports){
+},{"../tree/create":19,"../tree/update":23,"./util/attrs":5,"./util/attrs-n-s":4,"./util/props":7}],3:[function(require,module,exports){
 /**
  * The Virtual Text constructor.
  *
@@ -217,7 +259,7 @@ Text.prototype.destroy = function() {
 };
 
 module.exports = Text;
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -235,7 +277,7 @@ var namespaces = {
  * @param  Object attrs     The attributes to match on.
  * @return Object attrs     The element attributes state.
  */
-function apply(element, previous, attrs) {
+function patch(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -269,11 +311,11 @@ function splitAttrName(attrName) {
 }
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   namespaces: namespaces
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
 var style = require("./style");
 
@@ -285,7 +327,7 @@ var style = require("./style");
  * @param  Object attrs     The attributes to match on.
  * @return Object attrs     The element attributes state.
  */
-function apply(element, previous, attrs) {
+function patch(element, previous, attrs) {
   if (!previous && !attrs) {
     return attrs;
   }
@@ -350,16 +392,16 @@ set.value = function(name, element, previous, attrs) {
  * Custom set handler for the style attribute.
  */
 set.style = function(name, element, previous, attrs) {
-  style.apply(element, previous[name], attrs[name]);
+  style.patch(element, previous[name], attrs[name]);
 };
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   set: set,
   unset: unset
 };
 
-},{"./style":7,"dom-element-value":13}],5:[function(require,module,exports){
+},{"./style":8,"dom-element-value":14}],6:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -368,7 +410,7 @@ module.exports = {
  * @param  Object dataset   The dataset to match on.
  * @return Object dataset   The element dataset state.
  */
-function apply(element, previous, dataset) {
+function patch(element, previous, dataset) {
   if (!previous && !dataset) {
     return dataset;
   }
@@ -393,10 +435,10 @@ function apply(element, previous, dataset) {
 }
 
 module.exports = {
-  apply: apply
+  patch: patch
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
 var dataset = require("./dataset");
 
@@ -408,7 +450,7 @@ var dataset = require("./dataset");
  * @param  Object props     The properties to match on.
  * @return Object props     The element properties state.
  */
-function apply(element, previous, props) {
+function patch(element, previous, props) {
   if (!previous && !props) {
     return props;
   }
@@ -473,23 +515,23 @@ set.value = function(element, previous, props) {
  * Custom set handler for the dataset attribute.
  */
 set.dataset = function(name, element, previous, props) {
-  dataset.apply(element, previous[name], props[name]);
+  dataset.patch(element, previous[name], props[name]);
 };
 
 /**
  * Custom unset handler for the dataset attribute.
  */
 unset.dataset = function(name, element, previous) {
-  dataset.apply(element, previous[name], {});
+  dataset.patch(element, previous[name], {});
 };
 
 module.exports = {
-  apply: apply,
+  patch: patch,
   set: set,
   unset: unset
 };
 
-},{"./dataset":5,"dom-element-value":13}],7:[function(require,module,exports){
+},{"./dataset":6,"dom-element-value":14}],8:[function(require,module,exports){
 var domElementCss = require("dom-element-css");
 
 /**
@@ -499,7 +541,7 @@ var domElementCss = require("dom-element-css");
  * @param  Object previous  The previous state of style attributes.
  * @param  Object style     The style attributes to match on.
  */
-function apply(element, previous, style) {
+function patch(element, previous, style) {
   if (!previous && !style) {
     return style;
   }
@@ -524,10 +566,10 @@ function apply(element, previous, style) {
 }
 
 module.exports = {
-  apply: apply
+  patch: patch
 };
 
-},{"dom-element-css":9}],8:[function(require,module,exports){
+},{"dom-element-css":10}],9:[function(require,module,exports){
 /**
  * Index based collection manipulation methods for DOM childNodes.
  */
@@ -609,7 +651,7 @@ collection.extend = function(object) {
 
 module.exports = collection;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
 
@@ -652,7 +694,7 @@ function css(element) {
 
 module.exports = css;
 
-},{"to-camel-case":10}],10:[function(require,module,exports){
+},{"to-camel-case":11}],11:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -677,7 +719,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":11}],11:[function(require,module,exports){
+},{"to-space-case":12}],12:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -702,7 +744,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":12}],12:[function(require,module,exports){
+},{"to-no-case":13}],13:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -777,7 +819,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * DOM element value Getter/Setter.
  */
@@ -884,7 +926,170 @@ function set(element, val) {
 
 module.exports = value;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+var events = require("component-event");
+
+var isArray = Array.isArray;
+
+/**
+ * Captures all event on at a top level container (`document.body` by default).
+ * When an event occurs, the delegate handler is executed starting form `event.target` up
+ * to the defined container.
+ *
+ * @param Function delegateHandler The event handler function to execute on triggered events.
+ * @param Object   container       A DOM element container.
+ */
+function EventManager(delegateHandler, container) {
+  if (typeof(delegateHandler) !== "function") {
+    throw new Error("The passed handler function is invalid");
+  }
+  this._delegateHandler = delegateHandler;
+  this._container = container || document.body;
+  this._events = Object.create(null);
+}
+
+/**
+ * Binds a event.
+ *
+ * @param String name The event name to catch.
+ */
+EventManager.prototype.bind = function(name) {
+
+  var bubbleEvent = function(e) {
+    e.isPropagationStopped = false;
+    e.delegateTarget = e.target;
+    e.stopPropagation = function() {
+      this.isPropagationStopped = true;
+    }
+    while(e.delegateTarget && e.delegateTarget !== this._container) {
+      this._delegateHandler(name, e);
+      if (e.isPropagationStopped) {
+        break;
+      }
+      e.delegateTarget = e.delegateTarget.parentNode;
+    }
+  }.bind(this);
+
+  if (this._events[name]) {
+    this.unbind(name);
+  }
+  this._events[name] = bubbleEvent;
+  events.bind(this._container, name, bubbleEvent);
+};
+
+/**
+ * Unbinds an event or all events if `name` is not provided.
+ *
+ * @param String name The event name to uncatch or none to unbind all events.
+ */
+EventManager.prototype.unbind = function(name) {
+  if (arguments.length) {
+    if (this._events[name]) {
+      events.unbind(this._container, name, this._events[name]);
+    }
+    return;
+  }
+  for (var key in this._events) {
+    this.unbind(key);
+  }
+};
+
+/**
+ * Returns all binded events.
+ *
+ * @return Array All binded events.
+ */
+EventManager.prototype.binded = function() {
+  return Object.keys(this._events);
+}
+
+/**
+ * Binds some default events.
+ */
+EventManager.prototype.bindDefaultEvents = function() {
+  for (var i = 0, len = EventManager.defaultEvents.length; i < len; i++) {
+    this.bind(EventManager.defaultEvents[i]);
+  }
+};
+
+/**
+ * List of default events.
+ */
+EventManager.defaultEvents = [
+  'blur',
+  'change',
+  'click',
+  'contextmenu',
+  'copy',
+  'cut',
+  'dblclick',
+  'drag',
+  'dragend',
+  'dragenter',
+  'dragexit',
+  'dragleave',
+  'dragover',
+  'dragstart',
+  'drop',
+  'focus',
+  'input',
+  'keydown',
+  'keypress',
+  'keyup',
+  'mousedown',
+  'mouseenter',
+  'mouseleave',
+  'mousemove',
+  'mouseup',
+  'paste',
+  'scroll',
+  'submit',
+  'touchcancel',
+  'touchend',
+  'touchmove',
+  'touchstart',
+  'wheel'
+];
+
+module.exports = EventManager;
+
+},{"component-event":16}],16:[function(require,module,exports){
+var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
+    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
+    prefix = bind !== 'addEventListener' ? 'on' : '';
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.bind = function(el, type, fn, capture){
+  el[bind](prefix + type, fn, capture || false);
+  return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  el[unbind](prefix + type, fn, capture || false);
+  return fn;
+};
+},{}],17:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -942,7 +1147,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -972,7 +1177,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -994,7 +1199,7 @@ function create(container, nodes, parent) {
 }
 
 module.exports = create;
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var isEmpty = require("is-empty");
 var domCollection = require("dom-collection");
 
@@ -1158,7 +1363,7 @@ function indexChildren(children) {
 
 module.exports = patch;
 
-},{"dom-collection":8,"is-empty":15}],18:[function(require,module,exports){
+},{"dom-collection":9,"is-empty":18}],21:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1167,7 +1372,7 @@ function remove(nodes, parent) {
 }
 
 module.exports = remove;
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var query = require("dom-query");
 var create = require("./create");
 var update = require("./update");
@@ -1264,7 +1469,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./create":16,"./remove":18,"./update":20,"dom-query":14}],20:[function(require,module,exports){
+},{"./create":19,"./remove":21,"./update":23,"dom-query":17}],23:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1284,7 +1489,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":17}],21:[function(require,module,exports){
+},{"./patch":20}],24:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var create = require("./tree/create");
 var update = require("./tree/update");
@@ -1293,7 +1498,9 @@ var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
 var attrs = require("./node/util/attrs");
+var attrsNS = require("./node/util/attrs-n-s");
 var props = require("./node/util/props");
+var events = require("./events");
 
 module.exports = {
   Tree: Tree,
@@ -1304,8 +1511,10 @@ module.exports = {
   remove: remove,
   patch: patch,
   attrs: attrs,
-  props: props
+  attrsNS: attrsNS,
+  props: props,
+  events: events
 };
 
-},{"./node/tag":1,"./node/text":2,"./node/util/attrs":4,"./node/util/props":6,"./tree/create":16,"./tree/patch":17,"./tree/remove":18,"./tree/tree":19,"./tree/update":20}]},{},[21])(21)
+},{"./events":1,"./node/tag":2,"./node/text":3,"./node/util/attrs":5,"./node/util/attrs-n-s":4,"./node/util/props":7,"./tree/create":19,"./tree/patch":20,"./tree/remove":21,"./tree/tree":22,"./tree/update":23}]},{},[24])(24)
 });

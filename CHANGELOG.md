@@ -2,6 +2,11 @@
 
 ## HEAD
 
+## 0.1.1 (2015-05-22)
+
+  * **Add:** adds the event delegation system.
+  * **Bugfix:** `domLayerNode` is now correcly updated when some event handlers are set through `events`.
+
 ## 0.1.0 (2015-05-20)
 
   * **BC break:** refactor properties/attributes API to allow custom handlers.
