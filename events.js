@@ -30,6 +30,6 @@ function init() {
 }
 
 module.exports = {
-  getManager: getManager(),
+  getManager: getManager,
   init: init
 };
