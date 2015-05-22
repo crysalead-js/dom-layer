@@ -16,15 +16,20 @@ function eventHandler(name, e) {
   return element.domLayerNode.events[eventName](e, value);
 }
 
-function init() {
+function getManager() {
   if (eventManager) {
     return eventManager;
   }
-  eventManager = new EventManager(eventHandler);
-  eventManager.bindDefaultEvents();
-  return eventManager;
+  return eventManager = new EventManager(eventHandler);
+}
+
+function init() {
+  var em = getManager();
+  em.bindDefaultEvents();
+  return em;
 }
 
 module.exports = {
+  getManager: getManager(),
   init: init
 };
