@@ -8,9 +8,9 @@ function eventHandler(name, e) {
   if (!element.domLayerNode || !element.domLayerNode.events || !element.domLayerNode.events[eventName]) {
     return;
   }
-  var value, tagName = element.tagName.toLowerCase();
 
-  if (/^input$|^select$|^textarea$|^button$/.test(tagName)) {
+  var value;
+  if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
     value = domElementValue(element);
   }
   return element.domLayerNode.events[eventName](e, value);
