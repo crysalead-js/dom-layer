@@ -145,4 +145,32 @@ describe("patch", function() {
 
   });
 
+  it("checks that `domLayerNode` is correctly updated when `events` is defined", function() {
+
+    var from = h({ events: { "onclick": function() {} } });
+    var to = h({ events: { "onclick": function() {} } });
+
+    var rootNode = from.render();
+    expect(rootNode.domLayerNode).toBe(from);
+
+    rootNode = patch.node(from, to);
+
+    expect(rootNode.domLayerNode).toBe(to);
+
+  });
+
+  it("checks that `domLayerNode` is unsetted when no more `events` are defined", function() {
+
+    var from = h({ events: { "onclick": function() {} } });
+    var to = h();
+
+    var rootNode = from.render();
+    expect(rootNode.domLayerNode).toBe(from);
+
+    rootNode = patch.node(from, to);
+
+    expect(rootNode.domLayerNode).toBe(undefined);
+
+  });
+
 });

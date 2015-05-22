@@ -169,4 +169,12 @@ describe("render", function() {
 
   });
 
+  it("checks that `domLayerNode` is correctly set when `events` is defined", function() {
+
+    var node = h({ events: { "onclick": function() {} } });
+    var element = node.render();
+    expect(element.domLayerNode).toBe(node);
+
+  });
+
 });

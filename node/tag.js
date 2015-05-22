@@ -97,7 +97,12 @@ Tag.prototype.patch = function(to) {
   props.patch(to.element, this.props, to.props);
   attrs.patch(to.element, this.attrs, to.attrs);
   attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
-  return this.element;
+  if (to.events) {
+    to.element.domLayerNode = to;
+  } else if (this.events) {
+    to.element.domLayerNode = undefined;
+  }
+  return to.element;
 }
 
 /**
