@@ -40,25 +40,21 @@ Tree.prototype.mount = function(selector, factory, data) {
 /**
  * Unmounts a virtual tree.
  *
- * @param String|Object selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
  */
-Tree.prototype.unmount = function(selector) {
-  var containers = query.all(selector);
-  if (!containers.length) {
+Tree.prototype.unmount = function(mountId) {
+  if (arguments.length) {
+    var mount = this._mounted[mountId];
+    if (mount) {
+      remove(mount.children);
+      delete mount.container.domLayerTreeId;
+      delete this._mounted[mountId];
+    }
     return;
   }
-  if (containers.length > 1) {
-    throw new Error("The selector must identify an unique DOM element");
+  for (mountId in this._mounted) {
+    this.unmount(mountId);
   }
-  var container = containers[0];
-  var mountId = container.domLayerTreeId;
-  if (!this._mounted[mountId]) {
-    return;
-  }
-
-  remove(this._mounted[mountId].children);
-  delete this._mounted[mountId];
-  delete container.domLayerTreeId;
 }
 
 /**

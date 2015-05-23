@@ -56,20 +56,9 @@ describe("Tree", function() {
       var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
-      tree.unmount("#mount-point");
+      tree.unmount(mountId);
       expect(mountPoint.textContent).toBe("");
       expect(mountPoint.domLayerTreeId).toBe(undefined);
-
-    });
-
-    it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
-
-      document.body.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
-
-      var closure = function() {
-        tree.unmount(".mount-point");
-      };
-      expect(closure).toThrow(new Error("The selector must identify an unique DOM element"));
 
     });
 
