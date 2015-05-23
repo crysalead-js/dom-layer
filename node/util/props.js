@@ -1,4 +1,5 @@
 var domElementValue = require("dom-element-value");
+var valueEqual = require("./value-equal");
 var dataset = require("./dataset");
 
 /**
@@ -38,12 +39,16 @@ function patch(element, previous, props) {
  * @param  Object props     The properties to match on.
  */
 function set(name, element, previous, props) {
-  if (set[name]) {
-    set[name](name, element, previous, props);
+  if (props[name] === undefined) {
+    return;
+  }
+  if (set.handlers[name]) {
+    set.handlers[name](name, element, previous, props);
   } else if (previous[name] !== props[name]) {
     element[name] = props[name];
   }
 };
+set.handlers = Object.create(null);
 
 /**
  * Unsets a property.
@@ -53,34 +58,42 @@ function set(name, element, previous, props) {
  * @param  Object previous  The previous state of properties.
  */
 function unset(name, element, previous) {
-  if (unset[name]) {
-    unset[name](name, element, previous[name], previous);
+  if (unset.handlers[name]) {
+    unset.handlers[name](name, element, previous[name], previous);
   } else {
     element[name] = undefined;
   }
 };
+unset.handlers = Object.create(null);
 
 /**
  * Custom set handler for the value attribute.
  */
-set.value = function(element, previous, props) {
-  if (previous["multiple"] !== props["multiple"]) {
-    element.multiple = props["multiple"];
+set.handlers.value = function(element, previous, props) {
+  if (valueEqual(domElementValue(element), props[name])) {
+    return;
   }
-  domElementValue(element, newValue);
+  if (element.tagName === "SELECT") {
+    if (previous["multiple"] !== props["multiple"]) {
+      element.multiple = props["multiple"];
+    }
+    domElementValue(element, props[name]);
+  } else {
+    element[name] = props[name];
+  }
 };
 
 /**
  * Custom set handler for the dataset attribute.
  */
-set.dataset = function(name, element, previous, props) {
+set.handlers.dataset = function(name, element, previous, props) {
   dataset.patch(element, previous[name], props[name]);
 };
 
 /**
  * Custom unset handler for the dataset attribute.
  */
-unset.dataset = function(name, element, previous) {
+unset.handlers.dataset = function(name, element, previous) {
   dataset.patch(element, previous[name], {});
 };
 

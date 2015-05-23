@@ -6,11 +6,27 @@ describe("props", function() {
 
   describe(".patch()", function() {
 
+    it("can sets the `name` property", function() {
+
+      var node = h({ tagName: "input", attrs: { name: "input1" } });
+      var element = node.render();
+      expect(element.name).toBe("input1");
+
+    });
+
     it("doesn't set undefined props", function() {
 
       var node = h({ tagName: "div", props: { special: undefined } });
       var rootNode = node.render();
       expect("special" in rootNode).toBe(false);
+
+    });
+
+    it("doesn't set undefined props with a custom handler", function() {
+
+      var node = h({ tagName: "div", props: { value: undefined } });
+      var rootNode = node.render();
+      expect("value" in rootNode).toBe(false);
 
     });
 

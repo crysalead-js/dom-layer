@@ -1,4 +1,5 @@
 var domElementValue = require("dom-element-value");
+var valueEqual = require("./value-equal");
 var style = require("./style");
 
 /**
@@ -18,7 +19,7 @@ function patch(element, previous, attrs) {
   attrs = attrs || {};
 
   for (name in previous) {
-    if (!previous[name] || attrs[name]) {
+    if (!previous[name] || attrs[name] != null) {
       continue;
     }
     unset(name, element, previous);
@@ -38,12 +39,16 @@ function patch(element, previous, attrs) {
  * @param  Object attrs     The attributes to match on.
  */
 function set(name, element, previous, attrs) {
-  if (set[name]) {
-    set[name](name, element, previous, attrs);
+  if (attrs[name] == null) {
+    return;
+  }
+  if (set.handlers[name]) {
+    set.handlers[name](name, element, previous, attrs);
   } else if (previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
+set.handlers = Object.create(null);
 
 /**
  * Unsets an attribute.
@@ -53,28 +58,43 @@ function set(name, element, previous, attrs) {
  * @param  Object previous  The previous state of attributes.
  */
 function unset(name, element, previous) {
-  if (unset[name]) {
-    unset[name](name, element, previous);
+  if (unset.handlers[name]) {
+    unset.handlers[name](name, element, previous);
   } else {
     element.removeAttribute(name);
   }
 };
+unset.handlers = Object.create(null);
 
 /**
  * Custom set handler for the value attribute.
  */
-set.value = function(name, element, previous, attrs) {
-  if (previous["multiple"] !== attrs["multiple"]) {
-    element.setAttribute(name, attrs["multiple"]);
+set.handlers.value = function(name, element, previous, attrs) {
+  if (valueEqual(domElementValue(element), attrs[name])) {
+    return;
   }
-  domElementValue(element, attrs[name]);
+  if (element.tagName === "SELECT") {
+    if (previous["multiple"] !== attrs["multiple"]) {
+     element.setAttribute("multiple", attrs["multiple"]);
+    }
+    domElementValue(element, attrs[name]);
+  } else {
+    element.setAttribute(name, attrs[name]);
+  }
 };
 
 /**
  * Custom set handler for the style attribute.
  */
-set.style = function(name, element, previous, attrs) {
+set.handlers.style = function(name, element, previous, attrs) {
   style.patch(element, previous[name], attrs[name]);
+};
+
+/**
+ * Custom unset handler for the style attribute.
+ */
+unset.handlers.style = function(name, element, previous) {
+  style.patch(element, previous[name]);
 };
 
 module.exports = {

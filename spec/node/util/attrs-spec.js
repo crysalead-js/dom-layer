@@ -6,6 +6,14 @@ describe("attrs", function() {
 
   describe(".patch()", function() {
 
+    it('can sets the `"name"` attributes', function() {
+
+      var node = h({ tagName: "input", attrs: { name: "input1" } });
+      var element = node.render();
+      expect(element.getAttribute("name")).toBe("input1");
+
+    });
+
     it("sets attributes", function() {
 
       var from = h({ tagName: "div" });
