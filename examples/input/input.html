@@ -1,0 +1,139 @@
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <script src="../../dist/dom-layer.js"></script>
+</head>
+<body>
+
+<div id="mount-point"></div>
+
+<script src="./js/input.js"></script>
+
+<script type="text/javascript">
+
+var Tree = domLayer.Tree;
+
+domLayer.events.init();
+
+var textInput = new TextInput("Hello World !!!");
+
+var textarea = new Textarea("Hello World !!!");
+
+var checkBox = new CheckBox(false);
+
+var checkBoxWithValue = new CheckBox(true, "abc");
+
+var radioGroup = new RadioGroup("a", "second");
+var radio1 = new Radio(radioGroup, false, "first");
+var radio2 = new Radio(radioGroup, false, "second");
+var radio3 = new Radio(radioGroup, false, "third");
+
+var selectDefault = new Select(null, [["A", "Value A"], ["B", "Value B"], ["C", "Value C"]]);
+
+var select = new Select("C", [["A", "Value A"], ["B", "Value B"], ["C", "Value C"]]);
+
+var selectMultiple = new SelectMultiple(["A", "C"], [["A", "Value A"], ["B", "Value B"], ["C", "Value C"]]);
+
+function EventsExample() {}
+
+EventsExample.prototype.render = function() {
+  return new Tag("div", {}, [
+    new Tag("h1", {}, [new Text("Events example")]),
+    new Tag("b", {}, [new Text("Text input:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        textInput.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(textInput.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Textarea:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        textarea.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(textarea.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Check box:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        checkBox.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(checkBox.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Check box (with a non-boolean value):")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        checkBoxWithValue.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(checkBoxWithValue.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Radio:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        radio1.render(), radio2.render(), radio3.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(radioGroup.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Select (with an invalid default value):")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        selectDefault.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(selectDefault.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Select (with a valid default value):")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        select.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(select.value())
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Select Multiple:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        selectMultiple.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(selectMultiple.value().join(', '))
+      ]),
+    ])
+  ]);
+}
+
+var example = new EventsExample();
+
+var tree = new Tree();
+var id = tree.mount("#mount-point", example.render.bind(example));
+
+function updateDom() {
+  var container = document.getElementById("mount-point");
+  if (container && container.domLayerTreeId) {
+    tree.update(container.domLayerTreeId);
+  }
+}
+
+</script>
+</body>
+</html>
