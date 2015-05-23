@@ -357,12 +357,9 @@ function patch(element, previous, attrs) {
  * @param  Object attrs     The attributes to match on.
  */
 function set(name, element, previous, attrs) {
-  if (attrs[name] == null) {
-    return;
-  }
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, attrs);
-  } else if (previous[name] !== attrs[name]) {
+  } else if (attrs[name] !== null && previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
@@ -395,12 +392,10 @@ set.handlers.value = function(name, element, previous, attrs) {
     if (previous["multiple"] !== attrs["multiple"]) {
      element.setAttribute("multiple", attrs["multiple"]);
     }
+    domElementValue(element, attrs[name]);
   } else {
     element.setAttribute(name, attrs[name]);
-  }
-  var type = domElementValue.type(element);
-  if (type !== "radio" && type !== "checkbox") {
-    domElementValue(element, attrs[name]);
+    element[name] = attrs[name] ? attrs[name] : "";
   }
 };
 
@@ -1491,12 +1486,17 @@ Tree.prototype.unmount = function(mountId) {
  * Updates a mount (ie. run the factory function and updates the DOM according to occured changes).
  *
  * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
+ * @param String tree    An optionnal virtual tree to use.
  */
-Tree.prototype.update = function(mountId) {
+Tree.prototype.update = function(mountId, tree) {
   if (arguments.length) {
     var mount = this._mounted[mountId];
     if (mount) {
-      mount.children = update(mount.container, mount.children, mount.factory, null);
+      var active = document.activeElement;
+      mount.children = update(mount.container, mount.children, tree ? tree : mount.factory, null);
+      if (active) {
+        active.focus();
+      }
     }
     return;
   }

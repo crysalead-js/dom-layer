@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.1.3 (2015-05-23)
+
+  * **Bugfix:** fixes focus lost issue on input.
+
 ## 0.1.2 (2015-05-23)
 
   * **Add:** adds the input example.
