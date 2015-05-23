@@ -39,12 +39,9 @@ function patch(element, previous, attrs) {
  * @param  Object attrs     The attributes to match on.
  */
 function set(name, element, previous, attrs) {
-  if (attrs[name] == null) {
-    return;
-  }
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, attrs);
-  } else if (previous[name] !== attrs[name]) {
+  } else if (attrs[name] !== null && previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
@@ -77,12 +74,10 @@ set.handlers.value = function(name, element, previous, attrs) {
     if (previous["multiple"] !== attrs["multiple"]) {
      element.setAttribute("multiple", attrs["multiple"]);
     }
+    domElementValue(element, attrs[name]);
   } else {
     element.setAttribute(name, attrs[name]);
-  }
-  var type = domElementValue.type(element);
-  if (type !== "radio" && type !== "checkbox") {
-    domElementValue(element, attrs[name]);
+    element[name] = attrs[name] ? attrs[name] : "";
   }
 };
 
