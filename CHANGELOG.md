@@ -2,6 +2,14 @@
 
 ## HEAD
 
+## 0.1.2 (2015-05-23)
+
+  * **Add:** adds the input example.
+  * **Bugfix:** fixes an issue with checkbox & radio input.
+  * **Bugfix:** fixes the `getManager()` exposed method.
+  * **BC break:** reformat custom set/unset handlers, they must now be populated under the `handlers` namespace.
+  * **BC break:** `unmount()` takes now a mount id as first parameter.
+
 ## 0.1.1 (2015-05-22)
 
   * **Add:** adds the event delegation system.

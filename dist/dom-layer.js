@@ -31,11 +31,11 @@ function init() {
 }
 
 module.exports = {
-  getManager: getManager(),
+  getManager: getManager,
   init: init
 };
 
-},{"dom-element-value":14,"dom-event-manager":15}],2:[function(require,module,exports){
+},{"dom-element-value":15,"dom-event-manager":16}],2:[function(require,module,exports){
 var create = require("../tree/create");
 var update = require("../tree/update");
 var props = require("./util/props");
@@ -191,7 +191,7 @@ function broadcastRemove(node) {
 
 module.exports = Tag;
 
-},{"../tree/create":19,"../tree/update":23,"./util/attrs":5,"./util/attrs-n-s":4,"./util/props":7}],3:[function(require,module,exports){
+},{"../tree/create":20,"../tree/update":24,"./util/attrs":5,"./util/attrs-n-s":4,"./util/props":7}],3:[function(require,module,exports){
 /**
  * The Virtual Text constructor.
  *
@@ -317,6 +317,7 @@ module.exports = {
 
 },{}],5:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
+var valueEqual = require("./value-equal");
 var style = require("./style");
 
 /**
@@ -336,7 +337,7 @@ function patch(element, previous, attrs) {
   attrs = attrs || {};
 
   for (name in previous) {
-    if (!previous[name] || attrs[name]) {
+    if (!previous[name] || attrs[name] != null) {
       continue;
     }
     unset(name, element, previous);
@@ -356,12 +357,16 @@ function patch(element, previous, attrs) {
  * @param  Object attrs     The attributes to match on.
  */
 function set(name, element, previous, attrs) {
-  if (set[name]) {
-    set[name](name, element, previous, attrs);
+  if (attrs[name] == null) {
+    return;
+  }
+  if (set.handlers[name]) {
+    set.handlers[name](name, element, previous, attrs);
   } else if (previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
+set.handlers = Object.create(null);
 
 /**
  * Unsets an attribute.
@@ -371,28 +376,46 @@ function set(name, element, previous, attrs) {
  * @param  Object previous  The previous state of attributes.
  */
 function unset(name, element, previous) {
-  if (unset[name]) {
-    unset[name](name, element, previous);
+  if (unset.handlers[name]) {
+    unset.handlers[name](name, element, previous);
   } else {
     element.removeAttribute(name);
   }
 };
+unset.handlers = Object.create(null);
 
 /**
  * Custom set handler for the value attribute.
  */
-set.value = function(name, element, previous, attrs) {
-  if (previous["multiple"] !== attrs["multiple"]) {
-    element.setAttribute(name, attrs["multiple"]);
+set.handlers.value = function(name, element, previous, attrs) {
+  if (valueEqual(domElementValue(element), attrs[name])) {
+    return;
   }
-  domElementValue(element, attrs[name]);
+  if (element.tagName === "SELECT") {
+    if (previous["multiple"] !== attrs["multiple"]) {
+     element.setAttribute("multiple", attrs["multiple"]);
+    }
+  } else {
+    element.setAttribute(name, attrs[name]);
+  }
+  var type = domElementValue.type(element);
+  if (type !== "radio" && type !== "checkbox") {
+    domElementValue(element, attrs[name]);
+  }
 };
 
 /**
  * Custom set handler for the style attribute.
  */
-set.style = function(name, element, previous, attrs) {
+set.handlers.style = function(name, element, previous, attrs) {
   style.patch(element, previous[name], attrs[name]);
+};
+
+/**
+ * Custom unset handler for the style attribute.
+ */
+unset.handlers.style = function(name, element, previous) {
+  style.patch(element, previous[name]);
 };
 
 module.exports = {
@@ -401,7 +424,7 @@ module.exports = {
   unset: unset
 };
 
-},{"./style":8,"dom-element-value":14}],6:[function(require,module,exports){
+},{"./style":8,"./value-equal":9,"dom-element-value":15}],6:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -440,6 +463,7 @@ module.exports = {
 
 },{}],7:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
+var valueEqual = require("./value-equal");
 var dataset = require("./dataset");
 
 /**
@@ -479,12 +503,16 @@ function patch(element, previous, props) {
  * @param  Object props     The properties to match on.
  */
 function set(name, element, previous, props) {
-  if (set[name]) {
-    set[name](name, element, previous, props);
+  if (props[name] === undefined) {
+    return;
+  }
+  if (set.handlers[name]) {
+    set.handlers[name](name, element, previous, props);
   } else if (previous[name] !== props[name]) {
     element[name] = props[name];
   }
 };
+set.handlers = Object.create(null);
 
 /**
  * Unsets a property.
@@ -494,34 +522,42 @@ function set(name, element, previous, props) {
  * @param  Object previous  The previous state of properties.
  */
 function unset(name, element, previous) {
-  if (unset[name]) {
-    unset[name](name, element, previous[name], previous);
+  if (unset.handlers[name]) {
+    unset.handlers[name](name, element, previous[name], previous);
   } else {
     element[name] = undefined;
   }
 };
+unset.handlers = Object.create(null);
 
 /**
  * Custom set handler for the value attribute.
  */
-set.value = function(element, previous, props) {
-  if (previous["multiple"] !== props["multiple"]) {
-    element.multiple = props["multiple"];
+set.handlers.value = function(element, previous, props) {
+  if (valueEqual(domElementValue(element), props[name])) {
+    return;
   }
-  domElementValue(element, newValue);
+  if (element.tagName === "SELECT") {
+    if (previous["multiple"] !== props["multiple"]) {
+      element.multiple = props["multiple"];
+    }
+    domElementValue(element, props[name]);
+  } else {
+    element[name] = props[name];
+  }
 };
 
 /**
  * Custom set handler for the dataset attribute.
  */
-set.dataset = function(name, element, previous, props) {
+set.handlers.dataset = function(name, element, previous, props) {
   dataset.patch(element, previous[name], props[name]);
 };
 
 /**
  * Custom unset handler for the dataset attribute.
  */
-unset.dataset = function(name, element, previous) {
+unset.handlers.dataset = function(name, element, previous) {
   dataset.patch(element, previous[name], {});
 };
 
@@ -531,7 +567,7 @@ module.exports = {
   unset: unset
 };
 
-},{"./dataset":6,"dom-element-value":14}],8:[function(require,module,exports){
+},{"./dataset":6,"./value-equal":9,"dom-element-value":15}],8:[function(require,module,exports){
 var domElementCss = require("dom-element-css");
 
 /**
@@ -569,7 +605,26 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":10}],9:[function(require,module,exports){
+},{"dom-element-css":11}],9:[function(require,module,exports){
+var isArray = Array.isArray;
+
+function valueEqual(a, b) {
+  if (!isArray(a) || !isArray(b)) {
+    return a === b;
+  }
+
+  var i = a.length;
+  if (i != b.length) return false;
+  while (i--) {
+    if (a[i] !== b[i]) {
+     return false;
+    }
+  }
+  return true;
+};
+
+module.exports = valueEqual;
+},{}],10:[function(require,module,exports){
 /**
  * Index based collection manipulation methods for DOM childNodes.
  */
@@ -651,7 +706,7 @@ collection.extend = function(object) {
 
 module.exports = collection;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
 
@@ -694,7 +749,7 @@ function css(element) {
 
 module.exports = css;
 
-},{"to-camel-case":11}],11:[function(require,module,exports){
+},{"to-camel-case":12}],12:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -719,7 +774,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":12}],12:[function(require,module,exports){
+},{"to-space-case":13}],13:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -744,7 +799,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":13}],13:[function(require,module,exports){
+},{"to-no-case":14}],14:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -819,7 +874,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * DOM element value Getter/Setter.
  */
@@ -926,7 +981,7 @@ function set(element, val) {
 
 module.exports = value;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var events = require("component-event");
 
 var isArray = Array.isArray;
@@ -1053,7 +1108,7 @@ EventManager.defaultEvents = [
 
 module.exports = EventManager;
 
-},{"component-event":16}],16:[function(require,module,exports){
+},{"component-event":17}],17:[function(require,module,exports){
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1089,7 +1144,7 @@ exports.unbind = function(el, type, fn, capture){
   el[unbind](prefix + type, fn, capture || false);
   return fn;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -1147,7 +1202,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -1177,7 +1232,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -1199,7 +1254,7 @@ function create(container, nodes, parent) {
 }
 
 module.exports = create;
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var isEmpty = require("is-empty");
 var domCollection = require("dom-collection");
 
@@ -1363,7 +1418,7 @@ function indexChildren(children) {
 
 module.exports = patch;
 
-},{"dom-collection":9,"is-empty":18}],21:[function(require,module,exports){
+},{"dom-collection":10,"is-empty":19}],22:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1372,7 +1427,7 @@ function remove(nodes, parent) {
 }
 
 module.exports = remove;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var query = require("dom-query");
 var create = require("./create");
 var update = require("./update");
@@ -1415,25 +1470,21 @@ Tree.prototype.mount = function(selector, factory, data) {
 /**
  * Unmounts a virtual tree.
  *
- * @param String|Object selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
  */
-Tree.prototype.unmount = function(selector) {
-  var containers = query.all(selector);
-  if (!containers.length) {
+Tree.prototype.unmount = function(mountId) {
+  if (arguments.length) {
+    var mount = this._mounted[mountId];
+    if (mount) {
+      remove(mount.children);
+      delete mount.container.domLayerTreeId;
+      delete this._mounted[mountId];
+    }
     return;
   }
-  if (containers.length > 1) {
-    throw new Error("The selector must identify an unique DOM element");
+  for (mountId in this._mounted) {
+    this.unmount(mountId);
   }
-  var container = containers[0];
-  var mountId = container.domLayerTreeId;
-  if (!this._mounted[mountId]) {
-    return;
-  }
-
-  remove(this._mounted[mountId].children);
-  delete this._mounted[mountId];
-  delete container.domLayerTreeId;
 }
 
 /**
@@ -1469,7 +1520,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./create":19,"./remove":21,"./update":23,"dom-query":17}],23:[function(require,module,exports){
+},{"./create":20,"./remove":22,"./update":24,"dom-query":18}],24:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1489,7 +1540,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":20}],24:[function(require,module,exports){
+},{"./patch":21}],25:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var create = require("./tree/create");
 var update = require("./tree/update");
@@ -1516,5 +1567,5 @@ module.exports = {
   events: events
 };
 
-},{"./events":1,"./node/tag":2,"./node/text":3,"./node/util/attrs":5,"./node/util/attrs-n-s":4,"./node/util/props":7,"./tree/create":19,"./tree/patch":20,"./tree/remove":21,"./tree/tree":22,"./tree/update":23}]},{},[24])(24)
+},{"./events":1,"./node/tag":2,"./node/text":3,"./node/util/attrs":5,"./node/util/attrs-n-s":4,"./node/util/props":7,"./tree/create":20,"./tree/patch":21,"./tree/remove":22,"./tree/tree":23,"./tree/update":24}]},{},[25])(25)
 });
