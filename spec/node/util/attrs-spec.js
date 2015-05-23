@@ -133,7 +133,7 @@ describe("attrs", function() {
 
       });
 
-      it("allows `null` for property value", function() {
+      it("allows `null` for removing an attribute value", function() {
 
         var from = h({ tagName: "input", attrs: { value: "hello" } });
         var to = h({ tagName: "input", attrs: { value: null } });
@@ -141,7 +141,46 @@ describe("attrs", function() {
         from.render();
         var rootNode = patch.node(from, to);
 
-        expect(rootNode.value).toBe(_.property("input", "value", null));
+        expect(rootNode.hasAttribute("value")).toBe(false);
+
+      });
+
+      it('makes the `"value"` attribute to be setted as the selected value for `select`', function() {
+
+        var select = h({ tagName: "select", attrs: { value: "bar" } }, [
+          h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
+          h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+        ]);
+
+        var element = select.render();
+        expect(element.value).toBe("bar");
+
+      });
+
+      it('makes the `"value"` attribute to be setted as the selected value for `textarea`', function() {
+
+        var select = h({ tagName: "textarea", attrs: { value: "bar" } });
+
+        var element = select.render();
+        expect(element.value).toBe("bar");
+
+      });
+
+      it('makes the `"value"` attribute to NOT be setted as the selected value for `radio`', function() {
+
+        var select = h({ tagName: "input", attrs: { type: "radio", name: "a", value: "bar" } });
+
+        var element = select.render();
+        expect(element.checked).toBe(false);
+
+      });
+
+      it('makes the `"value"` attribute to NOT be setted as the selected value for `checkbox`', function() {
+
+        var select = h({ tagName: "input", attrs: { type: "checkbox", value: "bar" } });
+
+        var element = select.render();
+        expect(element.checked).toBe(false);
 
       });
 

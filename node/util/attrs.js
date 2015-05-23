@@ -77,9 +77,12 @@ set.handlers.value = function(name, element, previous, attrs) {
     if (previous["multiple"] !== attrs["multiple"]) {
      element.setAttribute("multiple", attrs["multiple"]);
     }
-    domElementValue(element, attrs[name]);
   } else {
     element.setAttribute(name, attrs[name]);
+  }
+  var type = domElementValue.type(element);
+  if (type !== "radio" && type !== "checkbox") {
+    domElementValue(element, attrs[name]);
   }
 };
 
