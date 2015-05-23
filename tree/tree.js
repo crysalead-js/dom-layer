@@ -61,12 +61,17 @@ Tree.prototype.unmount = function(mountId) {
  * Updates a mount (ie. run the factory function and updates the DOM according to occured changes).
  *
  * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
+ * @param String tree    An optionnal virtual tree to use.
  */
-Tree.prototype.update = function(mountId) {
+Tree.prototype.update = function(mountId, tree) {
   if (arguments.length) {
     var mount = this._mounted[mountId];
     if (mount) {
-      mount.children = update(mount.container, mount.children, mount.factory, null);
+      var active = document.activeElement;
+      mount.children = update(mount.container, mount.children, tree ? tree : mount.factory, null);
+      if (active) {
+        active.focus();
+      }
     }
     return;
   }

@@ -127,6 +127,32 @@ describe("Tree", function() {
 
     });
 
+    it('maintains focus', function () {
+
+      var from = [
+        h({ tagName: 'input', key: 0, attrs: { id: "input1" } }),
+        h({ tagName: 'input', key: 1, attrs: { id: "input2" } })
+      ];
+
+      var to = [
+        h({ tagName: 'input', key: 1, attrs: { id: "input2" } }),
+        h({ tagName: 'input', key: 0, attrs: { id: "input1" } })
+      ];
+
+      var mountId = tree.mount("#mount-point", from);
+
+      var input = document.getElementById("input2");
+
+      input.focus();
+
+      expect(input).toBe(document.activeElement);
+
+      tree.update(mountId, to);
+
+      expect(input).toBe(document.activeElement);
+
+    });
+
     it("ignores updates with invalid id", function() {
 
       tree.update("invalid_id");
