@@ -40,24 +40,22 @@ Textarea.prototype.render = function() {
   });
 }
 
-function CheckBox(checked, value) {
-  this._checked = checked;
+function CheckBox(value, checked) {
   this._value = value;
-  this._currentValue = this._checked ? (this._value ? this._value : true) : false;
+  this._currentValue = checked ? (this._value ? this._value : true) : false;
 }
 CheckBox.prototype.checked = function() {
-  return this._checked;
+  return this._currentValue === this._value;
 }
 CheckBox.prototype.value = function() {
   return this._currentValue;
 }
 CheckBox.prototype.render = function() {
   return new Tag("input", {
-    props: { id: "checkbox", checked: this._checked },
+    props: { id: "checkbox", checked: this.checked() },
     attrs: { type: "checkbox", value: this._value},
     events: {
       onchange: function(e, value) {
-        this._checked = this._currentValue === this._value;
         this._currentValue = value;
         updateDom();
       }.bind(this)
@@ -81,21 +79,19 @@ RadioGroup.prototype.value = function(value) {
   return this._value;
 }
 
-function Radio(group, checked, value) {
+function Radio(group, value) {
   this._group = group;
   this._value = value;
-  this._checked = checked;
 }
 Radio.prototype.checked = function() {
-  return this._checked;
+  return this._group.value() === this._value;
 }
 Radio.prototype.render = function() {
   return new Tag("input", {
-    props: { checked: this._group.value() === this._value},
+    props: { checked: this.checked() },
     attrs: { type: "radio" , name: this._group.name(), value: this._value},
     events: {
       onchange: function(e, value) {
-        this._checked = this._value === this._group.value();
         this._group.value(value);
         updateDom();
       }.bind(this)

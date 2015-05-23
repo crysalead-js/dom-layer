@@ -8,7 +8,7 @@
 
 <div id="mount-point"></div>
 
-<script src="./js/input.js"></script>
+<script src="./js/inputs.js"></script>
 
 <script type="text/javascript">
 
@@ -20,14 +20,14 @@ var textInput = new TextInput("Hello World !!!");
 
 var textarea = new Textarea("Hello World !!!");
 
-var checkBox = new CheckBox(false);
+var checkBox = new CheckBox();
 
-var checkBoxWithValue = new CheckBox(true, "abc");
+var checkBoxWithValue = new CheckBox("abc", true);
 
 var radioGroup = new RadioGroup("a", "second");
-var radio1 = new Radio(radioGroup, false, "first");
-var radio2 = new Radio(radioGroup, false, "second");
-var radio3 = new Radio(radioGroup, false, "third");
+var radio1 = new Radio(radioGroup, "first");
+var radio2 = new Radio(radioGroup, "second");
+var radio3 = new Radio(radioGroup, "third");
 
 var selectDefault = new Select(null, [["A", "Value A"], ["B", "Value B"], ["C", "Value C"]]);
 
@@ -86,7 +86,7 @@ EventsExample.prototype.render = function() {
         radio1.render(), radio2.render(), radio3.render()
       ]),
       new Tag("div", {}, [
-        new Text("value: "), new Text(radioGroup.value())
+        new Text("value: "), new Text(radioGroup.value() + " (" + radio1.checked() + ", " + radio2.checked() + ", " + radio3.checked() + ")")
       ]),
     ]),
 
