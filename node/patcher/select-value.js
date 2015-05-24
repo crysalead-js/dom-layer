@@ -7,7 +7,7 @@ isArray = Array.isArray;
  * If present on a select/select multiple virtual node the value is populated over
  * the contained `<option>` using the `"selected"` attribute.
  */
-function selectValue(node, value, multiple) {
+function selectValue(node) {
   if (node.tagName !== "select") {
     return;
   }
@@ -18,7 +18,6 @@ function selectValue(node, value, multiple) {
     return;
   }
 
-  var values = isArray(value) ? value : values;
   var values = {};
   if (!isArray(value)) {
     values[value] = value;
