@@ -41,8 +41,8 @@ Textarea.prototype.render = function() {
 }
 
 function CheckBox(value, checked) {
-  this._value = value;
-  this._currentValue = checked ? (this._value ? this._value : true) : false;
+  this._value = value ? value : true;
+  this._currentValue = checked ? this._value : false;
 }
 CheckBox.prototype.checked = function() {
   return this._currentValue === this._value;
