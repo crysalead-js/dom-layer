@@ -5,9 +5,9 @@ var remove = require("./tree/remove");
 var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
-var attrs = require("./node/util/attrs");
-var attrsNS = require("./node/util/attrs-n-s");
-var props = require("./node/util/props");
+var attrs = require("./node/patcher/attrs");
+var attrsNS = require("./node/patcher/attrs-n-s");
+var props = require("./node/patcher/props");
 var events = require("./events");
 
 module.exports = {

@@ -1,7 +1,7 @@
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
 var patch = require("../../../tree/patch");
-var attrsNS = require("../../../node/util/attrs-n-s");
+var attrsNS = require("../../../node/patcher/attrs-n-s");
 
 var namespaces = attrsNS.namespaces;
 

@@ -1,8 +1,8 @@
 var create = require("../tree/create");
 var update = require("../tree/update");
-var props = require("./util/props");
-var attrs = require("./util/attrs");
-var attrsNS = require("./util/attrs-n-s");
+var props = require("./patcher/props");
+var attrs = require("./patcher/attrs");
+var attrsNS = require("./patcher/attrs-n-s");
 
 /**
  * The Virtual Tag constructor.

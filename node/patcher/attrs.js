@@ -1,5 +1,5 @@
 var domElementValue = require("dom-element-value");
-var valueEqual = require("./value-equal");
+var valueEqual = require("../../util/value-equal");
 var style = require("./style");
 
 /**

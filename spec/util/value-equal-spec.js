@@ -1,4 +1,4 @@
-var valueEqual = require("../../../node/util/value-equal");
+var valueEqual = require("../../util/value-equal");
 
 describe("valueEqual", function() {
 
