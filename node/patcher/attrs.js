@@ -1,5 +1,4 @@
 var domElementValue = require("dom-element-value");
-var valueEqual = require("../../util/value-equal");
 var style = require("./style");
 
 /**
@@ -67,18 +66,11 @@ unset.handlers = Object.create(null);
  * Custom set handler for the value attribute.
  */
 set.handlers.value = function(name, element, previous, attrs) {
-  if (valueEqual(domElementValue(element), attrs[name])) {
+  if (previous[name] === attrs[name]) {
     return;
   }
-  if (element.tagName === "SELECT") {
-    if (previous["multiple"] !== attrs["multiple"]) {
-     element.setAttribute("multiple", attrs["multiple"]);
-    }
-    domElementValue(element, attrs[name]);
-  } else {
-    element.setAttribute(name, attrs[name]);
-    element[name] = attrs[name] ? attrs[name] : "";
-  }
+  element.setAttribute(name, attrs[name]);
+  element[name] = attrs[name] ? attrs[name] : "";
 };
 
 /**

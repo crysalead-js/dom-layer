@@ -3,6 +3,7 @@ var update = require("../tree/update");
 var props = require("./patcher/props");
 var attrs = require("./patcher/attrs");
 var attrsNS = require("./patcher/attrs-n-s");
+var selectValue = require("./patcher/select-value");
 
 /**
  * The Virtual Tag constructor.
@@ -69,11 +70,13 @@ Tag.prototype.render = function(parent) {
   if (this.events) {
     element.domLayerNode = this;
   }
-  create(element, this.children, this);
 
+  selectValue(this);
   props.patch(element, {}, this.props);
   attrs.patch(element, {}, this.attrs);
   attrsNS.patch(element, {}, this.attrsNS);
+
+  create(element, this.children, this);
 
   if (this.callbacks && this.callbacks.created) {
     this.callbacks.created(this, element);
@@ -93,10 +96,14 @@ Tag.prototype.patch = function(to) {
     return to.render();
   }
   to.element = this.element;
-  update(to.element, this.children, to.children, to);
+
+  selectValue(to);
   props.patch(to.element, this.props, to.props);
   attrs.patch(to.element, this.attrs, to.attrs);
   attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+
+  update(to.element, this.children, to.children);
+
   if (to.events) {
     to.element.domLayerNode = to;
   } else if (this.events) {

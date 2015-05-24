@@ -1,5 +1,4 @@
 var domElementValue = require("dom-element-value");
-var valueEqual = require("../../util/value-equal");
 var dataset = require("./dataset");
 
 /**
@@ -65,23 +64,6 @@ function unset(name, element, previous) {
   }
 };
 unset.handlers = Object.create(null);
-
-/**
- * Custom set handler for the value attribute.
- */
-set.handlers.value = function(element, previous, props) {
-  if (valueEqual(domElementValue(element), props[name])) {
-    return;
-  }
-  if (element.tagName === "SELECT") {
-    if (previous["multiple"] !== props["multiple"]) {
-      element.multiple = props["multiple"];
-    }
-    domElementValue(element, props[name]);
-  } else {
-    element[name] = props[name];
-  }
-};
 
 /**
  * Custom set handler for the dataset attribute.

@@ -13,6 +13,5 @@ require('./node/remove-spec');
 require('./node/patcher/props-spec');
 require('./node/patcher/attrs-spec');
 require('./node/patcher/attrs-n-s-spec');
-require('./util/value-equal-spec');
 require('./tree/tree-spec');
 require('./tree/patch-spec');

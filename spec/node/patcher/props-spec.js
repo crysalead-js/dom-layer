@@ -1,3 +1,4 @@
+var domElementValue = require("dom-element-value");
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
 var patch = require("../../../tree/patch");
@@ -64,6 +65,46 @@ describe("props", function() {
       var to = h({ tagName: "div", props: {}});
       var newRoot = patch.node(from, to);
       expect(typeof rootNode.onclick).toBe("undefined");
+
+    });
+
+    it("populates the `value` property on select", function() {
+
+      var select = h({ tagName: "select", props: { value: "bar" } }, [
+        h({tagName: "option", props: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", props: {value: "bar"}}, ["bar"])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element)).toBe("bar");
+
+    });
+
+    it("populates the `value` property on select multiple", function() {
+
+      var select = h({ tagName: "select", props: { multiple: true, value: ["foo", "bar"] } }, [
+        h({tagName: "option", props: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", props: {value: "bar"}}, ["bar"])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element).sort()).toEqual(["bar", "foo"]);
+
+    });
+
+    it("populates the `value` property on select multiple using groups", function() {
+
+      var select = h({ tagName: "select", props: { multiple: true, value: ["foo", "bar"] } }, [
+        h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
+          h({tagName: "option", props: {value: "foo"}}, ["foo"])
+        ]),
+        h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
+          h({tagName: "option", props: {value: "bar"}}, ["bar"])
+        ])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element).sort()).toEqual(["bar", "foo"]);
 
     });
 

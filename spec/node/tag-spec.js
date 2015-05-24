@@ -53,16 +53,4 @@ describe("Tag", function() {
 
   });
 
-  it("assures children rendering is done before applying attributes & properties", function() {
-
-    var select = h({ tagName: "select", attrs: { value: "bar" } }, [
-      h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
-      h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
-    ]);
-
-    var element = select.render();
-    expect(element.value).toBe("bar");
-
-  });
-
 });

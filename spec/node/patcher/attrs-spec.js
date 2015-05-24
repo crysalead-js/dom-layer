@@ -1,3 +1,4 @@
+var domElementValue = require("dom-element-value");
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
 var patch = require("../../../tree/patch");
@@ -103,7 +104,7 @@ describe("attrs", function() {
 
     });
 
-    it('makes the `"value"` attribute to be populated over select options', function() {
+    it('populates the `"value"` attribute on select', function() {
 
       var select = h({ tagName: "select", attrs: { value: "bar" } }, [
         h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
@@ -111,11 +112,39 @@ describe("attrs", function() {
       ]);
 
       var element = select.render();
-      expect(element.value).toBe("bar");
+      expect(domElementValue(element)).toBe("bar");
 
     });
 
-    it('makes the `"value"` attribute to set the value property for `textarea`', function() {
+    it('populates the `"value"` attribute on select multiple', function() {
+
+      var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
+        h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element).sort()).toEqual(["bar", "foo"]);
+
+    });
+
+    it('populates the `"value"` attribute on select multiple using groups', function() {
+
+      var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
+        h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
+          h({tagName: "option", attrs: {value: "foo"}}, ["foo"])
+        ]),
+        h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
+          h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+        ])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element).sort()).toEqual(["bar", "foo"]);
+
+    });
+
+    it('assures the `"value"` attribute also set the value property for `textarea`', function() {
 
       var select = h({ tagName: "textarea", attrs: { value: "bar" } });
 
@@ -124,7 +153,7 @@ describe("attrs", function() {
 
     });
 
-    it('makes the `"value"` attribute to NOT set the checked property for `radio`', function() {
+    it('assures the `"value"` attribute to NOT set the checked property for `radio`', function() {
 
       var select = h({ tagName: "input", attrs: { type: "radio", name: "a", value: "bar" } });
 
@@ -133,7 +162,7 @@ describe("attrs", function() {
 
     });
 
-    it('makes the `"value"` attribute to NOT set the checked property for `checkbox`', function() {
+    it('assures the `"value"` attribute to NOT set the checked property for `checkbox`', function() {
 
       var select = h({ tagName: "input", attrs: { type: "checkbox", value: "bar" } });
 
