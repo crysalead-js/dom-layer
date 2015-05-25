@@ -36,230 +36,6 @@ module.exports = {
 };
 
 },{"dom-element-value":15,"dom-event-manager":16}],2:[function(require,module,exports){
-var create = require("../tree/create");
-var update = require("../tree/update");
-var props = require("./util/props");
-var attrs = require("./util/attrs");
-var attrsNS = require("./util/attrs-n-s");
-
-/**
- * The Virtual Tag constructor.
- *
- * @param  String tagName  The tag name.
- * @param  Object config   The virtual node definition.
- * @param  Array  children An array for children.
- */
-function Tag(tagName, config, children) {
-  this.tagName = tagName || "div";
-  config = config || {};
-  this.children = children || [];
-  this.props = config.props;
-  this.attrs = config.attrs;
-  this.attrsNS = config.attrsNS;
-  this.events = config.events;
-  this.callbacks = config.callbacks;
-  this.data = config.data;
-  this.element = undefined;
-  this.parent = undefined;
-
-  this.key = config.key != null ? config.key : undefined;
-
-  this.namespace = config.namespace || "";
-};
-
-Tag.prototype.type = "Tag";
-
-/**
- * Creates and return the corresponding DOM node.
- *
- * @return Object A DOM node.
- */
-Tag.prototype.create = function() {
-  var element;
-  if (!this.namespace) {
-    element = document.createElement(this.tagName);
-  } else {
-    element = document.createElementNS(this.namespace, this.tagName);
-  }
-  return element;
-};
-
-/**
- * Renders the virtual node.
- *
- * @param  Object  parent A parent node.
- * @return Object         A root DOM node.
- */
-Tag.prototype.render = function(parent) {
-  this.parent = parent;
-
-  if (!this.namespace) {
-    if (this.tagName === "svg" ) {
-      this.namespace = "http://www.w3.org/2000/svg";
-    } else if (this.tagName === "math") {
-      this.namespace = "http://www.w3.org/1998/Math/MathML";
-    } else if (parent) {
-      this.namespace = parent.namespace;
-    }
-  }
-
-  var element = this.element = this.create();
-  if (this.events) {
-    element.domLayerNode = this;
-  }
-  create(element, this.children, this);
-
-  props.patch(element, {}, this.props);
-  attrs.patch(element, {}, this.attrs);
-  attrsNS.patch(element, {}, this.attrsNS);
-
-  if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, element);
-  }
-  return element;
-};
-
-/**
- * Patches a node according to the a new representation.
- *
- * @param  Object to A new node representation.
- * @return Object    A DOM element, can be a new one or simply the old patched one.
- */
-Tag.prototype.patch = function(to) {
-  if (this.type !== to.type || this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
-    this.remove(false);
-    return to.render();
-  }
-  to.element = this.element;
-  update(to.element, this.children, to.children, to);
-  props.patch(to.element, this.props, to.props);
-  attrs.patch(to.element, this.attrs, to.attrs);
-  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
-  if (to.events) {
-    to.element.domLayerNode = to;
-  } else if (this.events) {
-    to.element.domLayerNode = undefined;
-  }
-  return to.element;
-}
-
-/**
- * Removes the DOM node attached to the virtual node.
- */
-Tag.prototype.remove = function(destroy) {
-  broadcastRemove(this);
-  if(destroy !== false) {
-    this.destroy();
-  }
-};
-
-/**
- * Destroys the DOM node attached to the virtual node.
- */
-Tag.prototype.destroy = function() {
-  var element = this.element;
-
-  if (!element) {
-    return;
-  }
-  var parentNode = element.parentNode;
-  if (!parentNode) {
-    return;
-  }
-  if (!this.callbacks || !this.callbacks.destroy) {
-    return parentNode.removeChild(element);
-  }
-  return this.callbacks.destroy(element, function() {
-    return parentNode.removeChild(element);
-  });
-};
-
-/**
- * Broadcasts the remove "event".
- */
-function broadcastRemove(node) {
-  if (!node.children) {
-    return;
-  }
-  if (node.callbacks && node.callbacks.remove) {
-    node.callbacks.remove(node, node.element);
-  }
-  for(var i = 0, len = node.children.length; i < len; i++) {
-    broadcastRemove(node.children[i]);
-  }
-}
-
-module.exports = Tag;
-
-},{"../tree/create":20,"../tree/update":24,"./util/attrs":5,"./util/attrs-n-s":4,"./util/props":7}],3:[function(require,module,exports){
-/**
- * The Virtual Text constructor.
- *
- * @param  String tagName  The tag name.
- * @param  Array  children An array for children.
- */
-function Text(text) {
-  this.text = text;
-  this.element = undefined;
-}
-
-Text.prototype.type = "Text";
-
-/**
- * Creates and return the corresponding DOM node.
- *
- * @return Object A DOM node.
- */
-Text.prototype.create = function() {
-  return document.createTextNode(this.text);
-}
-
-/**
- * Renders virtual text node.
- *
- * @return Object        A text node.
- */
-Text.prototype.render = function() {
-  return this.element = this.create();
-}
-
-/**
- * Patches a node according to the a new representation.
- *
- * @param  Object to A new node representation.
- * @return Object    A DOM element, can be a new one or simply the old patched one.
- */
-Text.prototype.patch = function(to) {
-  if (this.type !== to.type) {
-    this.remove(false);
-    return to.render();
-  }
-  to.element = this.element;
-  if (this.text !== to.text) {
-    this.element.replaceData(0, this.element.length, to.text);
-  }
-  return this.element;
-}
-
-/**
- * Removes the DOM node attached to the virtual node.
- */
-Text.prototype.remove = function(destroy) {
-  if(destroy !== false) {
-    this.destroy();
-  }
-};
-
-/**
- * Destroys the DOM node attached to the virtual node.
- */
-Text.prototype.destroy = function() {
-  var parentNode = this.element.parentNode;
-  return parentNode.removeChild(this.element);
-};
-
-module.exports = Text;
-},{}],4:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -315,9 +91,8 @@ module.exports = {
   namespaces: namespaces
 };
 
-},{}],5:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
-var valueEqual = require("./value-equal");
 var style = require("./style");
 
 /**
@@ -385,18 +160,11 @@ unset.handlers = Object.create(null);
  * Custom set handler for the value attribute.
  */
 set.handlers.value = function(name, element, previous, attrs) {
-  if (valueEqual(domElementValue(element), attrs[name])) {
+  if (previous[name] === attrs[name]) {
     return;
   }
-  if (element.tagName === "SELECT") {
-    if (previous["multiple"] !== attrs["multiple"]) {
-     element.setAttribute("multiple", attrs["multiple"]);
-    }
-    domElementValue(element, attrs[name]);
-  } else {
-    element.setAttribute(name, attrs[name]);
-    element[name] = attrs[name] ? attrs[name] : "";
-  }
+  element.setAttribute(name, attrs[name]);
+  element[name] = attrs[name] ? attrs[name] : "";
 };
 
 /**
@@ -419,7 +187,7 @@ module.exports = {
   unset: unset
 };
 
-},{"./style":8,"./value-equal":9,"dom-element-value":15}],6:[function(require,module,exports){
+},{"./style":7,"dom-element-value":15}],4:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -456,9 +224,8 @@ module.exports = {
   patch: patch
 };
 
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
-var valueEqual = require("./value-equal");
 var dataset = require("./dataset");
 
 /**
@@ -526,23 +293,6 @@ function unset(name, element, previous) {
 unset.handlers = Object.create(null);
 
 /**
- * Custom set handler for the value attribute.
- */
-set.handlers.value = function(element, previous, props) {
-  if (valueEqual(domElementValue(element), props[name])) {
-    return;
-  }
-  if (element.tagName === "SELECT") {
-    if (previous["multiple"] !== props["multiple"]) {
-      element.multiple = props["multiple"];
-    }
-    domElementValue(element, props[name]);
-  } else {
-    element[name] = props[name];
-  }
-};
-
-/**
  * Custom set handler for the dataset attribute.
  */
 set.handlers.dataset = function(name, element, previous, props) {
@@ -562,7 +312,66 @@ module.exports = {
   unset: unset
 };
 
-},{"./dataset":6,"./value-equal":9,"dom-element-value":15}],8:[function(require,module,exports){
+},{"./dataset":4,"dom-element-value":15}],6:[function(require,module,exports){
+isArray = Array.isArray;
+
+/**
+ * This is a convenience function which preprocess the value attribute/property
+ * set on a select/select multiple virtual nodes.
+ *
+ * If present on a select/select multiple virtual node the value is populated over
+ * the contained `<option>` using the `"selected"` attribute.
+ */
+function selectValue(node) {
+  if (node.tagName !== "select") {
+    return;
+  }
+  var value = node.attrs && node.attrs.value;
+  value = value || node.props && node.props.value;
+
+  if (value == null) {
+    return;
+  }
+
+  var values = {};
+  if (!isArray(value)) {
+    values[value] = value;
+  } else {
+    for (var i = 0, len = value.length; i < len ; i++) {
+      values[value[i]] = value[i];
+    }
+  }
+  populateOptions(node, values);
+  if (node.attrs && node.attrs.hasOwnProperty("value")) {
+    delete node.attrs.value;
+  }
+  if (node.props && node.props.hasOwnProperty("value")) {
+    delete node.props.value;
+  }
+}
+
+function populateOptions(node, values) {
+  if (node.tagName !== "option") {
+    for (var i = 0, len = node.children.length; i < len ; i++) {
+      populateOptions(node.children[i], values);
+    }
+    return;
+  }
+  var value = node.attrs && node.attrs.value;
+  value = value || node.props && node.props.value;
+
+  if (!values.hasOwnProperty(value)) {
+    return;
+  }
+  node.attrs = node.attrs || {};
+  node.attrs.selected = "selected";
+  node.props = node.props || {};
+  node.props.selected = true;
+}
+
+module.exports = selectValue;
+
+},{}],7:[function(require,module,exports){
 var domElementCss = require("dom-element-css");
 
 /**
@@ -600,26 +409,298 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":11}],9:[function(require,module,exports){
-var isArray = Array.isArray;
+},{"dom-element-css":11}],8:[function(require,module,exports){
+var voidElements = require("void-elements");
+var attach = require("../tree/attach");
+var create = require("../tree/create");
+var update = require("../tree/update");
+var props = require("./patcher/props");
+var attrs = require("./patcher/attrs");
+var attrsNS = require("./patcher/attrs-n-s");
+var selectValue = require("./patcher/select-value");
+var stringifyAttrs = require("../util/stringify-attrs");
 
-function valueEqual(a, b) {
-  if (!isArray(a) || !isArray(b)) {
-    return a === b;
-  }
+/**
+ * The Virtual Tag constructor.
+ *
+ * @param  String tagName  The tag name.
+ * @param  Object config   The virtual node definition.
+ * @param  Array  children An array for children.
+ */
+function Tag(tagName, config, children) {
+  this.tagName = tagName || "div";
+  config = config || {};
+  this.children = children || [];
+  this.props = config.props;
+  this.attrs = config.attrs;
+  this.attrsNS = config.attrsNS;
+  this.events = config.events;
+  this.callbacks = config.callbacks;
+  this.data = config.data;
+  this.element = undefined;
+  this.parent = undefined;
 
-  var i = a.length;
-  if (i != b.length) return false;
-  while (i--) {
-    if (a[i] !== b[i]) {
-     return false;
-    }
-  }
-  return true;
+  this.key = config.key != null ? config.key : undefined;
+
+  this.namespace = config.namespace || "";
 };
 
-module.exports = valueEqual;
-},{}],10:[function(require,module,exports){
+Tag.prototype.type = "Tag";
+
+/**
+ * Creates and return the corresponding DOM node.
+ *
+ * @return Object A DOM node.
+ */
+Tag.prototype.create = function() {
+  var element;
+  if (!this.namespace) {
+    element = document.createElement(this.tagName);
+  } else {
+    element = document.createElementNS(this.namespace, this.tagName);
+  }
+  return element;
+};
+
+/**
+ * Renders the virtual node.
+ *
+ * @param  Object  parent A parent node.
+ * @return Object         A root DOM node.
+ */
+Tag.prototype.render = function(parent) {
+  this.parent = parent;
+
+  if (!this.namespace) {
+    if (this.tagName === "svg" ) {
+      this.namespace = "http://www.w3.org/2000/svg";
+    } else if (this.tagName === "math") {
+      this.namespace = "http://www.w3.org/1998/Math/MathML";
+    } else if (parent) {
+      this.namespace = parent.namespace;
+    }
+  }
+
+  var element = this.element = this.create();
+  if (this.events) {
+    element.domLayerNode = this;
+  }
+
+  selectValue(this);
+  props.patch(element, {}, this.props);
+  attrs.patch(element, {}, this.attrs);
+  attrsNS.patch(element, {}, this.attrsNS);
+
+  create(element, this.children, this);
+
+  if (this.callbacks && this.callbacks.created) {
+    this.callbacks.created(this, element);
+  }
+  return element;
+};
+
+/**
+ * Attaches an existing DOM element.
+ *
+ * @param  Object element A textual DOM element.
+ * @return Object         The textual DOM element.
+ */
+Tag.prototype.attach = function(element, parent) {
+  this.parent = parent;
+  this.element = element;
+  if (this.events) {
+    element.domLayerNode = this;
+  }
+  props.patch(element, {}, this.props);
+
+  attach(element, this.children, this);
+
+  if (this.callbacks && this.callbacks.created) {
+    this.callbacks.created(this, element);
+  }
+  return element;
+}
+
+/**
+ * Patches a node according to the a new representation.
+ *
+ * @param  Object to A new node representation.
+ * @return Object    A DOM element, can be a new one or simply the old patched one.
+ */
+Tag.prototype.patch = function(to) {
+  if (this.type !== to.type || this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
+    this.remove(false);
+    return to.render();
+  }
+  to.element = this.element;
+
+  selectValue(to);
+  props.patch(to.element, this.props, to.props);
+  attrs.patch(to.element, this.attrs, to.attrs);
+  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+
+  update(to.element, this.children, to.children);
+
+  if (to.events) {
+    to.element.domLayerNode = to;
+  } else if (this.events) {
+    to.element.domLayerNode = undefined;
+  }
+  return to.element;
+}
+
+/**
+ * Removes the DOM node attached to the virtual node.
+ */
+Tag.prototype.remove = function(destroy) {
+  broadcastRemove(this);
+  if(destroy !== false) {
+    this.destroy();
+  }
+};
+
+/**
+ * Destroys the DOM node attached to the virtual node.
+ */
+Tag.prototype.destroy = function() {
+  var element = this.element;
+
+  if (!element) {
+    return;
+  }
+  var parentNode = element.parentNode;
+  if (!parentNode) {
+    return;
+  }
+  if (!this.callbacks || !this.callbacks.destroy) {
+    return parentNode.removeChild(element);
+  }
+  return this.callbacks.destroy(element, function() {
+    return parentNode.removeChild(element);
+  });
+};
+
+/**
+ * Broadcasts the remove "event".
+ */
+function broadcastRemove(node) {
+  if (!node.children) {
+    return;
+  }
+  if (node.callbacks && node.callbacks.remove) {
+    node.callbacks.remove(node, node.element);
+  }
+  for(var i = 0, len = node.children.length; i < len; i++) {
+    broadcastRemove(node.children[i]);
+  }
+}
+
+/**
+ * Returns an html representation of a tag node.
+ */
+Tag.prototype.toHtml = function() {
+
+  var attributes = stringifyAttrs(this.attrs);
+  var html = "<" + this.tagName + (attributes ? " " + attributes : "") + ">";
+
+  for (var i = 0, len = this.children.length; i < len ; i++) {
+    html += this.children[i].toHtml();
+  }
+  html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
+  return html;
+
+};
+
+module.exports = Tag;
+
+},{"../tree/attach":22,"../tree/create":23,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":3,"./patcher/attrs-n-s":2,"./patcher/props":5,"./patcher/select-value":6,"void-elements":21}],9:[function(require,module,exports){
+var escapeHtml = require("escape-html");
+
+/**
+ * The Virtual Text constructor.
+ *
+ * @param  String tagName  The tag name.
+ * @param  Array  children An array for children.
+ */
+function Text(text) {
+  this.text = text;
+  this.element = undefined;
+}
+
+Text.prototype.type = "Text";
+
+/**
+ * Creates and return the corresponding DOM node.
+ *
+ * @return Object A DOM node.
+ */
+Text.prototype.create = function() {
+  return document.createTextNode(this.text);
+}
+
+/**
+ * Renders virtual text node.
+ *
+ * @return Object        A textual DOM element.
+ */
+Text.prototype.render = function() {
+  return this.element = this.create();
+}
+
+/**
+ * Attaches an existing textual DOM element.
+ *
+ * @param  Object element A textual DOM element.
+ * @return Object         The textual DOM element.
+ */
+Text.prototype.attach = function(element) {
+  return this.element = element;
+}
+
+/**
+ * Patches a node according to the a new representation.
+ *
+ * @param  Object to A new node representation.
+ * @return Object    A DOM element, can be a new one or simply the old patched one.
+ */
+Text.prototype.patch = function(to) {
+  if (this.type !== to.type) {
+    this.remove(false);
+    return to.render();
+  }
+  to.element = this.element;
+  if (this.text !== to.text) {
+    this.element.replaceData(0, this.element.length, to.text);
+  }
+  return this.element;
+}
+
+/**
+ * Removes the DOM node attached to the virtual node.
+ */
+Text.prototype.remove = function(destroy) {
+  if(destroy !== false) {
+    this.destroy();
+  }
+};
+
+/**
+ * Destroys the DOM node attached to the virtual node.
+ */
+Text.prototype.destroy = function() {
+  var parentNode = this.element.parentNode;
+  return parentNode.removeChild(this.element);
+};
+
+/**
+ * Returns an html representation of the text node.
+ */
+Text.prototype.toHtml = function() {
+  return escapeHtml(this.text);
+}
+
+module.exports = Text;
+},{"escape-html":19}],10:[function(require,module,exports){
 /**
  * Index based collection manipulation methods for DOM childNodes.
  */
@@ -1198,6 +1279,24 @@ query.engine = function(engine){
 module.exports = query;
 
 },{}],19:[function(require,module,exports){
+/**
+ * Escape special characters in the given string of html.
+ *
+ * @param  {String} html
+ * @return {String}
+ * @api private
+ */
+
+module.exports = function(html) {
+  return String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+},{}],20:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -1227,7 +1326,86 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
+/**
+ * This file automatically generated from `pre-publish.js`.
+ * Do not manually edit.
+ */
+
+module.exports = {
+  "area": true,
+  "base": true,
+  "br": true,
+  "col": true,
+  "embed": true,
+  "hr": true,
+  "img": true,
+  "input": true,
+  "keygen": true,
+  "link": true,
+  "menuitem": true,
+  "meta": true,
+  "param": true,
+  "source": true,
+  "track": true,
+  "wbr": true
+};
+
+},{}],22:[function(require,module,exports){
+var isArray = Array.isArray;
+
+function attach(container, nodes, parent) {
+  if (typeof nodes === "function") {
+    nodes = nodes(container, parent);
+  }
+  if (nodes == null) {
+    return;
+  }
+  if (!isArray(nodes)) {
+    nodes = [nodes];
+  }
+
+  var i = 0, j = 0;
+  var childNodes = container.childNodes;
+  var nodesLen = nodes.length
+  var text, textLen, size;
+
+  while (i < nodesLen) {
+    if (!nodes[i]) {
+      i++;
+      continue;
+    }
+    if (nodes[i].type !== "Text") {
+      nodes[i].attach(childNodes[j], parent);
+      i++;
+    } else {
+      // In an HTML template having consecutive textual nodes is not possible.
+      // So the virtual tree will be dynamically adjusted to make attachments to
+      // work out of the box in a transparent manner if this principle is not
+      // respected in a virtual tree.
+
+      size = nodes[i].text.length;
+      text = childNodes[j].data;
+
+      nodes[i].text = text;
+      nodes[i].attach(childNodes[j], parent);
+      i++;
+
+      textLen = text.length;
+      while (size < textLen && i < nodesLen) {
+        size += nodes[i].text.length;
+        nodes[i].text = "";
+        i++;
+      }
+    }
+    j++;
+  }
+  return nodes;
+}
+
+module.exports = attach;
+
+},{}],23:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -1249,7 +1427,8 @@ function create(container, nodes, parent) {
 }
 
 module.exports = create;
-},{}],21:[function(require,module,exports){
+
+},{}],24:[function(require,module,exports){
 var isEmpty = require("is-empty");
 var domCollection = require("dom-collection");
 
@@ -1413,7 +1592,7 @@ function indexChildren(children) {
 
 module.exports = patch;
 
-},{"dom-collection":10,"is-empty":19}],22:[function(require,module,exports){
+},{"dom-collection":10,"is-empty":20}],25:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1422,8 +1601,10 @@ function remove(nodes, parent) {
 }
 
 module.exports = remove;
-},{}],23:[function(require,module,exports){
+
+},{}],26:[function(require,module,exports){
 var query = require("dom-query");
+var attach = require("./attach");
 var create = require("./create");
 var update = require("./update");
 var remove = require("./remove");
@@ -1437,13 +1618,36 @@ function Tree() {
 /**
  * Mounts a virtual tree into a passed selector.
  *
- * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
  * @param Object          data     Some extra data to attach to the mount.
  */
 Tree.prototype.mount = function(selector, factory, data) {
+  return this.apply(selector, factory, data, create);
+}
+
+/**
+ * Attaches a virtual tree onto a previously rendered DOM tree.
+ *
+ * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point
+ *                                 containing a previously rendered DOM tree.
+ * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
+ * @param Object          data     Some extra data to attach to the mount.
+ */
+Tree.prototype.attach = function(selector, factory, data) {
+  return this.apply(selector, factory, data, attach);
+}
+
+/**
+ * Applies a virtual tree into a passed selector.
+ *
+ * @param String|Object   selector        A CSS string selector or a DOMElement identifying the mounting point.
+ * @param Function|Object factory         A factory function which returns a virtual tree or the virtual tree itself.
+ * @param Object          data            Some extra data to attach to the mount.
+ * @param function        processChildren The function to process node children.
+ */
+Tree.prototype.apply = function(selector, factory, data, processChildren) {
   data = data || {};
-  this.unmount(selector);
   var containers = query.all(selector);
   if (!containers.length) {
     return;
@@ -1457,7 +1661,7 @@ Tree.prototype.mount = function(selector, factory, data) {
 
   data.container = container;
   data.factory = factory;
-  data.children = create(container, factory, null);
+  data.children = processChildren(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerTreeId = mountId;
 }
@@ -1520,7 +1724,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./create":20,"./remove":22,"./update":24,"dom-query":18}],24:[function(require,module,exports){
+},{"./attach":22,"./create":23,"./remove":25,"./update":27,"dom-query":18}],27:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1540,23 +1744,41 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":21}],25:[function(require,module,exports){
+},{"./patch":24}],28:[function(require,module,exports){
+function stringifyAttrs(attrs) {
+  if (!attrs) {
+    return "";
+  }
+  var attributes = [];
+  for (var key in attrs) {
+    if (typeof attrs[key] !== "string") {
+      continue;
+    }
+    attributes.push(key + '="' + attrs[key].replace(/"/g, '\\"') + '"');
+  }
+  return attributes.join(" ");
+}
+
+module.exports = stringifyAttrs;
+},{}],29:[function(require,module,exports){
 var Tree = require("./tree/tree");
+var attach = require("./tree/attach");
 var create = require("./tree/create");
 var update = require("./tree/update");
 var remove = require("./tree/remove");
 var patch = require("./tree/patch");
 var Tag = require("./node/tag");
 var Text = require("./node/text");
-var attrs = require("./node/util/attrs");
-var attrsNS = require("./node/util/attrs-n-s");
-var props = require("./node/util/props");
+var attrs = require("./node/patcher/attrs");
+var attrsNS = require("./node/patcher/attrs-n-s");
+var props = require("./node/patcher/props");
 var events = require("./events");
 
 module.exports = {
   Tree: Tree,
   Tag: Tag,
   Text: Text,
+  attach: attach,
   create: create,
   update: update,
   remove: remove,
@@ -1567,5 +1789,5 @@ module.exports = {
   events: events
 };
 
-},{"./events":1,"./node/tag":2,"./node/text":3,"./node/util/attrs":5,"./node/util/attrs-n-s":4,"./node/util/props":7,"./tree/create":20,"./tree/patch":21,"./tree/remove":22,"./tree/tree":23,"./tree/update":24}]},{},[25])(25)
+},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":22,"./tree/create":23,"./tree/patch":24,"./tree/remove":25,"./tree/tree":26,"./tree/update":27}]},{},[29])(29)
 });

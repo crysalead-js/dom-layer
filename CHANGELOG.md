@@ -2,6 +2,11 @@
 
 ## HEAD
 
+## 0.1.4 (2015-05-25)
+
+  * **Add:** starts considering server side rendering using `attach()`.
+  * **BC break:** repo refactoring some internal paths may have changed.
+
 ## 0.1.3 (2015-05-23)
 
   * **Bugfix:** fixes focus lost issue on input.
