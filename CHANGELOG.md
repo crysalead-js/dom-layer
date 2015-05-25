@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.1.5 (2015-05-25)
+
+  * **Update:** updates dependencies.
+
 ## 0.1.4 (2015-05-25)
 
   * **Add:** starts considering server side rendering using `attach()`.

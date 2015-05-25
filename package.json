@@ -1,26 +1,27 @@
 {
   "name": "dom-layer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Virtual DOM implementation.",
+  "keywords": ["virtual", "dom", "diff", "diffing", "patch", "patching"],
   "repository": {
     "type": "git",
     "url": "http://github.com/crysalead-js/dom-layer.git"
   },
   "dependencies": {
-    "dom-collection": "^1.0.1",
-    "dom-element-css": "^1.0.0",
-    "dom-element-value": "^1.0.1",
-    "dom-event-manager": "^1.0.0",
+    "dom-collection": "^1.0.2",
+    "dom-element-css": "^1.0.1",
+    "dom-element-value": "^1.0.2",
+    "dom-event-manager": "^1.0.1",
     "dom-query": "^1.0.1",
     "escape-html": "^1.0.1",
     "is-empty": "0.0.1",
     "void-elements": "^2.0.1"
   },
   "devDependencies": {
-    "browserify": "^10.1.3",
-    "jasmine": "^2.2.1",
+    "browserify": "^10.2.1",
+    "jasmine": "^2.3.1",
     "jsdom": "3.1.2",
-    "uglify-js": "^2.4.21"
+    "uglify-js": "^2.4.23"
   },
   "scripts": {
     "test": "jasmine",
