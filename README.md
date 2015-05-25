@@ -12,20 +12,20 @@ This library is a Virtual DOM implementation ala React. If this implementation i
 
 ### The different type of nodes
 
-Out of the box, two objects `Tag` and `Text` are available for representing DOM elements. But you should be able to build your own ones based on the `Tag` one. It can be useful if you consider to manage virutal nodes like `Comment` or `Doctype` in a higher level of abstraction.
+Out of the box, the `Tag` and `Text` node are available for representing DOM elements. However it still possible to build your own ones. It may be useful if you are considering to manage virutal nodes like `Comment` or `Doctype` in a higher level of abstraction.
 
 #### Example
 
 So as an example, let's build the virtual representation of a simple `<div id="message">Hello World</div>`.
 
 ```js
-var Tag = require("dom-layer").Tag;
-var Text = require("dom-layer").Text;
+var Tag = require("dom-layer").Tag; // or `domLayer.Tag` from a browser.
+var Text = require("dom-layer").Text; // or `domLayer.Text` from a browser.
 
 var root = new Tag("div", {attrs: {id: "message"}}, [new Text("Hello World!")]);
 ```
 
-`Tag` takes as first parameter the tag name to represent. The second parameter is an object of options and the last parameter is the children array (but can also be a function which returns a children array, like a `render()` function).
+The first parameter of `Tag` is the tag name to represent. The second parameter is an object of options and the last parameter is the children array (which can also be a function which returns a children array, like a `render()` function).
 
 Note: This is the verbose way to build a virtual tree but it was never the way to write a web application with. You should now build your own abstraction on top of it. React uses JSX for example as an abstraction layer but it would be possible to make it work with some old school html templating too.
 
@@ -47,12 +47,12 @@ The `Tag` node is configurable with the `options` parameter and the configurable
 ```
 
 - `props`: allows to set some DOM Element properties like `"onclick"`, `"id"`.
-- `attrs`: is dedicated to attributes like `title"`, `"class"`.
+- `attrs`: is dedicated to attributes like `"title"`, `"class"`.
 - `style`: contains CSS definitions.
 - `attrsNS`: is dedicated to attributes with a namespace like `"xlink:href"`.
-- `events`: allows to store some event's callback (require an additionnal library to work).
-- `callbacks`: are are executed during the virtual node lifetime (e.g `'created'`, `'remove'`)
-- `data`: is optional but can contain some user's extra data.
+- `events`: allows to store some events managed in a delegated way (requires to run `require("dom-layer").events.init()` first).
+- `callbacks`: are callbacks executed during the virtual node lifetime (e.g `'created'`, `'remove'`)
+- `data`: is optional but can contain some higher level abstraction data.
 
 ## The mount/unmount API
 
@@ -72,7 +72,7 @@ var view = new Tag("div", {props: {id: "message"}}, [
 var mountId = tree.mount("#mount-point", view);
 ```
 
-Once a virtual tree is mounted, a call to the `update()` method will update it.
+Once a virtual tree is mounted, a call to the `update()` method with the new virtual tree will update the DOM accordingly.
 
 ```js
 tree.update(mountId, new Tag("div", {props: {id: "message"}}, [
@@ -80,7 +80,7 @@ tree.update(mountId, new Tag("div", {props: {id: "message"}}, [
 ]));
 ```
 
-However it's also possible to mount a function instead of virtual tree (like a render function which will return a virtual tree to render).
+However it's possible to direclty mount a function instead of simple virtual tree (like a render function).
 
 So let's make it a bit more interesting by creating a "trivial" component. Let's start with a `Component` which contain a `render()` method:
 
@@ -102,33 +102,33 @@ Component.prototype.render = function() {
 };
 ```
 
-So according to the `order` value, the text will be displayed either sorted or reversed depending on its value. Let's see how we can make it work:
+So according to the `order` value represent the states of the component, and the text sequence will be displayed either sorted or reversed depending on the `order` value. Let's see how we can mount it:
 
 ```js
 var component = new Component();
 
 var factory = component.render.bind(component);
 
-// We are now using the `render()` function as mounting parameter
+// We are now using the `render()` function as the second parameter of `mount()`
 var mountId = tree.mount("#mount-point", factory);
 
 var mountPoint = document.getElementById("mount-point");
 
-// Changing the order doesn't change anything on screen we need to run `update()`
+// Changing the order here doesn't change anything on screen since we need to run `update()` first.
 component.order = "desc";
 
 // Since the mounting has been done using the `render()` function, the second parameter is no more needed.
 tree.update(mountId);
 ```
 
-During the update, the "factory function" (i.e the `render()` function) is executed and returns the new virtual tree. Then the DOM is patched according to changes.
+During updates, the "factory function" (i.e the `render()` function) is executed and returns the new virtual tree to render. Then the DOM is patched according to changes.
 
-The example above is rudimentary but shows how to connect a higher abtraction to this virtual dom implementation.
+The example above is rudimentary but shows how to connect a higher abtraction on this virtual dom implementation.
 
-Finally to unmount a virtual tree, the `unmount()` function need to be called with a selector. For example:
+Finally to unmount a virtual tree, the `unmount()` function needs to be called with the mount identifier. For example:
 
 ```js
-tree.unmount("#mount-point");
+tree.unmount(mountId);
 ```
 
 ## Events managment
@@ -154,7 +154,7 @@ var button = new Tag("button", {events: {onclick: function() {alert("Hello World
 ]);
 ```
 
-With delegated events, events are not attached to DOM element directly. The events are listened at the top level (i.e `document.body`) using a single event listener. This strategy is probably the most advantageous especially for virtual dom implementations and tends to perform faster when the number of event handlers is high.
+With delegated events, events are not attached to DOM element directly. The events are listened at the a level element (i.e `document.body` in this case) using a single event listener. This strategy is probably the most advantageous especially for virtual dom implementations. It tends to perform faster when the number of event handlers is high and works in a transparent manner. So that's why the DOM level 2 events (i.e which requires numerous `addEventListener()/removeEventListener()` on DOM patching) hasn't been implemented.
 
 Note:
 Make sure you initialized the event manager first by using `domLayer.events.init()` otherwise the events won't be catched on `document.body` (and therefore "forwarded" on the defined event handler).
@@ -165,7 +165,7 @@ You can check an [example here](http://rawgit.com/crysalead-js/dom-layer/master/
 
 **Warning: here be dragons**
 
-The server side rendering is pretty straight forward. To get the html representation of a virtual tree, you can simply use the `toHtml()` method:
+The server side strategy is pretty straight forward. To get the html representation of a virtual tree, you can simply use the `toHtml()` method:
 
 ```js
 var html = new Tag("button", {events: {onclick: function() {alert("Hello World!");}}}, [
@@ -173,7 +173,7 @@ var html = new Tag("button", {events: {onclick: function() {alert("Hello World!"
 ]).toHtml();
 ```
 
-So the above piece of logic will be executed server side to generate a full HTML page. Then client side the `attach()` method will be used instead of the `mount()` to mount a virtual tree on a DOM element which already contain some rendered html.
+So the above piece of logic will be executed server side to generate a full HTML page. Then client side the `attach()` method will be used instead of the `mount()` to mount a virtual tree on a DOM element which already contain a rendering.
 
 ```html
 <div id="mount-point"><div>Hello World !</div></div> <!-- the part rendered by the server side -->
