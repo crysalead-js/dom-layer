@@ -1,4 +1,3 @@
-var domElementValue = require("dom-element-value");
 var dataset = require("./dataset");
 
 /**
