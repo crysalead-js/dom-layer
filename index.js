@@ -1,4 +1,5 @@
 var Tree = require("./tree/tree");
+var attach = require("./tree/attach");
 var create = require("./tree/create");
 var update = require("./tree/update");
 var remove = require("./tree/remove");
@@ -14,6 +15,7 @@ module.exports = {
   Tree: Tree,
   Tag: Tag,
   Text: Text,
+  attach: attach,
   create: create,
   update: update,
   remove: remove,

@@ -1,9 +1,12 @@
+var voidElements = require("void-elements");
+var attach = require("../tree/attach");
 var create = require("../tree/create");
 var update = require("../tree/update");
 var props = require("./patcher/props");
 var attrs = require("./patcher/attrs");
 var attrsNS = require("./patcher/attrs-n-s");
 var selectValue = require("./patcher/select-value");
+var stringifyAttrs = require("../util/stringify-attrs");
 
 /**
  * The Virtual Tag constructor.
@@ -85,6 +88,28 @@ Tag.prototype.render = function(parent) {
 };
 
 /**
+ * Attaches an existing DOM element.
+ *
+ * @param  Object element A textual DOM element.
+ * @return Object         The textual DOM element.
+ */
+Tag.prototype.attach = function(element, parent) {
+  this.parent = parent;
+  this.element = element;
+  if (this.events) {
+    element.domLayerNode = this;
+  }
+  props.patch(element, {}, this.props);
+
+  attach(element, this.children, this);
+
+  if (this.callbacks && this.callbacks.created) {
+    this.callbacks.created(this, element);
+  }
+  return element;
+}
+
+/**
  * Patches a node according to the a new representation.
  *
  * @param  Object to A new node representation.
@@ -157,5 +182,21 @@ function broadcastRemove(node) {
     broadcastRemove(node.children[i]);
   }
 }
+
+/**
+ * Returns an html representation of a tag node.
+ */
+Tag.prototype.toHtml = function() {
+
+  var attributes = stringifyAttrs(this.attrs);
+  var html = "<" + this.tagName + (attributes ? " " + attributes : "") + ">";
+
+  for (var i = 0, len = this.children.length; i < len ; i++) {
+    html += this.children[i].toHtml();
+  }
+  html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
+  return html;
+
+};
 
 module.exports = Tag;

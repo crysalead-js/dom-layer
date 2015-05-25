@@ -1,4 +1,5 @@
 var query = require("dom-query");
+var attach = require("./attach");
 var create = require("./create");
 var update = require("./update");
 var remove = require("./remove");
@@ -12,13 +13,36 @@ function Tree() {
 /**
  * Mounts a virtual tree into a passed selector.
  *
- * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point(s).
+ * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
  * @param Object          data     Some extra data to attach to the mount.
  */
 Tree.prototype.mount = function(selector, factory, data) {
+  return this.apply(selector, factory, data, create);
+}
+
+/**
+ * Attaches a virtual tree onto a previously rendered DOM tree.
+ *
+ * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point
+ *                                 containing a previously rendered DOM tree.
+ * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
+ * @param Object          data     Some extra data to attach to the mount.
+ */
+Tree.prototype.attach = function(selector, factory, data) {
+  return this.apply(selector, factory, data, attach);
+}
+
+/**
+ * Applies a virtual tree into a passed selector.
+ *
+ * @param String|Object   selector        A CSS string selector or a DOMElement identifying the mounting point.
+ * @param Function|Object factory         A factory function which returns a virtual tree or the virtual tree itself.
+ * @param Object          data            Some extra data to attach to the mount.
+ * @param function        processChildren The function to process node children.
+ */
+Tree.prototype.apply = function(selector, factory, data, processChildren) {
   data = data || {};
-  this.unmount(selector);
   var containers = query.all(selector);
   if (!containers.length) {
     return;
@@ -32,7 +56,7 @@ Tree.prototype.mount = function(selector, factory, data) {
 
   data.container = container;
   data.factory = factory;
-  data.children = create(container, factory, null);
+  data.children = processChildren(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerTreeId = mountId;
 }

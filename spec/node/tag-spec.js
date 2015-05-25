@@ -3,9 +3,9 @@ var Tag = require("../../node/tag");
 
 describe("Tag", function() {
 
-  it("verifies `Tag` is a function", function() {
+  it("verifies the type value", function() {
 
-      expect(typeof Tag).toBe("function");
+      expect(new Tag().type).toBe("Tag");
 
   });
 
@@ -50,6 +50,41 @@ describe("Tag", function() {
     var element = tag.render();
     expect(circle.namespace).toBe("http://www.w3.org/2000/svg");
     expect(element.childNodes[0].namespaceURI).toBe("http://www.w3.org/2000/svg");
+
+  });
+
+
+  it('htmlify a select multiple using groups', function() {
+
+    var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
+      h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
+        h({tagName: "option", attrs: {value: "foo"}}, ["foo"])
+      ]),
+      h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
+        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+      ])
+    ]);
+
+    var html = select.toHtml();
+
+    var expected = '<select multiple="multiple">';
+    expected += '<optgroup label="foo-group"><option value="foo">foo</option></optgroup>';
+    expected += '<optgroup label="bar-group"><option value="bar">bar</option></optgroup>';
+    expected += '</select>';
+
+    expect(html).toBe(expected);
+
+  });
+
+  describe("toHtml", function() {
+
+    it('htmlify a void element', function() {
+
+      var br = h({ tagName: "br" });
+      var html = br.toHtml();
+      expect(html).toBe("<br>");
+
+    });
 
   });
 

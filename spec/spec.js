@@ -7,6 +7,7 @@ global.window = global.document.parentWindow;
 document.defaultView.HTMLElement.prototype.dataset = {};
 
 require('./node/tag-spec');
+require('./node/text-spec');
 require('./node/render-spec');
 require('./node/patch-spec');
 require('./node/remove-spec');

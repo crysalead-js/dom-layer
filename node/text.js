@@ -1,3 +1,5 @@
+var escapeHtml = require("escape-html");
+
 /**
  * The Virtual Text constructor.
  *
@@ -23,10 +25,20 @@ Text.prototype.create = function() {
 /**
  * Renders virtual text node.
  *
- * @return Object        A text node.
+ * @return Object        A textual DOM element.
  */
 Text.prototype.render = function() {
   return this.element = this.create();
+}
+
+/**
+ * Attaches an existing textual DOM element.
+ *
+ * @param  Object element A textual DOM element.
+ * @return Object         The textual DOM element.
+ */
+Text.prototype.attach = function(element) {
+  return this.element = element;
 }
 
 /**
@@ -63,5 +75,12 @@ Text.prototype.destroy = function() {
   var parentNode = this.element.parentNode;
   return parentNode.removeChild(this.element);
 };
+
+/**
+ * Returns an html representation of the text node.
+ */
+Text.prototype.toHtml = function() {
+  return escapeHtml(this.text);
+}
 
 module.exports = Text;

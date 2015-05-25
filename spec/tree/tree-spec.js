@@ -48,6 +48,64 @@ describe("Tree", function() {
 
   });
 
+  describe(".attach()", function() {
+
+    it("populates domLayerNode when `events` is set", function() {
+
+      document.body.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
+
+      var onclick = function () {};
+      var from = h({ tagName: "button", events: { onclick: onclick} }, ["Click me!"]);
+      var mountId = tree.attach("#mount-point", from);
+      var mountPoint = document.getElementById("mount-point");
+
+      expect(mountPoint.innerHTML).toBe("<button>Click me!</button>");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
+
+      expect(from.element).toBe(mountPoint.childNodes[0]);
+      expect(from.element.textContent).toBe("Click me!");
+      expect(from.element.domLayerNode).toBe(from);
+      expect(from.element.domLayerNode.events.onclick).toBe(onclick);
+
+    });
+
+    it("manages the consecutive textual nodes edge case", function() {
+
+      document.body.innerHTML = '<div id="mount-point"><div>#1#2#3</div></div>';
+
+      var from = h({}, ["#1", "#2", "#3"]);
+      var mountId = tree.attach("#mount-point", from);
+      var mountPoint = document.getElementById("mount-point");
+
+      expect(mountPoint.textContent).toBe("#1#2#3");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
+
+      expect(from.element).toBe(mountPoint.childNodes[0]);
+
+      var children = from.children;
+      var childNodes = mountPoint.childNodes;
+
+      expect(children[0].element).toBe(childNodes[0].childNodes[0]);
+      expect(children[0].element.textContent).toBe("#1#2#3");
+      expect(children[0].text).toBe("#1#2#3");
+      expect(children[1].text).toBe("");
+      expect(children[2].text).toBe("");
+
+    });
+
+    it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
+
+      document.body.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
+
+      var closure = function() {
+        tree.attach(".mount-point", h());
+      };
+      expect(closure).toThrow(new Error("The selector must identify an unique DOM element"));
+
+    });
+
+  });
+
   describe(".umount()", function() {
 
     it("unmounts a virtual tree", function() {

@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "dom-collection": "^1.0.1",
-    "dom-event-manager": "^1.0.0",
-    "dom-element-value": "^1.0.1",
     "dom-element-css": "^1.0.0",
+    "dom-element-value": "^1.0.1",
+    "dom-event-manager": "^1.0.0",
     "dom-query": "^1.0.1",
-    "is-empty": "0.0.1"
+    "escape-html": "^1.0.1",
+    "is-empty": "0.0.1",
+    "void-elements": "^2.0.1"
   },
   "devDependencies": {
     "browserify": "^10.1.3",
