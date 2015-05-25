@@ -1,3 +1,10 @@
+/**
+ * Returns a `'key1="value1" key2="value2" ...'` string from
+ * a `{ key1: "value1", key2: "value2" }` object.
+ *
+ * @param  Object attrs The keys/values object to stringify.
+ * @return String       The corresponding string.
+ */
 function stringifyAttrs(attrs) {
   if (!attrs) {
     return "";

@@ -1,11 +1,10 @@
 isArray = Array.isArray;
 
 /**
- * This is a convenience function which preprocess the value attribute/property
- * set on a select/select multiple virtual nodes.
- *
- * If present on a select/select multiple virtual node the value is populated over
- * the contained `<option>` using the `"selected"` attribute.
+ * This is a convenience function which preprocesses the value attribute/property
+ * set on a select or select multiple virtual node. The value is first populated over
+ * corresponding `<option>` by setting the `"selected"` attribute and then deleted
+ * from the node `attrs` & `props` field.
  */
 function selectValue(node) {
   if (node.tagName !== "select") {
