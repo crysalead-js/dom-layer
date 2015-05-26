@@ -30,7 +30,7 @@ function Tag(tagName, config, children) {
 
   this.key = config.key != null ? config.key : undefined;
 
-  this.namespace = config.namespace || "";
+  this.namespace = config.attrs && config.attrs.xmlns || "";
 };
 
 Tag.prototype.type = "Tag";
@@ -70,6 +70,7 @@ Tag.prototype.render = function(parent) {
   }
 
   var element = this.element = this.create();
+
   if (this.events) {
     element.domLayerNode = this;
   }
@@ -108,7 +109,6 @@ Tag.prototype.attach = function(element, parent) {
   }
   return element;
 }
-
 
 /**
  * Check if the node match another node.

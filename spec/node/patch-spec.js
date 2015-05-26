@@ -131,16 +131,16 @@ describe("patch", function() {
 
   it("patches if different namespaces", function() {
 
-    var from = h({ namespace: "testing" });
-    var to = h({ namespace: "undefined" });
+    var from = h({ attrs: { xmlns: "testing" } });
+    var to = h({ attrs: { xmlns: "undefined" } });
 
     var rootNode = from.render();
-    expect(rootNode.tagName).toBe("div");
+    expect(rootNode.tagName.toLowerCase()).toBe("div");
     expect(rootNode.namespaceURI).toBe("testing");
 
     rootNode = patch.node(from, to);
 
-    expect(rootNode.tagName).toBe("div");
+    expect(rootNode.tagName.toLowerCase()).toBe("div");
     expect(rootNode.namespaceURI).toBe("undefined");
 
   });
