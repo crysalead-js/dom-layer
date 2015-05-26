@@ -31,6 +31,7 @@ function Tag(tagName, config, children) {
   this.key = config.key != null ? config.key : undefined;
 
   this.namespace = config.attrs && config.attrs.xmlns || "";
+  this.is = config.attrs && config.attrs.is || "";
 };
 
 Tag.prototype.type = "Tag";
@@ -42,10 +43,18 @@ Tag.prototype.type = "Tag";
  */
 Tag.prototype.create = function() {
   var element;
-  if (!this.namespace) {
-    element = document.createElement(this.tagName);
+  if (this.namespace) {
+    if (this.is) {
+      element = document.createElementNS(this.namespace, this.tagName, this.is);
+    } else {
+      element = document.createElementNS(this.namespace, this.tagName);
+    }
   } else {
-    element = document.createElementNS(this.namespace, this.tagName);
+    if (this.is) {
+      element = document.createElement(this.tagName, this.is);
+    } else {
+      element = document.createElement(this.tagName);
+    }
   }
   return element;
 };
@@ -123,7 +132,8 @@ Tag.prototype.match = function(to) {
     this.type !== to.type ||
     this.tagName !== to.tagName ||
     this.key !== to.key ||
-    this.namespace !== to.namespace
+    this.namespace !== to.namespace ||
+    this.is !== to.is
   );
 }
 
