@@ -42,13 +42,25 @@ Text.prototype.attach = function(element) {
 }
 
 /**
+ * Check if the node match another node.
+ *
+ * Note: nodes which doesn't match must be rendered from scratch (i.e. can't be patched).
+ *
+ * @param  Object  to A node representation to check matching.
+ * @return Boolean
+ */
+Text.prototype.match = function(to) {
+  return this.type === to.type;
+}
+
+/**
  * Patches a node according to the a new representation.
  *
  * @param  Object to A new node representation.
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Text.prototype.patch = function(to) {
-  if (this.type !== to.type) {
+  if (!this.match(to)) {
     this.remove(false);
     return to.render();
   }

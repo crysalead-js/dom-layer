@@ -109,6 +109,24 @@ Tag.prototype.attach = function(element, parent) {
   return element;
 }
 
+
+/**
+ * Check if the node match another node.
+ *
+ * Note: nodes which doesn't match must be rendered from scratch (i.e. can't be patched).
+ *
+ * @param  Object  to A node representation to check matching.
+ * @return Boolean
+ */
+Tag.prototype.match = function(to) {
+  return !(
+    this.type !== to.type ||
+    this.tagName !== to.tagName ||
+    this.key !== to.key ||
+    this.namespace !== to.namespace
+  );
+}
+
 /**
  * Patches a node according to the a new representation.
  *
@@ -116,9 +134,9 @@ Tag.prototype.attach = function(element, parent) {
  * @return Object    A DOM element, can be a new one or simply the old patched one.
  */
 Tag.prototype.patch = function(to) {
-  if (this.type !== to.type || this.tagName !== to.tagName || this.key !== to.key || this.namespace !== to.namespace) {
+  if (!this.match(to)) {
     this.remove(false);
-    return to.render();
+    return to.render(this.parent);
   }
   to.element = this.element;
 

@@ -9,50 +9,90 @@ var isArray = Array.isArray;
  * Since finding the longest common subsequence problem is NP-hard, this implementation
  * is a simple heuristic for reordering nodes with a "minimum" of moves in O(n).
  *
+ * @param Object container    The parent container.
  * @param Array  fromChildren The initial order of children to reorder.
  * @param Array  toChildren   The array of children to take the order from.
- * @param Object container    The container.
+ * @param Object parent       The parent virtual node.
  */
 function patch(container, fromChildren, toChildren, parent) {
-  var indexes = updateChildren(fromChildren, toChildren);
-  var direction = indexes.direction;
-  var fromKeys = indexes.keys;
-  var fromFree = indexes.free;
-  var toItem, toIndex = 0, targetIndex = 0;
-  var direction = 1;
-  var freeLength = fromFree.length, freeIndex = 0;
+  var fromStartIndex = 0, toStartIndex = 0;
+  var fromEndIndex = fromChildren.length - 1;
+  var fromStartNode = fromChildren[0];
+  var fromEndNode = fromChildren[fromEndIndex];
+  var toEndIndex = toChildren.length - 1;
+  var toStartNode = toChildren[0];
+  var toEndNode = toChildren[toEndIndex];
 
-  var unshift = indexes.direction < 0 ? 1 : 0;
+  var indexes, index, node, before;
 
-  if (unshift) {
-    toIndex = toChildren.length - 1;
-    targetIndex = container.childNodes.length - 1;
-    freeIndex = fromFree.length - 1
-    direction = -1;
-  }
-
-  // Reorder & Add missing nodes
-  for (var i = 0, len = toChildren.length; i < len; i++) {
-    toItem = toChildren[toIndex];
-    if (toItem.key !== undefined) {
-      if (fromKeys[toItem.key] !== undefined) {
-        domCollection.moveAt(fromKeys[toItem.key], targetIndex, container);
-      } else {
-        domCollection.insertAt(toItem.render(parent), Math.max(targetIndex, 0), container);
-        targetIndex += unshift;
-      }
-    } else if (freeLength > 0) {
-      domCollection.moveAt(fromFree[freeIndex], targetIndex, container);
-      freeLength--;
-      freeIndex += direction;
+  while (fromStartIndex <= fromEndIndex && toStartIndex <= toEndIndex) {
+    if (fromStartNode === undefined) {
+      fromStartNode = fromChildren[++fromStartIndex];
+    } else if (fromEndNode === undefined) {
+      fromEndNode = fromChildren[--fromEndIndex];
+    } else if (fromStartNode.match(toStartNode)) {
+      fromStartNode.patch(toStartNode);
+      fromStartNode = fromChildren[++fromStartIndex];
+      toStartNode = toChildren[++toStartIndex];
+    } else if (fromEndNode.match(toEndNode)) {
+      fromEndNode.patch(toEndNode);
+      fromEndNode = fromChildren[--fromEndIndex];
+      toEndNode = toChildren[--toEndIndex];
+    } else if (fromStartNode.match(toEndNode)) {
+      fromStartNode.patch(toEndNode);
+      container.insertBefore(fromStartNode.element, fromEndNode.element.nextSibling);
+      fromStartNode = fromChildren[++fromStartIndex];
+      toEndNode = toChildren[--toEndIndex];
+    } else if (fromEndNode.match(toStartNode)) {
+      fromEndNode.patch(toStartNode);
+      container.insertBefore(fromEndNode.element, fromStartNode.element);
+      fromEndNode = fromChildren[--fromEndIndex];
+      toStartNode = toChildren[++toStartIndex];
     } else {
-      domCollection.insertAt(toItem.render(parent), Math.max(targetIndex, 0), container);
-      targetIndex += unshift;
+      if (indexes === undefined) {
+        indexes = keysIndexes(fromChildren, fromStartIndex, fromEndIndex);
+      }
+      index = indexes[toStartNode.key];
+      if (index === undefined) {
+        container.insertBefore(toStartNode.render(parent), fromStartNode.element);
+        toStartNode = toChildren[++toStartIndex];
+      } else {
+        node = fromChildren[index];
+        node.patch(toStartNode);
+        fromChildren[index] = undefined;
+        container.insertBefore(node.element, fromStartNode.element);
+        toStartNode = toChildren[++toStartIndex];
+      }
     }
-    targetIndex += direction;
-    toIndex += direction;
   }
-  return toChildren;
+  if (fromStartIndex > fromEndIndex) {
+    before = toChildren[toEndIndex + 1] === undefined ? null : toChildren[toEndIndex + 1].element;
+    for (; toStartIndex <= toEndIndex; toStartIndex++) {
+      container.insertBefore(toChildren[toStartIndex].render(parent), before);
+    }
+  } else if (toStartIndex > toEndIndex) {
+    for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {
+      fromChildren[fromStartIndex].remove();
+    }
+  }
+  return fromChildren;
+}
+
+/**
+ * Returns indexes of keyed nodes.
+ *
+ * @param  Array  children An array of nodes.
+ * @return Object          An object of keyed nodes indexes.
+ */
+function keysIndexes(children, startIndex, endIndex) {
+  var i, keys = Object.create(null), key;
+  for (i = startIndex; i <= endIndex; ++i) {
+    key = children[i].key;
+    if (key !== undefined) {
+      keys[key] = i;
+    }
+  }
+  return keys;
 }
 
 /**
@@ -77,86 +117,6 @@ patch.node = function(from, to) {
     container.replaceChild(next, element);
   }
   return next;
-}
-
-/**
- * Updates `fromChildren` according to `toChildren` nodes which means:
- *
- * 1)- removes all keys which are not present in `toChildren` and unkeyed nodes which exceed `toChildren` ones.
- * 2)- builds an index of all keyed element which are still present in `toChildren`.
- * 3)- attempt to auto-detect the direction of moves.
- *
- * Note: Only updates here, no reordering.
- *
- * @param  Array  fromChildren The original array to update.
- * @param  Array  toChildren   The new array to match on.
- * @result Array               An array which contain:
- *                             - an object of all remained keyed element indexed by key.
- *                             - an array of all available unkeyed element.
- *                             - the likely direction auto-detection:
- *                               direction < 1 means mainly unshift based moves.
- *                               direction > 1 means mainly shift based moves.
- */
-function updateChildren(fromChildren, toChildren) {
-  var i, len;
-  var fromItem, toItem, fromIndex = 0, toIndex, direction = 0;
-  var indexes = indexChildren(toChildren);
-  var toKeys = indexes.keys, toFree = indexes.free;
-  var keys = Object.create(null), free = [];
-
-  for (i = 0, len = fromChildren.length; i < len; i++) {
-    fromItem = fromChildren[i];
-    if (fromItem.key === undefined) {
-      free.push(fromItem);
-    } else if (toKeys[fromItem.key] !== undefined) {
-      toIndex = toKeys[fromItem.key];
-      keys[fromItem.key] = fromItem.element;
-      toItem = toChildren[toIndex];
-      patch.node(fromItem, toItem);
-      direction = direction + (toIndex - i > 0 ? 1 : -1);
-    } else {
-      fromItem.remove();
-      continue;
-    }
-    fromIndex++;
-  }
-
-  var balance = free.length - toFree.length;
-
-  if (balance > 0) {
-    var start = direction < 0 ? toFree.length : 0;
-    for (i = 0; i < balance; i++) {
-      free[start + i].remove();
-    }
-    free.splice(start, balance);
-  }
-
-  for (i = 0, len = free.length; i < len; i++) {
-    free[i] = patch.node(free[i], toChildren[toFree[i]]);
-  }
-
-  return { keys: keys, free: free, direction: direction };
-}
-
-/**
- * Returns an array of all positions of keys inside `children` indexed by node keys.
- *
- * @param  Array  children An array of nodes.
- * @return Object          An array of object which contain:
- *                         - an object of keyed nodes indexed by keys.
- *                         - an array of unkeyed nodes.
- */
-function indexChildren(children) {
-  var i, len, child, keys = Object.create(null), free = [];
-  for (i = 0, len = children.length; i < len; i++) {
-    child = children[i];
-    if (child.key !== undefined) {
-      keys[child.key] = i;
-    } else {
-      free.push(i);
-    }
-  }
-  return { keys: keys, free: free };
 }
 
 module.exports = patch;
