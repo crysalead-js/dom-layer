@@ -54,6 +54,10 @@ Tree.prototype.apply = function(selector, factory, data, processChildren) {
   this._mountedIndex++;
   var mountId = "" + this._mountedIndex;
 
+  if (container.domLayerTreeId) {
+    this.unmount(container.domLayerTreeId);
+  }
+
   data.container = container;
   data.factory = factory;
   data.children = processChildren(container, factory, null);

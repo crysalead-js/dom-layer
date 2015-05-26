@@ -35,6 +35,22 @@ describe("Tree", function() {
 
     });
 
+    it("auto unmounts a already mounted virtual tree on mount", function() {
+
+      var mountPoint = document.getElementById("mount-point");
+
+      var mountId1 = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
+      expect(mountPoint.textContent).toBe("#1#2#3");
+      expect(mountPoint.domLayerTreeId).toBe(mountId1);
+
+      var mountId2 = tree.mount("#mount-point", h({}, ["#4", "#5", "#6"]));
+      expect(mountPoint.textContent).toBe("#4#5#6");
+      expect(mountPoint.domLayerTreeId).toBe(mountId2);
+
+      expect(Object.keys(tree.mounted())).toEqual(['2']);
+
+    });
+
     it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
 
       document.body.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
