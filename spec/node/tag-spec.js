@@ -77,6 +77,14 @@ describe("Tag", function() {
 
     });
 
+    it("renders a select multiple using groups", function() {
+
+      var image = h({ tagName: "input", attrs: { type: "file", multiple: "multiple", capture: "capture", accept: "image/*" } });
+      var html = image.toHtml();
+
+      expect(html).toBe('<input type="file" multiple="multiple" capture="capture" accept="image/*">');
+    });
+
     it("renders a style attribute", function() {
 
       var div = h({ tagName: "div", attrs: { style: {
