@@ -53,32 +53,44 @@ describe("Tag", function() {
 
   });
 
-
-  it('htmlify a select multiple using groups', function() {
-
-    var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
-      h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
-        h({tagName: "option", attrs: {value: "foo"}}, ["foo"])
-      ]),
-      h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
-        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
-      ])
-    ]);
-
-    var html = select.toHtml();
-
-    var expected = '<select multiple="multiple">';
-    expected += '<optgroup label="foo-group"><option value="foo">foo</option></optgroup>';
-    expected += '<optgroup label="bar-group"><option value="bar">bar</option></optgroup>';
-    expected += '</select>';
-
-    expect(html).toBe(expected);
-
-  });
-
   describe("toHtml", function() {
 
-    it('htmlify a void element', function() {
+    it("htmlify a select multiple using groups", function() {
+
+      var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
+        h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
+          h({tagName: "option", attrs: {value: "foo"}}, ["foo"])
+        ]),
+        h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
+          h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+        ])
+      ]);
+
+      var html = select.toHtml();
+
+      var expected = '<select multiple="multiple">';
+      expected += '<optgroup label="foo-group"><option value="foo">foo</option></optgroup>';
+      expected += '<optgroup label="bar-group"><option value="bar">bar</option></optgroup>';
+      expected += '</select>';
+
+      expect(html).toBe(expected);
+
+    });
+
+    it("htmlify a style attribute", function() {
+
+      var div = h({ tagName: "div", attrs: { style: {
+        border: "1px solid rgb(0, 0, 0)",
+        padding: "2px"
+      } } });
+
+      var html = div.toHtml();
+
+      expect(html).toBe('<div style="border:1px solid rgb(0, 0, 0);padding:2px"></div>');
+
+    });
+
+    it("htmlify a void element", function() {
 
       var br = h({ tagName: "br" });
       var html = br.toHtml();
