@@ -6,7 +6,7 @@ var stringifyStyle = require("./stringify-style");
  * @param  Object attrs The keys/values object to stringify.
  * @return String       The corresponding string.
  */
-function stringifyAttrs(attrs) {
+function stringifyAttrs(attrs, tagName) {
   if (!attrs) {
     return "";
   }
@@ -16,7 +16,7 @@ function stringifyAttrs(attrs) {
     if (key === "style") {
       value = stringifyStyle(value);
     }
-    if (typeof value !== "string") {
+    if (key === "value" && (/^(?:textarea|select)$/i.test(tagName) || attrs.contenteditable)) {
       continue;
     }
     attributes.push(key + '="' + value.replace(/"/g, '\\"') + '"');

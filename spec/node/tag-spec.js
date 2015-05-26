@@ -55,7 +55,7 @@ describe("Tag", function() {
 
   describe("toHtml", function() {
 
-    it("htmlify a select multiple using groups", function() {
+    it("renders a select multiple using groups", function() {
 
       var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
         h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
@@ -77,7 +77,7 @@ describe("Tag", function() {
 
     });
 
-    it("htmlify a style attribute", function() {
+    it("renders a style attribute", function() {
 
       var div = h({ tagName: "div", attrs: { style: {
         border: "1px solid rgb(0, 0, 0)",
@@ -90,7 +90,23 @@ describe("Tag", function() {
 
     });
 
-    it("htmlify a void element", function() {
+    it("ignores textarea value attribute", function() {
+
+      var textarea = h({ tagName: "textarea", attrs: { value: "should be ignored" } });
+      var html = textarea.toHtml();
+      expect(html).toBe('<textarea></textarea>');
+
+    });
+
+    it("ignores contenteditable value attribute", function() {
+
+      var div = h({ tagName: "div", attrs: { contenteditable: "true", value: "should be ignored" } });
+      var html = div.toHtml();
+      expect(html).toBe('<div contenteditable="true"></div>');
+
+    });
+
+    it("renders a void element", function() {
 
       var br = h({ tagName: "br" });
       var html = br.toHtml();

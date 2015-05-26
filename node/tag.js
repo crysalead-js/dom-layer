@@ -188,7 +188,7 @@ function broadcastRemove(node) {
  */
 Tag.prototype.toHtml = function() {
 
-  var attributes = stringifyAttrs(this.attrs);
+  var attributes = stringifyAttrs(this.attrs, this.tagName);
   var html = "<" + this.tagName + (attributes ? " " + attributes : "") + ">";
 
   for (var i = 0, len = this.children.length; i < len ; i++) {
