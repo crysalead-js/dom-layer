@@ -35,14 +35,15 @@ The `Tag` node is configurable with the `options` parameter and the configurable
 
 ```js
 {
-  props: {}     // The properties
-  attrs: {      // The attributes
-    style:      // The style
+  key: String|Integer // The node key value
+  props: {}           // The properties
+  attrs: {            // The attributes
+    style: String|{}  // The style
   },
-  attrsNS: {},  // The namespaced attributes (for SVG elements only)
-  events: {}    // Delegated events (requires to create an event manager),
-  callbacks: {} // The callbacks to call during the node life cycle.
-  data: {}      // Some custom data you want to embed with your virtual node.
+  attrsNS: {},        // The namespaced attributes (for SVG elements only)
+  events: {}          // Delegated events (requires to create an event manager),
+  callbacks: {}       // The callbacks to call during the node life cycle.
+  data: {}            // Some custom data you want to embed with your virtual node.
 }
 ```
 
