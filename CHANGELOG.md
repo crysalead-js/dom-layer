@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.1.7 (2015-05-27)
+
+  * **Bugfix:** fixes the new patching algorithm.
+
 ## 0.1.6 (2015-05-27)
 
   * **Add:** Supports type extension (for custom elements).

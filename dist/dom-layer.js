@@ -1477,11 +1477,12 @@ var isArray = Array.isArray;
  * is a simple heuristic for reordering nodes with a "minimum" of moves in O(n).
  *
  * @param Object container    The parent container.
- * @param Array  fromChildren The initial order of children to reorder.
- * @param Array  toChildren   The array of children to take the order from.
+ * @param Array  children     The current array of children.
+ * @param Array  toChildren   The new array of children to reach.
  * @param Object parent       The parent virtual node.
  */
-function patch(container, fromChildren, toChildren, parent) {
+function patch(container, children, toChildren, parent) {
+  var fromChildren = children.slice();
   var fromStartIndex = 0, toStartIndex = 0;
   var fromEndIndex = fromChildren.length - 1;
   var fromStartNode = fromChildren[0];
@@ -1542,7 +1543,7 @@ function patch(container, fromChildren, toChildren, parent) {
       fromChildren[fromStartIndex].remove();
     }
   }
-  return fromChildren;
+  return toChildren;
 }
 
 /**
