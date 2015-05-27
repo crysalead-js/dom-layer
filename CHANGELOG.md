@@ -2,6 +2,15 @@
 
 ## HEAD
 
+## 0.1.6 (2015-05-27)
+
+  * **Add:** Supports type extension (for custom elements).
+  * **Add:** refactors the patching algorithm for better performances on updates.
+  * **Add:** auto unmounts already mounted virtual trees on `mount()`.
+  * **Bugfix:** filters out the value attribute of textarea, select & contenteditable element from rendering.
+  * **Bugfix:** fixes inline style rendering when using `toHtml()`.
+  * **BC break:** extracts namespace right from the xmlns attribute.
+
 ## 0.1.5 (2015-05-25)
 
   * **Update:** updates dependencies.
