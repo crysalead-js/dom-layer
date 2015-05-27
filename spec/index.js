@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 require('./node/tag-spec');
 require('./node/text-spec');
 require('./node/render-spec');
+require('./node/patch-node-spec');
 require('./node/patch-spec');
 require('./node/remove-spec');
 require('./node/patcher/props-spec');
