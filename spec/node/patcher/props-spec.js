@@ -64,7 +64,7 @@ describe("props", function() {
 
       var to = h({ tagName: "div", props: {}});
       var newRoot = patch.node(from, to);
-      expect(typeof rootNode.onclick).toBe("undefined");
+      expect(rootNode.onclick).toBe(null);
 
     });
 

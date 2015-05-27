@@ -156,15 +156,11 @@ describe("render", function() {
 
   it("respects namespace", function() {
 
-    if (!_.hasNamespace() || (typeof module !== 'undefined' && module.exports)) {
-        return;
-    }
-
     var svgURI = "http://www.w3.org/2000/svgcustom";
     var node = h({ tagName: "svg", attrs: { xmlns: svgURI } });
     var element = node.render();
 
-    expect(element.tagName).toBe("SVG");
+    expect(element.tagName.toLowerCase()).toBe("svg");
     expect(element.namespaceURI).toBe(svgURI);
 
   });

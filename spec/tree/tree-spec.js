@@ -4,15 +4,17 @@ var Tree = require("../../tree/tree");
 
 describe("Tree", function() {
 
-  var tree;
+  var tree, mountPoint;
 
   beforeEach(function() {
-    document.body.innerHTML = '<div id="mount-point"></div>';
+    test = document.getElementById("test");
+    test.innerHTML = '<div id="mount-point"></div>';
+    mountPoint = document.getElementById("mount-point");
     tree = new Tree();
   })
 
   afterEach(function() {
-    document.body.innerHTML = '';
+    test.innerHTML = '';
   });
 
 
@@ -21,7 +23,6 @@ describe("Tree", function() {
     it("mounts a virtual tree", function() {
 
       var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
       expect(mountPoint.domLayerTreeId).toBe(mountId);
 
@@ -30,14 +31,11 @@ describe("Tree", function() {
     it("mounts a factory", function() {
 
       var mountId = tree.mount("#mount-point", function() { return h({}, ["#1", "#2", "#3"]); });
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
     });
 
     it("auto unmounts a already mounted virtual tree on mount", function() {
-
-      var mountPoint = document.getElementById("mount-point");
 
       var mountId1 = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
       expect(mountPoint.textContent).toBe("#1#2#3");
@@ -53,7 +51,7 @@ describe("Tree", function() {
 
     it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
 
-      document.body.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
+      test.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
 
       var closure = function() {
         tree.mount(".mount-point", h());
@@ -68,7 +66,7 @@ describe("Tree", function() {
 
     it("populates domLayerNode when `events` is set", function() {
 
-      document.body.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
+      test.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
 
       var onclick = function () {};
       var from = h({ tagName: "button", events: { onclick: onclick} }, ["Click me!"]);
@@ -87,7 +85,7 @@ describe("Tree", function() {
 
     it("manages the consecutive textual nodes edge case", function() {
 
-      document.body.innerHTML = '<div id="mount-point"><div>#1#2#3</div></div>';
+      test.innerHTML = '<div id="mount-point"><div>#1#2#3</div></div>';
 
       var from = h({}, ["#1", "#2", "#3"]);
       var mountId = tree.attach("#mount-point", from);
@@ -111,7 +109,7 @@ describe("Tree", function() {
 
     it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
 
-      document.body.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
+      test.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
 
       var closure = function() {
         tree.attach(".mount-point", h());
@@ -127,7 +125,6 @@ describe("Tree", function() {
     it("unmounts a virtual tree", function() {
 
       var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
       tree.unmount(mountId);
@@ -156,7 +153,6 @@ describe("Tree", function() {
       var component = new Component();
 
       var mountId = tree.mount("#mount-point", component.render.bind(component));
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
       component.order = "desc";
@@ -167,7 +163,7 @@ describe("Tree", function() {
 
     it("updates all mounted trees", function() {
 
-      document.body.innerHTML = '<div id="mount-point"></div><div id="mount-point2"></div>';
+      test.innerHTML = '<div id="mount-point"></div><div id="mount-point2"></div>';
 
       function Component() {
         this.order = "asc";
@@ -229,7 +225,7 @@ describe("Tree", function() {
 
     it("ignores updates with invalid id", function() {
 
-      tree.update("invalid_id");
+      expect(tree.update("invalid_id")).toBe(undefined);
 
     });
 
@@ -241,7 +237,6 @@ describe("Tree", function() {
 
       var children = h({}, ["#1", "#2", "#3"]);
       var mountId = tree.mount("#mount-point", children, { custom: "custom" });
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
       var mounted = tree.mounted(mountId);
@@ -256,7 +251,6 @@ describe("Tree", function() {
 
       var children = h({}, ["#1", "#2", "#3"]);
       var mountId = tree.mount("#mount-point", children, { custom: "custom" });
-      var mountPoint = document.getElementById("mount-point");
       expect(mountPoint.textContent).toBe("#1#2#3");
 
       var mounted = tree.mounted();

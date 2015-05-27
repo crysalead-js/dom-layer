@@ -2,7 +2,14 @@
   "name": "dom-layer",
   "version": "0.1.5",
   "description": "Virtual DOM implementation.",
-  "keywords": ["virtual", "dom", "diff", "diffing", "patch", "patching"],
+  "keywords": [
+    "virtual",
+    "dom",
+    "diff",
+    "diffing",
+    "patch",
+    "patching"
+  ],
   "repository": {
     "type": "git",
     "url": "http://github.com/crysalead-js/dom-layer.git"
@@ -20,11 +27,11 @@
   "devDependencies": {
     "browserify": "^10.2.1",
     "jasmine": "^2.3.1",
-    "jsdom": "3.1.2",
+    "testem": "^0.8.3",
     "uglify-js": "^2.4.23"
   },
   "scripts": {
-    "test": "jasmine",
+    "test": "testem ci -l firefox",
     "dist": "browserify --s domLayer index.js > dist/dom-layer.js && browserify --s domLayer index.js | uglifyjs > dist/dom-layer.min.js"
   }
 }

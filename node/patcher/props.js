@@ -59,7 +59,7 @@ function unset(name, element, previous) {
   if (unset.handlers[name]) {
     unset.handlers[name](name, element, previous[name], previous);
   } else {
-    element[name] = undefined;
+    element[name] = null;
   }
 };
 unset.handlers = Object.create(null);

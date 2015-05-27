@@ -1,0 +1,11 @@
+{
+  "framework": "jasmine2",
+  "serve_files": ["spec/browserified.js"],
+  "src_files": [
+    "./**/*.js"
+  ],
+  "src_files_ignore": "node_modules/**/*",
+  "before_tests": "browserify -d spec/index.js -o spec/browserified.js",
+  "on_exit": "rm spec/browserified.js",
+  "launch_in_dev": [ "chrome" ]
+}

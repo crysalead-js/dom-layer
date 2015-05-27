@@ -16,7 +16,7 @@ function patch(element, previous, dataset) {
 
   for (name in previous) {
     if (dataset[name] === undefined) {
-      element.dataset[name] = undefined;
+      delete element.dataset[name];
     }
   }
 
