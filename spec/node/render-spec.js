@@ -165,6 +165,20 @@ describe("render", function() {
 
   });
 
+  it("respects type extension", function() {
+
+    var MegaButton = document.registerElement('mega-button', {
+      prototype: Object.create(HTMLButtonElement.prototype),
+      extends: 'button'
+    });
+
+    var node = h({ tagName: "button" , attrs: { is: "mega-button" } });
+    var element = node.render();
+
+    expect(element instanceof MegaButton).toBe(true);
+
+  });
+
   it("checks that `domLayerNode` is correctly set when `events` is defined", function() {
 
     var node = h({ events: { "onclick": function() {} } });
