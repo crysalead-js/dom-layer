@@ -6,7 +6,6 @@ var remove = require("./remove");
 var isArray = Array.isArray;
 
 function Tree() {
-  this._mountedIndex = 0;
   this._mounted = Object.create(null);
 }
 
@@ -19,7 +18,7 @@ function Tree() {
  */
 Tree.prototype.mount = function(selector, factory, data) {
   return this.apply(selector, factory, data, create);
-}
+};
 
 /**
  * Attaches a virtual tree onto a previously rendered DOM tree.
@@ -31,7 +30,7 @@ Tree.prototype.mount = function(selector, factory, data) {
  */
 Tree.prototype.attach = function(selector, factory, data) {
   return this.apply(selector, factory, data, attach);
-}
+};
 
 /**
  * Applies a virtual tree into a passed selector.
@@ -50,20 +49,31 @@ Tree.prototype.apply = function(selector, factory, data, processChildren) {
   if (containers.length > 1) {
     throw new Error("The selector must identify an unique DOM element");
   }
-  var container = containers[0];
-  this._mountedIndex++;
-  var mountId = "" + this._mountedIndex;
 
+  var container = containers[0];
   if (container.domLayerTreeId) {
     this.unmount(container.domLayerTreeId);
   }
 
+  var mountId = data.mountId ? data.mountId : this.uuid();
   data.container = container;
   data.factory = factory;
   data.children = processChildren(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerTreeId = mountId;
-}
+};
+
+/**
+ * Returns a UUID identifier.
+ *
+ * @return String a unique identifier
+ */
+Tree.prototype.uuid = function() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+  });
+};
 
 /**
  * Unmounts a virtual tree.
@@ -83,7 +93,7 @@ Tree.prototype.unmount = function(mountId) {
   for (mountId in this._mounted) {
     this.unmount(mountId);
   }
-}
+};
 
 /**
  * Updates a mount (ie. run the factory function and updates the DOM according to occured changes).
@@ -106,7 +116,7 @@ Tree.prototype.update = function(mountId, tree) {
   for (mountId in this._mounted) {
     this.update(mountId);
   }
-}
+};
 
 /**
  * Returns the definition of a mounted tree all of them if no `mountId` is provided.
@@ -119,6 +129,6 @@ Tree.prototype.mounted = function(mountId) {
     return this._mounted[mountId];
   }
   return this._mounted;
-}
+};
 
 module.exports = Tree;

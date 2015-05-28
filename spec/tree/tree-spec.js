@@ -28,6 +28,17 @@ describe("Tree", function() {
 
     });
 
+    it("mounts a virtual tree using a custom UUID identifier", function() {
+
+      var bookedId = tree.uuid();
+      var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]), { mountId: bookedId });
+
+      expect(mountPoint.textContent).toBe("#1#2#3");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
+      expect(bookedId).toBe(mountId);
+
+    });
+
     it("mounts a factory", function() {
 
       var mountId = tree.mount("#mount-point", function() { return h({}, ["#1", "#2", "#3"]); });
@@ -45,7 +56,7 @@ describe("Tree", function() {
       expect(mountPoint.textContent).toBe("#4#5#6");
       expect(mountPoint.domLayerTreeId).toBe(mountId2);
 
-      expect(Object.keys(tree.mounted())).toEqual(['2']);
+      expect(Object.keys(tree.mounted())).toEqual([mountId2]);
 
     });
 
