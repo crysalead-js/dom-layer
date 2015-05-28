@@ -2,21 +2,27 @@
 
 [![Build Status](https://travis-ci.org/crysalead-js/dom-layer.svg?branch=master)](https://travis-ci.org/crysalead-js/dom-layer)
 
-**Warning: work in progress**
-
-This library is a Virtual DOM implementation ala React. If this implementation is not the fasted one (though faster than the React and Mithril and with similar performances with Virtual DOM according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
+This library is a Virtual DOM implementation ala React. If this implementation is not the fasted one (though close to the fasted on [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
 
 *You can however see some live benchmark in the [examples/speedtest](http://rawgit.com/crysalead-js/dom-layer/master/examples/speedtest/speedtest.html) directory.*
 
 ## The Virtual DOM API
 
-### The different type of nodes
+* Uses a straightforward `mount()`/`unmount()`/`update()` API
+* Can on mount an array of virtual nodes (i.e. not limited to a single root)
+* Delegated event system (via `events`)
+* Supports DOM level O event (via `props`)
+* Supports SVG, MathML as well as [Custom Elements & type extension](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/)
+* Allows to create his own virtual nodes
+* Server side rendering facilities
 
-Out of the box, the `Tag` and `Text` node are available for representing DOM elements. However it still possible to build your own ones. It may be useful if you are considering to manage virutal nodes like `Comment` or `Doctype` in a higher level of abstraction.
+### The different type of virtual node
+
+Out of the box, only the `Tag` and `Text` node are available for representing DOM elements. It should be enough for most abstractions. However it still possible to build your own ones. For example you can create your own virutal nodes like `Comment` or `Doctype` for some particular reason or some `ShadowTag` to play with [Web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM). Since all virtual nodes embed their rendering & patching strategy, all options are possible. For example you can image a `StaticHtml` node which render some static HTML and just bail out on patching.
 
 #### Example
 
-So as an example, let's build the virtual representation of a simple `<div id="message">Hello World</div>`.
+So as a simple example, let's build the virtual representation of `<div id="message">Hello World</div>`.
 
 ```js
 var Tag = require("dom-layer").Tag; // or `domLayer.Tag` from a browser.
@@ -164,9 +170,7 @@ You can check an [example here](http://rawgit.com/crysalead-js/dom-layer/master/
 
 ## Server side rendering
 
-**Warning: here be dragons**
-
-The server side strategy is pretty straight forward. To get the html representation of a virtual tree, you can simply use the `toHtml()` method:
+The server side strategy is pretty straightforward. To get the html representation of a virtual tree you can simply use the `toHtml()` method:
 
 ```js
 var html = new Tag("button", {events: {onclick: function() {alert("Hello World!");}}}, [
@@ -174,7 +178,7 @@ var html = new Tag("button", {events: {onclick: function() {alert("Hello World!"
 ]).toHtml();
 ```
 
-So the above piece of logic will be executed server side to generate a full HTML page. Then client side the `attach()` method will be used instead of the `mount()` to mount a virtual tree on a DOM element which already contain a rendering.
+The above piece of logic will be executed server side to generate a full HTML page. Then, client side, the `attach()` method will be used (instead of the `mount()` one) to mount a virtual tree on the rendered DOM element.
 
 ```html
 <div id="mount-point"><div>Hello World !</div></div> <!-- the part rendered by the server side -->
@@ -189,7 +193,7 @@ So the above piece of logic will be executed server side to generate a full HTML
   ]);
 
   var tree = new Tree();
-  var mountId = tree.attach("#mount-point", button);
+  var mountId = tree.attach("#mount-point", button); // using `attach()` instead of `mount()`.
 </script>
 ```
 
