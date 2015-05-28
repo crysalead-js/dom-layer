@@ -30,8 +30,8 @@ function Tag(tagName, config, children) {
 
   this.key = config.key != null ? config.key : undefined;
 
-  this.namespace = config.attrs && config.attrs.xmlns || "";
-  this.is = config.attrs && config.attrs.is || "";
+  this.namespace = config.attrs && config.attrs.xmlns || null;
+  this.is = config.attrs && config.attrs.is || null;
 };
 
 Tag.prototype.type = "Tag";

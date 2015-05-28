@@ -14,7 +14,81 @@ describe("Tag", function() {
     var tag = h();
     expect(tag.tagName).toBe("div");
     expect(tag.children).toEqual([]);
+    expect(tag.props).toBe(undefined);
+    expect(tag.attrs).toBe(undefined);
+    expect(tag.attrsNS).toBe(undefined);
+    expect(tag.events).toBe(undefined);
+    expect(tag.callbacks).toBe(undefined);
+    expect(tag.data).toBe(undefined);
+    expect(tag.element).toBe(undefined);
+    expect(tag.parent).toBe(undefined);
     expect(tag.key).toBe(undefined);
+    expect(tag.namespace).toBe(null);
+    expect(tag.is).toBe(null);
+
+  });
+
+  it("sets the `tagName` property", function() {
+
+    var tag = h({ tagName: "span" });
+    expect(tag.tagName).toBe("span");
+
+  });
+
+  it("sets the `children` property", function() {
+
+    var tag = h({}, ["child1", "child2"]);
+    expect(tag.children.length).toBe(2);
+    expect(tag.children[0].text).toBe("child1");
+    expect(tag.children[1].text).toBe("child2");
+
+  });
+
+  it("sets the `props` property", function() {
+
+    var props = {};
+    var tag = h({ props: props });
+    expect(tag.props).toBe(props);
+
+  });
+
+  it("sets the `attrs` property", function() {
+
+    var attrs = {};
+    var tag = h({ attrs: attrs });
+    expect(tag.attrs).toBe(attrs);
+
+  });
+
+  it("sets the `attrsNS` property", function() {
+
+    var attrsNS = {};
+    var tag = h({ attrsNS: attrsNS });
+    expect(tag.attrsNS).toBe(attrsNS);
+
+  });
+
+  it("sets the `events` property", function() {
+
+    var events = {};
+    var tag = h({ events: events });
+    expect(tag.events).toBe(events);
+
+  });
+
+  it("sets the `callbacks` property", function() {
+
+    var callbacks = {};
+    var tag = h({ callbacks: callbacks });
+    expect(tag.callbacks).toBe(callbacks);
+
+  });
+
+  it("sets the `data` property", function() {
+
+    var data = {};
+    var tag = h({ data: data });
+    expect(tag.data).toBe(data);
 
   });
 
@@ -25,7 +99,21 @@ describe("Tag", function() {
 
   });
 
-  it("sets default SVG namespace", function() {
+  it("sets the namespace", function() {
+
+    var tag = h({ tagName: "circle", attrs : { xmlns: "http://www.w3.org/2000/svg" } });
+    expect(tag.namespace).toBe("http://www.w3.org/2000/svg");
+
+  });
+
+  it("sets the type extension", function() {
+
+    var tag = h({ tagName: "button", attrs : { is: "mega-button" } });
+    expect(tag.is).toBe("mega-button");
+
+  });
+
+  it("sets SVG as default namespace for <svg>", function() {
 
     var tag = h({ tagName: "svg" });
     var element = tag.render();
@@ -34,7 +122,7 @@ describe("Tag", function() {
 
   });
 
-  it("sets default MathML namespace", function() {
+  it("sets MathML as default namespace for <math>", function() {
 
     var tag = h({ tagName: "math" });
     var element = tag.render();
