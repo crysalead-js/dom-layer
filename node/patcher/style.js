@@ -1,7 +1,7 @@
 var domElementCss = require("dom-element-css");
 
 /**
- * Maintains state of element style attributes.
+ * Maintains state of element style attribute.
  *
  * @param  Object element   A DOM element.
  * @param  Object previous  The previous state of style attributes.

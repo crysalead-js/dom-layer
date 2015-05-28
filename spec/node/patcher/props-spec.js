@@ -28,6 +28,36 @@ describe("props", function() {
 
     });
 
+    it("sets the `className` property", function() {
+
+      var from = h();
+      var to = h({ tagName: "div", props: { className: "active" } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.className).toBe("active");
+
+    });
+
+    it("sets the `className` property using an object", function() {
+
+      var from = h();
+      var to = h({ tagName: "div", props: { className: {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+    });
+
     it("sets the `dataset` property", function() {
 
       var a = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
@@ -63,6 +93,74 @@ describe("props", function() {
 
       var newRoot = patch.node(from, to);
       expect(newRoot.className).toBe("world");
+
+    });
+
+    it("patches the `className` property from a string to object", function() {
+
+      var from = h({ tagName: "div", props: { className: "default-class" } });
+      var to = h({ tagName: "div", props: { className: {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var element = from.render();
+      expect(element.className).toBe("default-class");
+
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+    });
+
+    it("patches the `className` property using objects", function() {
+
+      var from = h({ tagName: "div", props: { className: {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var to = h({ tagName: "div", props: { className: {
+        active1: false,
+        inactive: true,
+        active2: false
+      } } });
+
+      var element = from.render();
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(false);
+      expect(element.classList.contains("inactive")).toBe(true);
+      expect(element.classList.contains("active2")).toBe(false);
+
+    });
+
+    it("patches the `className` property from object to string", function() {
+
+      var from = h({ tagName: "div", props: { className: {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var to = h({ tagName: "div", props: { className: "default-class" } });
+
+      var element = from.render();
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+      patch.node(from, to);
+
+      expect(element.className).toBe("default-class");
 
     });
 

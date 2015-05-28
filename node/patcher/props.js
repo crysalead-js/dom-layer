@@ -1,4 +1,5 @@
 var dataset = require("./dataset");
+var stringifyClass = require("../../util/stringify-class");
 
 /**
  * Maintains state of element properties.
@@ -63,6 +64,16 @@ function unset(name, element, previous) {
   }
 };
 unset.handlers = Object.create(null);
+
+/**
+ * Custom set handler for the class attribute.
+ */
+set.handlers.className = function(name, element, previous, props) {
+  if (props[name] === undefined) {
+    return;
+  }
+  element.className = stringifyClass(props[name]);
+};
 
 /**
  * Custom set handler for the dataset attribute.

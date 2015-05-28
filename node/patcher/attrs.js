@@ -1,4 +1,5 @@
 var style = require("./style");
+var stringifyClass = require("../../util/stringify-class");
 
 /**
  * Maintains state of element attributes.
@@ -39,7 +40,7 @@ function patch(element, previous, attrs) {
 function set(name, element, previous, attrs) {
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, attrs);
-  } else if (attrs[name] !== null && previous[name] !== attrs[name]) {
+  } else if (attrs[name] != null && previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
@@ -70,6 +71,16 @@ set.handlers.value = function(name, element, previous, attrs) {
   }
   element.setAttribute(name, attrs[name]);
   element[name] = attrs[name] ? attrs[name] : "";
+};
+
+/**
+ * Custom set handler for the class attribute.
+ */
+set.handlers["class"] = function(name, element, previous, attrs) {
+  if (attrs[name] == null) {
+    return;
+  }
+  element.setAttribute(name, stringifyClass(attrs[name])); // Should work for IE > 7
 };
 
 /**

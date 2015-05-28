@@ -12,11 +12,11 @@ describe("attrs", function() {
       var from = h();
       var to = h({ attrs: { src: "test.jpg" } });
 
-      var rootNode = from.render();
-      var newRoot = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(newRoot).toBe(rootNode);
-      expect(newRoot.getAttribute("src")).toBe("test.jpg");
+      expect(element).toBe(element);
+      expect(element.getAttribute("src")).toBe("test.jpg");
 
     });
 
@@ -28,32 +28,86 @@ describe("attrs", function() {
 
     });
 
-    it('sets the `"style"` attributes', function() {
+    it('sets the `"class"` attributes', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { "class": "active" } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.className).toBe("active");
+
+    });
+
+    it('sets the `"class"` attributes using an object', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { "class": {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+    });
+
+    it('sets the `"style"` attributes using an object', function() {
 
       var from = h();
       var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
 
-      from.render();
-      var elem = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(elem.style.display).toBe(_.style("display", "none"));
+      expect(element.style.display).toBe(_.style("display", "none"));
+
+    });
+
+    it('sets the `"style"` attributes', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { style: "display: none" } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.style.display).toBe(_.style("display", "none"));
+
+    });
+
+    it('sets the `"style"` attributes using an object', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.style.display).toBe(_.style("display", "none"));
 
     });
 
     it("ignores `undefined` attribute", function() {
 
       var node = h({ tagName: "div", attrs: { "class": undefined } });
-      var rootNode = node.render();
-      expect(rootNode.hasAttribute("class")).toBe(false);
+      var element = node.render();
+      expect(element.hasAttribute("class")).toBe(false);
 
     });
 
     it("ignores `undefined` value attribute", function() {
 
       var node = h({ tagName: "div", attrs: { value: undefined } });
-      var rootNode = node.render();
-      expect("value" in rootNode).toBe(false);
-      expect(rootNode.hasAttribute("value")).toBe(false);
+      var element = node.render();
+      expect("value" in element).toBe(false);
+      expect(element.hasAttribute("value")).toBe(false);
 
     });
 
@@ -61,31 +115,127 @@ describe("attrs", function() {
 
       var from = h({ attrs: { foo: "bar", bar: "oops" } });
       var to = h({ attrs: { foo: "baz", bar: "oops" } });
-      var rootNode = from.render();
-      expect(rootNode.getAttribute("foo")).toBe("bar");
-      expect(rootNode.getAttribute("bar")).toBe("oops");
+      var element = from.render();
+      expect(element.getAttribute("foo")).toBe("bar");
+      expect(element.getAttribute("bar")).toBe("oops");
 
-      var newRoot = patch.node(from, to);
-      expect(newRoot.getAttribute("foo")).toBe("baz");
-      expect(newRoot.getAttribute("bar")).toBe("oops");
+      patch.node(from, to);
+      expect(element.getAttribute("foo")).toBe("baz");
+      expect(element.getAttribute("bar")).toBe("oops");
 
     });
 
-    it('patches the `"style"` attribute', function() {
+    it('patches the `"class"` attribute from a string to object', function() {
+
+      var from = h({ tagName: "div", attrs: { "class": "default-class" } });
+
+      var to = h({ tagName: "div", attrs: { "class": {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var element = from.render();
+      expect(element.className).toBe("default-class");
+
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+    });
+
+    it('patches the `"class"` attribute using objects', function() {
+
+      var from = h({ tagName: "div", attrs: { "class": {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var to = h({ tagName: "div", attrs: { "class": {
+        active1: false,
+        inactive: true,
+        active2: false
+      } } });
+
+      var element = from.render();
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+      patch.node(from, to);
+
+      expect(element.classList.contains("active1")).toBe(false);
+      expect(element.classList.contains("inactive")).toBe(true);
+      expect(element.classList.contains("active2")).toBe(false);
+
+    });
+
+    it('patches the `"class"` attribute from object to string', function() {
+
+      var from = h({ tagName: "div", attrs: { "class": {
+        active1: true,
+        inactive: false,
+        active2: true
+      } } });
+
+      var to = h({ tagName: "div", attrs: { "class": "default-class" } });
+
+      var element = from.render();
+      expect(element.classList.contains("active1")).toBe(true);
+      expect(element.classList.contains("inactive")).toBe(false);
+      expect(element.classList.contains("active2")).toBe(true);
+
+      patch.node(from, to);
+
+      expect(element.className).toBe("default-class");
+
+    });
+
+    it('patches the `"style"` attribute from a string to object', function() {
+
+      var from = h({ tagName: "div", attrs: { style: "width: 10px" } });
+      var to = h({ tagName: "div", attrs: { style: { padding: "5px" } } });
+
+      var element = from.render();
+      expect(element.style.width).toBe(_.style("width", "10px"));
+
+      patch.node(from, to);
+
+      expect(element.style.padding).toBe(_.style("padding", "5px"));
+      expect(element.style.width).toBe(_.style("width", ""));
+
+    });
+
+    it('patches the `"style"` attribute using objects', function() {
 
       var from = h({ tagName: "div", attrs: { style: { width: "10px" } } });
       var to = h({ tagName: "div", attrs: { style: { padding: "5px" } } });
 
-      var rootNode = from.render();
-      expect(rootNode.style.width).toBe(_.style("width", "10px"));
+      var element = from.render();
+      expect(element.style.width).toBe(_.style("width", "10px"));
 
-      var patches = {};
+      patch.node(from, to);
 
-      var newRoot = patch.node(from, to);
-      expect(rootNode).toBe(newRoot);
+      expect(element.style.padding).toBe(_.style("padding", "5px"));
+      expect(element.style.width).toBe(_.style("width", ""));
 
-      expect(newRoot.style.padding).toBe(_.style("padding", "5px"));
-      expect(newRoot.style.width).toBe(_.style("width", ""));
+    });
+
+    it('patches the `"style"` attribute from object to string', function() {
+
+      var from = h({ tagName: "div", attrs: { style: { width: "10px" } } });
+      var to = h({ tagName: "div", attrs: { style: "padding: 5px" } });
+
+      var element = from.render();
+      expect(element.style.width).toBe(_.style("width", "10px"));
+
+      patch.node(from, to);
+
+      expect(element.style.padding).toBe(_.style("padding", "5px"));
+      expect(element.style.width).toBe(_.style("width", ""));
 
     });
 
@@ -161,11 +311,11 @@ describe("attrs", function() {
       var from = h({ tagName: "input", attrs: { value: "hello" } });
       var to = h({ tagName: "input", attrs: { value: null } });
 
-      from.render();
-      var rootNode = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(rootNode.hasAttribute("value")).toBe(true);
-      expect(rootNode.value).toBe("");
+      expect(element.hasAttribute("value")).toBe(true);
+      expect(element.value).toBe("");
 
     });
 
@@ -174,13 +324,12 @@ describe("attrs", function() {
       var from = h({ attrs: { a: "1", b: "2", c: "3" } });
       var to = h({ attrs: { a: "1", c: "3" } });
 
-      var rootNode = from.render();
-      var newRoot = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(newRoot).toBe(rootNode);
-      expect(newRoot.getAttribute("a")).toBe("1");
-      expect(newRoot.getAttribute("b")).toBe(null);
-      expect(newRoot.getAttribute("c")).toBe("3");
+      expect(element.getAttribute("a")).toBe("1");
+      expect(element.getAttribute("b")).toBe(null);
+      expect(element.getAttribute("c")).toBe("3");
 
     });
 
@@ -189,13 +338,12 @@ describe("attrs", function() {
       var from = h({ attrs: { a: "1", b: "2", c: "3" } });
       var to = h();
 
-      var rootNode = from.render();
-      var newRoot = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(newRoot).toBe(rootNode);
-      expect(newRoot.getAttribute("a")).toBe(null);
-      expect(newRoot.getAttribute("b")).toBe(null);
-      expect(newRoot.getAttribute("c")).toBe(null);
+      expect(element.getAttribute("a")).toBe(null);
+      expect(element.getAttribute("b")).toBe(null);
+      expect(element.getAttribute("c")).toBe(null);
 
     });
 
@@ -205,11 +353,11 @@ describe("attrs", function() {
 
       var to = h({ attrs: { style: undefined } });
 
-      from.render();
-      var rootNode = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(rootNode.style.display).toBe(_.style("display", ""));
-      expect(rootNode.style.width).toBe(_.style("width", ""));
+      expect(element.style.display).toBe(_.style("display", ""));
+      expect(element.style.width).toBe(_.style("width", ""));
 
     });
 
@@ -218,35 +366,11 @@ describe("attrs", function() {
       var from = h({ tagName: "input", attrs: { custom: "hello" } });
       var to = h({ tagName: "input", attrs: { custom: null } });
 
-      from.render();
-      var rootNode = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(rootNode.hasAttribute("custom")).toBe(false);
-      expect(rootNode.custom).toBe(undefined);
-
-    });
-
-    it('sets the `"style"` attribute using an object', function() {
-
-      var from = h({ attrs: { style: { border: "none", className: "oops", display: "none" } } });
-
-      var to = h({ attrs: { style: { border: "1px solid #000", className: "oops", display: "" } } });
-
-      var rootNode = from.render();
-      expect(rootNode.style.border).toBe(_.style("border", "none"));
-      expect(rootNode.style.className).toBe(_.style("className", "oops"));
-      expect(rootNode.style.display).toBe(_.style("display", "none"));
-
-      var newNode = to.render();
-      expect(newNode.style.border).toBe(_.style("border", "1px solid #000"));
-      expect(newNode.style.className).toBe(_.style("className", "oops"));
-      expect(newNode.style.display).toBe(_.style("display", ""));
-
-      var newRoot = patch.node(from, to);
-      expect(newRoot.style.border).toBe(_.style("border", "1px solid #000"));
-      expect(newRoot.style.className).toBe(_.style("className", "oops"));
-      expect(newRoot.style.display).toBe(_.style("display", ""));
-      expect(rootNode.style).toBe(newRoot.style);
+      expect(element.hasAttribute("custom")).toBe(false);
+      expect(element.custom).toBe(undefined);
 
     });
 

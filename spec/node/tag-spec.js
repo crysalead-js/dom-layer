@@ -173,7 +173,7 @@ describe("Tag", function() {
       expect(html).toBe('<input type="file" multiple="multiple" capture="capture" accept="image/*">');
     });
 
-    it("renders a style attribute", function() {
+    it('renders a `"style"` attribute using an object', function() {
 
       var div = h({ tagName: "div", attrs: { style: {
         border: "1px solid rgb(0, 0, 0)",
@@ -183,6 +183,20 @@ describe("Tag", function() {
       var html = div.toHtml();
 
       expect(html).toBe('<div style="border:1px solid rgb(0, 0, 0);padding:2px"></div>');
+
+    });
+
+    it('renders a `"class"` attribute using an object', function() {
+
+      var div = h({ tagName: "div", attrs: { "class": {
+        active1: true,
+        inavtive: false,
+        active2: true
+      } } });
+
+      var html = div.toHtml();
+
+      expect(html).toBe('<div class="active1 active2"></div>');
 
     });
 
