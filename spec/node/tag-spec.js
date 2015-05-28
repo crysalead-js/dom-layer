@@ -18,14 +18,14 @@ describe("Tag", function() {
 
   });
 
-  it("set `'key'` property", function() {
+  it("sets the `key` property", function() {
 
     var tag = h({ key: "10" });
     expect(tag.key).toBe("10");
 
   });
 
-  it("respects default SVG namespace", function() {
+  it("sets default SVG namespace", function() {
 
     var tag = h({ tagName: "svg" });
     var element = tag.render();
@@ -34,7 +34,7 @@ describe("Tag", function() {
 
   });
 
-  it("respects default MathML namespace", function() {
+  it("sets default MathML namespace", function() {
 
     var tag = h({ tagName: "math" });
     var element = tag.render();
@@ -43,7 +43,7 @@ describe("Tag", function() {
 
   });
 
-  it("assures children use the parent namespace by default", function() {
+  it("uses the parent namespace by default", function() {
 
     var circle = h({ tagName: "circle" });
     var tag = h({ tagName: "svg" }, [circle]);

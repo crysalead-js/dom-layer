@@ -1,7 +1,7 @@
 var h = require("../helper/h");
 var _ = require("../helper/util");
 
-describe("remove", function() {
+describe(".remove()", function() {
 
   var container;
 

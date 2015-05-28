@@ -11,7 +11,7 @@ describe("Text", function() {
 
   describe("toHtml", function() {
 
-    it('stringify a text node', function() {
+    it('renders a text node', function() {
 
       var text = new Text("<hello>");
 

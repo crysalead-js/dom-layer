@@ -1,7 +1,7 @@
 var h = require("../helper/h");
 var _ = require("../helper/util");
 
-describe("render", function() {
+describe(".render()", function() {
 
   it("renders text node", function() {
 
