@@ -6,6 +6,21 @@ describe("patch.node()", function() {
 
   describe("when using regular nodes", function() {
 
+    it("adds all nodes", function() {
+
+      var from = _.buildNodes([]);
+      var to = _.buildNodes(["#0", "#1", "#2", "#3"]);
+
+      var rootNode = from.render();
+      var childNodes = _.rewrap(rootNode.childNodes);
+
+      var newRoot = patch.node(from, to);
+      expect(newRoot, rootNode);
+
+      expect(newRoot.textContent).toBe('#0#1#2#3');
+
+    });
+
     it("sizes up", function() {
 
       var from = _.buildNodes(["#0", "#1"]);
