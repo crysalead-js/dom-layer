@@ -2,17 +2,18 @@
 
 [![Build Status](https://travis-ci.org/crysalead-js/dom-layer.svg?branch=master)](https://travis-ci.org/crysalead-js/dom-layer)
 
-This library is a Virtual DOM implementation ala React. If this implementation is not the fasted one (though close to the fasted on [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
+This library is a Virtual DOM implementation ala React. If this implementation is not the fastest one (though close to the fastest according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
 
 *You can however see some live benchmark in the [examples/speedtest](http://rawgit.com/crysalead-js/dom-layer/master/examples/speedtest/speedtest.html) directory.*
 
 ## The Virtual DOM API
 
 * Uses a straightforward `mount()`/`unmount()`/`update()` API
-* Can on mount an array of virtual nodes (i.e. not limited to a single root)
+* Can mount an array of virtual nodes (not limited to a single root node)
 * Delegated event system (via `events`)
 * Supports DOM level O event (via `props`)
 * Supports SVG, MathML as well as [Custom Elements & type extension](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/)
+* Animated transitions supported through `"created"` & `"destroy"` callbacks
 * Allows to create his own virtual nodes
 * Server side rendering facilities
 
