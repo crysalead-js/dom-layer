@@ -200,6 +200,24 @@ describe("Tag", function() {
 
     });
 
+    it("renders namespaced attributes", function() {
+
+      var div = h({
+        tagName: "image",
+        attrs: {
+          xmlns: "http://www.w3.org/2000/svg"
+        },
+        attrsNS: {
+          "xlink:href": "test.jpg"
+        }
+      });
+
+      var html = div.toHtml();
+
+      expect(html).toBe('<image xmlns="http://www.w3.org/2000/svg" xlink:href="test.jpg"></image>');
+
+    });
+
     it("ignores textarea value attribute", function() {
 
       var textarea = h({ tagName: "textarea", attrs: { value: "should be ignored" } });
