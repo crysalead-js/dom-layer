@@ -23,7 +23,7 @@ function stringifyAttrs(attrs, tagName) {
     if (key === "value" && (/^(?:textarea|select)$/i.test(tagName) || attrs.contenteditable)) {
       continue;
     }
-    attributes.push(key + '="' + value.replace(/"/g, '\\"') + '"');
+    attributes.push(key + '="' + String(value).replace(/"/g, '\\"') + '"');
   }
   return attributes.join(" ");
 }

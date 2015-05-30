@@ -218,6 +218,14 @@ describe("Tag", function() {
 
     });
 
+    it("casts rendered attributes to string value", function() {
+
+      var checkbox = h({ tagName: "input", attrs: { type: "checkbox", value: true } });
+      var html = checkbox.toHtml();
+      expect(html).toBe('<input type="checkbox" value="true">');
+
+    });
+
     it("ignores textarea value attribute", function() {
 
       var textarea = h({ tagName: "textarea", attrs: { value: "should be ignored" } });
