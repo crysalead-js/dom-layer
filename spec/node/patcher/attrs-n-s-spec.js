@@ -13,10 +13,12 @@ describe("attrsNS", function() {
 
       var from = h({
         tagName: "image",
+        attrs: {
+          xmlns: "http://www.w3.org/2000/svg"
+        },
         attrsNS: {
           "xlink:href": "test.jpg"
-        },
-        namespace: "http://www.w3.org/2000/svg"
+        }
       });
 
       var rootNode = from.render();
@@ -28,16 +30,20 @@ describe("attrsNS", function() {
 
       var from = h({
         tagName: "image",
+        attrs: {
+          xmlns: "http://www.w3.org/2000/svg"
+        },
         attrsNS: {
           "xlink:href": "test.jpg"
-        },
-        namespace: "http://www.w3.org/2000/svg"
+        }
       });
 
       var to = h({
         tagName: "image",
-        attrsNS: {},
-        namespace: "http://www.w3.org/2000/svg"
+        attrs: {
+          xmlns: "http://www.w3.org/2000/svg"
+        },
+        attrsNS: {}
       });
 
       var rootNode = from.render();
