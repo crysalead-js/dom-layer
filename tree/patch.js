@@ -1,5 +1,4 @@
 var isEmpty = require("is-empty");
-var domCollection = require("dom-collection");
 
 var isArray = Array.isArray;
 

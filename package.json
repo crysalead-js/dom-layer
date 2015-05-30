@@ -15,7 +15,6 @@
     "url": "http://github.com/crysalead-js/dom-layer.git"
   },
   "dependencies": {
-    "dom-collection": "^1.0.2",
     "dom-element-css": "^1.0.1",
     "dom-element-value": "^1.0.2",
     "dom-event-manager": "^1.0.1",
