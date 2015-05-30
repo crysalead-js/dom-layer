@@ -1,5 +1,6 @@
 var h = require("../helper/h");
 var Tag = require("../../node/tag");
+var Tree = require("../../tree/tree");
 
 describe("Tag", function() {
 
@@ -138,6 +139,83 @@ describe("Tag", function() {
     var element = tag.render();
     expect(circle.namespace).toBe("http://www.w3.org/2000/svg");
     expect(element.childNodes[0].namespaceURI).toBe("http://www.w3.org/2000/svg");
+
+  });
+
+  describe('with `"callbacks"` defined', function() {
+
+    var testBody, tree, mountPoint;
+
+    beforeEach(function() {
+      testBody = document.getElementById("test");
+      testBody.innerHTML = '<div id="mount-point"></div>';
+      mountPoint = document.getElementById("mount-point");
+      tree = new Tree();
+    })
+
+    afterEach(function() {
+      testBody.innerHTML = '';
+    });
+
+    it('calls the `"created"` callback on create', function() {
+
+      var params;
+
+      var tag = h({ callbacks: { created : function() {
+        params = Array.prototype.slice.call(arguments);
+      } } });
+
+      var element = tag.render();
+
+      expect(params).toEqual([tag, element]);
+
+    });
+
+    it('calls the `"updated"` callback on updates', function() {
+
+      var params = [];
+      var callbacks = { updated : function() {
+        params.push(Array.prototype.slice.call(arguments));
+      } };
+
+      var from = h({ callbacks: callbacks });
+      var element = from.render();
+
+      var to1 = h({ callbacks: callbacks });
+      from.patch(to1);
+
+      var to2 = h({ callbacks: callbacks });
+      to1.patch(to2);
+
+      expect(params).toEqual([[to1, element], [to2, element]]);
+
+    });
+
+    it('calls the `"remove"` & `"destroy"` callback on remove', function() {
+
+      var destroyCallback;
+      var params = [];
+
+      var tag = h({ callbacks: {
+        remove : function() {
+          params.push(Array.prototype.slice.call(arguments));
+        },
+        destroy : function(element, callback) {
+          destroyCallback = callback;
+          params.push([element, destroyCallback]);
+        },
+      } });
+
+      var mountId = tree.mount("#mount-point", tag);
+      tree.unmount(mountId);
+
+      expect(mountPoint.innerHTML).toBe("<div></div>");
+      expect(params).toEqual([[tag, tag.element], [tag.element, destroyCallback]]);
+
+      destroyCallback();
+      expect(mountPoint.innerHTML).toBe("");
+
+    });
 
   });
 

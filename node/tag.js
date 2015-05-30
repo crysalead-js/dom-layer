@@ -162,6 +162,11 @@ Tag.prototype.patch = function(to) {
   } else if (this.events) {
     to.element.domLayerNode = undefined;
   }
+
+  if (this.callbacks && this.callbacks.updated) {
+    this.callbacks.updated(this, to.element);
+  }
+
   return to.element;
 }
 
@@ -200,11 +205,11 @@ Tag.prototype.destroy = function() {
  * Broadcasts the remove "event".
  */
 function broadcastRemove(node) {
-  if (!node.children) {
-    return;
-  }
   if (node.callbacks && node.callbacks.remove) {
     node.callbacks.remove(node, node.element);
+  }
+  if (!node.children) {
+    return;
   }
   for(var i = 0, len = node.children.length; i < len; i++) {
     broadcastRemove(node.children[i]);

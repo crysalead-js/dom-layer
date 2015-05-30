@@ -4,17 +4,17 @@ var Tree = require("../../tree/tree");
 
 describe("Tree", function() {
 
-  var tree, mountPoint;
+  var testBody, tree, mountPoint;
 
   beforeEach(function() {
-    test = document.getElementById("test");
-    test.innerHTML = '<div id="mount-point"></div>';
+    testBody = document.getElementById("test");
+    testBody.innerHTML = '<div id="mount-point"></div>';
     mountPoint = document.getElementById("mount-point");
     tree = new Tree();
   })
 
   afterEach(function() {
-    test.innerHTML = '';
+    testBody.innerHTML = '';
   });
 
 
@@ -62,7 +62,7 @@ describe("Tree", function() {
 
     it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
 
-      test.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
+      testBody.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
 
       var closure = function() {
         tree.mount(".mount-point", h());
@@ -77,7 +77,7 @@ describe("Tree", function() {
 
     it("populates domLayerNode when `events` is set", function() {
 
-      test.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
+      testBody.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
 
       var onclick = function () {};
       var from = h({ tagName: "button", events: { onclick: onclick} }, ["Click me!"]);
@@ -96,7 +96,7 @@ describe("Tree", function() {
 
     it("manages the consecutive textual nodes edge case", function() {
 
-      test.innerHTML = '<div id="mount-point"><div>#1#2#3</div></div>';
+      testBody.innerHTML = '<div id="mount-point"><div>#1#2#3</div></div>';
 
       var from = h({}, ["#1", "#2", "#3"]);
       var mountId = tree.attach("#mount-point", from);
@@ -120,7 +120,7 @@ describe("Tree", function() {
 
     it("throw an error when trying to use a selector which doesn't identify a unique DOM element", function() {
 
-      test.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
+      testBody.innerHTML = '<div class="mount-point"></div><div class="mount-point"></div>';
 
       var closure = function() {
         tree.attach(".mount-point", h());
@@ -174,7 +174,7 @@ describe("Tree", function() {
 
     it("updates all mounted trees", function() {
 
-      test.innerHTML = '<div id="mount-point"></div><div id="mount-point2"></div>';
+      testBody.innerHTML = '<div id="mount-point"></div><div id="mount-point2"></div>';
 
       function Component() {
         this.order = "asc";
