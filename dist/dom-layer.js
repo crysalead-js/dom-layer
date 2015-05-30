@@ -35,7 +35,7 @@ module.exports = {
   init: init
 };
 
-},{"dom-element-value":15,"dom-event-manager":16}],2:[function(require,module,exports){
+},{"dom-element-value":14,"dom-event-manager":15}],2:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -197,7 +197,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":29,"./style":7}],4:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./style":7}],4:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -332,7 +332,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":29,"./dataset":4}],6:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./dataset":4}],6:[function(require,module,exports){
 isArray = Array.isArray;
 
 /**
@@ -428,7 +428,7 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":11}],8:[function(require,module,exports){
+},{"dom-element-css":10}],8:[function(require,module,exports){
 var voidElements = require("void-elements");
 var attach = require("../tree/attach");
 var create = require("../tree/create");
@@ -593,6 +593,11 @@ Tag.prototype.patch = function(to) {
   } else if (this.events) {
     to.element.domLayerNode = undefined;
   }
+
+  if (this.callbacks && this.callbacks.updated) {
+    this.callbacks.updated(this, to.element);
+  }
+
   return to.element;
 }
 
@@ -631,11 +636,11 @@ Tag.prototype.destroy = function() {
  * Broadcasts the remove "event".
  */
 function broadcastRemove(node) {
-  if (!node.children) {
-    return;
-  }
   if (node.callbacks && node.callbacks.remove) {
     node.callbacks.remove(node, node.element);
+  }
+  if (!node.children) {
+    return;
   }
   for(var i = 0, len = node.children.length; i < len; i++) {
     broadcastRemove(node.children[i]);
@@ -661,7 +666,7 @@ Tag.prototype.toHtml = function() {
 
 module.exports = Tag;
 
-},{"../tree/attach":22,"../tree/create":23,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":3,"./patcher/attrs-n-s":2,"./patcher/props":5,"./patcher/select-value":6,"void-elements":21}],9:[function(require,module,exports){
+},{"../tree/attach":21,"../tree/create":22,"../tree/update":26,"../util/stringify-attrs":27,"./patcher/attrs":3,"./patcher/attrs-n-s":2,"./patcher/props":5,"./patcher/select-value":6,"void-elements":20}],9:[function(require,module,exports){
 var escapeHtml = require("escape-html");
 
 /**
@@ -760,89 +765,7 @@ Text.prototype.toHtml = function() {
 }
 
 module.exports = Text;
-},{"escape-html":19}],10:[function(require,module,exports){
-/**
- * Index based collection manipulation methods for DOM childNodes.
- */
-
-var collection = Object.create(null);
-
-/**
- * Inserts an DOM element at a specific index.
- *
- * @param  Object element The DOM element insert.
- * @param  Number index   The insertion index.
- * @param  Object parent  The parent container.
- * @return Object         The inserted DOM element.
- */
-collection.insertAt = function(element, index, parent) {
-  var childNodes = parent.childNodes;
-  var target = index >= childNodes.length ? null : childNodes[index];
-  parent.insertBefore(element, target);
-  return element;
-}
-
-/**
- * Moves a DOM element to a specific index.
- *
- * @param  Object element The DOM element to move.
- * @param  Number index   The target index.
- * @param  Object parent  The parent container.
- * @return Object         The moved DOM element.
- */
-collection.moveAt = function(element, index, parent) {
-  parent ? parent : element.parentNode;
-  var target = parent.childNodes[index];
-  if (element === target) {
-    return element;
-  }
-  parent.removeChild(element);
-  collection.insertAt(element, index, parent);
-  return element;
-}
-
-/**
- * Replaces a DOM element at a specific index.
- *
- * @param  Object element The DOM element to replace by.
- * @param  Number index   The index of the element to replace.
- * @param  Object parent  The parent container.
- * @return Object         The replaced DOM element.
- */
-collection.replaceAt = function(element, index, parent) {
-  parent ? parent : element.parentNode;
-  var target = parent.childNodes[index];
-  if (element === target) {
-    return element;
-  }
-  return parent.replaceChild(element, target);
-}
-
-/**
- * Removes a DOM element at a specific index.
- *
- * @param  Number index  The index of the element to remove.
- * @param  Object parent The parent container.
- */
-collection.removeAt = function(index, parent) {
-  var element = parent.childNodes[index];
-  return element ? parent.removeChild(element) : undefined;
-}
-
-/**
- * Extends an object with this module functions.
- *
- * @param Object object The object to extend.
- */
-collection.extend = function(object) {
-  for (key in collection) {
-    object[key] = collection[key];
-  }
-}
-
-module.exports = collection;
-
-},{}],11:[function(require,module,exports){
+},{"escape-html":18}],10:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
 
@@ -884,7 +807,7 @@ function css(element, name, value) {
 
 module.exports = css;
 
-},{"to-camel-case":12}],12:[function(require,module,exports){
+},{"to-camel-case":11}],11:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -909,7 +832,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":13}],13:[function(require,module,exports){
+},{"to-space-case":12}],12:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -934,7 +857,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":14}],14:[function(require,module,exports){
+},{"to-no-case":13}],13:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -1009,7 +932,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * DOM element value Getter/Setter.
  */
@@ -1116,7 +1039,7 @@ function set(element, val) {
 
 module.exports = value;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var events = require("component-event");
 
 var isArray = Array.isArray;
@@ -1243,7 +1166,7 @@ EventManager.defaultEvents = [
 
 module.exports = EventManager;
 
-},{"component-event":17}],17:[function(require,module,exports){
+},{"component-event":16}],16:[function(require,module,exports){
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1279,7 +1202,7 @@ exports.unbind = function(el, type, fn, capture){
   el[unbind](prefix + type, fn, capture || false);
   return fn;
 };
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -1337,7 +1260,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Escape special characters in the given string of html.
  *
@@ -1355,7 +1278,7 @@ module.exports = function(html) {
     .replace(/>/g, '&gt;');
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -1385,7 +1308,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * This file automatically generated from `pre-publish.js`.
  * Do not manually edit.
@@ -1410,7 +1333,7 @@ module.exports = {
   "wbr": true
 };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
@@ -1464,7 +1387,7 @@ function attach(container, nodes, parent) {
 
 module.exports = attach;
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -1487,9 +1410,8 @@ function create(container, nodes, parent) {
 
 module.exports = create;
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var isEmpty = require("is-empty");
-var domCollection = require("dom-collection");
 
 var isArray = Array.isArray;
 
@@ -1612,7 +1534,7 @@ patch.node = function(from, to) {
 
 module.exports = patch;
 
-},{"dom-collection":10,"is-empty":20}],25:[function(require,module,exports){
+},{"is-empty":19}],24:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1622,7 +1544,7 @@ function remove(nodes, parent) {
 
 module.exports = remove;
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var query = require("dom-query");
 var attach = require("./attach");
 var create = require("./create");
@@ -1758,7 +1680,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":22,"./create":23,"./remove":25,"./update":27,"dom-query":18}],27:[function(require,module,exports){
+},{"./attach":21,"./create":22,"./remove":24,"./update":26,"dom-query":17}],26:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1778,7 +1700,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":24}],28:[function(require,module,exports){
+},{"./patch":23}],27:[function(require,module,exports){
 var stringifyStyle = require("./stringify-style");
 var stringifyClass = require("./stringify-class");
 
@@ -1811,7 +1733,7 @@ function stringifyAttrs(attrs, tagName) {
 
 module.exports = stringifyAttrs;
 
-},{"./stringify-class":29,"./stringify-style":30}],29:[function(require,module,exports){
+},{"./stringify-class":28,"./stringify-style":29}],28:[function(require,module,exports){
 /**
  * Returns a `'class1 class3" ...'` string from
  * a `{ class1: true, class2: false, class3: true }` object.
@@ -1834,7 +1756,7 @@ function stringifyClass(classAttr) {
 
 module.exports = stringifyClass;
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Returns a `'key1:value1;key2:value2" ...'` string from
  * a `{ key1: "value1", key2: "value2" }` object.
@@ -1855,7 +1777,7 @@ function stringifyStyle(style) {
 
 module.exports = stringifyStyle;
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var attach = require("./tree/attach");
 var create = require("./tree/create");
@@ -1884,5 +1806,5 @@ module.exports = {
   events: events
 };
 
-},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":22,"./tree/create":23,"./tree/patch":24,"./tree/remove":25,"./tree/tree":26,"./tree/update":27}]},{},[31])(31)
+},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":21,"./tree/create":22,"./tree/patch":23,"./tree/remove":24,"./tree/tree":25,"./tree/update":26}]},{},[30])(30)
 });

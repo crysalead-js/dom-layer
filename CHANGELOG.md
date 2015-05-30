@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.1.9 (2015-05-30)
+
+  * **Add:** adds an `"updated"` callback to `Tag`.
+
 ## 0.1.8 (2015-05-30)
 
   * **Add:** the mount identifier can be now choosed on mounting using any kind of UUID.
