@@ -93,6 +93,7 @@ module.exports = {
 
 },{}],3:[function(require,module,exports){
 var style = require("./style");
+var stringifyClass = require("../../util/stringify-class");
 
 /**
  * Maintains state of element attributes.
@@ -133,7 +134,7 @@ function patch(element, previous, attrs) {
 function set(name, element, previous, attrs) {
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, attrs);
-  } else if (attrs[name] !== null && previous[name] !== attrs[name]) {
+  } else if (attrs[name] != null && previous[name] !== attrs[name]) {
     element.setAttribute(name, attrs[name]);
   }
 };
@@ -167,6 +168,16 @@ set.handlers.value = function(name, element, previous, attrs) {
 };
 
 /**
+ * Custom set handler for the class attribute.
+ */
+set.handlers["class"] = function(name, element, previous, attrs) {
+  if (attrs[name] == null) {
+    return;
+  }
+  element.setAttribute(name, stringifyClass(attrs[name])); // Should work for IE > 7
+};
+
+/**
  * Custom set handler for the style attribute.
  */
 set.handlers.style = function(name, element, previous, attrs) {
@@ -186,7 +197,7 @@ module.exports = {
   unset: unset
 };
 
-},{"./style":7}],4:[function(require,module,exports){
+},{"../../util/stringify-class":29,"./style":7}],4:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -225,6 +236,7 @@ module.exports = {
 
 },{}],5:[function(require,module,exports){
 var dataset = require("./dataset");
+var stringifyClass = require("../../util/stringify-class");
 
 /**
  * Maintains state of element properties.
@@ -291,6 +303,16 @@ function unset(name, element, previous) {
 unset.handlers = Object.create(null);
 
 /**
+ * Custom set handler for the class attribute.
+ */
+set.handlers.className = function(name, element, previous, props) {
+  if (props[name] === undefined) {
+    return;
+  }
+  element.className = stringifyClass(props[name]);
+};
+
+/**
  * Custom set handler for the dataset attribute.
  */
 set.handlers.dataset = function(name, element, previous, props) {
@@ -310,7 +332,7 @@ module.exports = {
   unset: unset
 };
 
-},{"./dataset":4}],6:[function(require,module,exports){
+},{"../../util/stringify-class":29,"./dataset":4}],6:[function(require,module,exports){
 isArray = Array.isArray;
 
 /**
@@ -372,7 +394,7 @@ module.exports = selectValue;
 var domElementCss = require("dom-element-css");
 
 /**
- * Maintains state of element style attributes.
+ * Maintains state of element style attribute.
  *
  * @param  Object element   A DOM element.
  * @param  Object previous  The previous state of style attributes.
@@ -439,8 +461,8 @@ function Tag(tagName, config, children) {
 
   this.key = config.key != null ? config.key : undefined;
 
-  this.namespace = config.attrs && config.attrs.xmlns || "";
-  this.is = config.attrs && config.attrs.is || "";
+  this.namespace = config.attrs && config.attrs.xmlns || null;
+  this.is = config.attrs && config.attrs.is || null;
 };
 
 Tag.prototype.type = "Tag";
@@ -625,8 +647,9 @@ function broadcastRemove(node) {
  */
 Tag.prototype.toHtml = function() {
 
-  var attributes = stringifyAttrs(this.attrs, this.tagName);
-  var html = "<" + this.tagName + (attributes ? " " + attributes : "") + ">";
+  var attrs = stringifyAttrs(this.attrs, this.tagName);
+  var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
+  var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
 
   for (var i = 0, len = this.children.length; i < len ; i++) {
     html += this.children[i].toHtml();
@@ -1608,7 +1631,6 @@ var remove = require("./remove");
 var isArray = Array.isArray;
 
 function Tree() {
-  this._mountedIndex = 0;
   this._mounted = Object.create(null);
 }
 
@@ -1621,7 +1643,7 @@ function Tree() {
  */
 Tree.prototype.mount = function(selector, factory, data) {
   return this.apply(selector, factory, data, create);
-}
+};
 
 /**
  * Attaches a virtual tree onto a previously rendered DOM tree.
@@ -1633,7 +1655,7 @@ Tree.prototype.mount = function(selector, factory, data) {
  */
 Tree.prototype.attach = function(selector, factory, data) {
   return this.apply(selector, factory, data, attach);
-}
+};
 
 /**
  * Applies a virtual tree into a passed selector.
@@ -1652,20 +1674,31 @@ Tree.prototype.apply = function(selector, factory, data, processChildren) {
   if (containers.length > 1) {
     throw new Error("The selector must identify an unique DOM element");
   }
-  var container = containers[0];
-  this._mountedIndex++;
-  var mountId = "" + this._mountedIndex;
 
+  var container = containers[0];
   if (container.domLayerTreeId) {
     this.unmount(container.domLayerTreeId);
   }
 
+  var mountId = data.mountId ? data.mountId : this.uuid();
   data.container = container;
   data.factory = factory;
   data.children = processChildren(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerTreeId = mountId;
-}
+};
+
+/**
+ * Returns a UUID identifier.
+ *
+ * @return String a unique identifier
+ */
+Tree.prototype.uuid = function() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+  });
+};
 
 /**
  * Unmounts a virtual tree.
@@ -1685,7 +1718,7 @@ Tree.prototype.unmount = function(mountId) {
   for (mountId in this._mounted) {
     this.unmount(mountId);
   }
-}
+};
 
 /**
  * Updates a mount (ie. run the factory function and updates the DOM according to occured changes).
@@ -1708,7 +1741,7 @@ Tree.prototype.update = function(mountId, tree) {
   for (mountId in this._mounted) {
     this.update(mountId);
   }
-}
+};
 
 /**
  * Returns the definition of a mounted tree all of them if no `mountId` is provided.
@@ -1721,7 +1754,7 @@ Tree.prototype.mounted = function(mountId) {
     return this._mounted[mountId];
   }
   return this._mounted;
-}
+};
 
 module.exports = Tree;
 
@@ -1747,6 +1780,8 @@ module.exports = update;
 
 },{"./patch":24}],28:[function(require,module,exports){
 var stringifyStyle = require("./stringify-style");
+var stringifyClass = require("./stringify-class");
+
 /**
  * Returns a `'key1="value1" key2="value2" ...'` string from
  * a `{ key1: "value1", key2: "value2" }` object.
@@ -1763,17 +1798,43 @@ function stringifyAttrs(attrs, tagName) {
     value = attrs[key];
     if (key === "style") {
       value = stringifyStyle(value);
+    } else if (key === "class") {
+      value = stringifyClass(value);
     }
     if (key === "value" && (/^(?:textarea|select)$/i.test(tagName) || attrs.contenteditable)) {
       continue;
     }
-    attributes.push(key + '="' + value.replace(/"/g, '\\"') + '"');
+    attributes.push(key + '="' + String(value).replace(/"/g, '\\"') + '"');
   }
   return attributes.join(" ");
 }
 
 module.exports = stringifyAttrs;
-},{"./stringify-style":29}],29:[function(require,module,exports){
+
+},{"./stringify-class":29,"./stringify-style":30}],29:[function(require,module,exports){
+/**
+ * Returns a `'class1 class3" ...'` string from
+ * a `{ class1: true, class2: false, class3: true }` object.
+ *
+ * @param  Object className The keys/values object to stringify.
+ * @return String           The corresponding string.
+ */
+function stringifyClass(classAttr) {
+  if (typeof classAttr === "string") {
+    return classAttr;
+  }
+  var classes = [];
+  for (var key in classAttr) {
+    if (classAttr[key]) {
+      classes.push(key);
+    }
+  }
+  return classes.join(" ");
+}
+
+module.exports = stringifyClass;
+
+},{}],30:[function(require,module,exports){
 /**
  * Returns a `'key1:value1;key2:value2" ...'` string from
  * a `{ key1: "value1", key2: "value2" }` object.
@@ -1794,7 +1855,7 @@ function stringifyStyle(style) {
 
 module.exports = stringifyStyle;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var Tree = require("./tree/tree");
 var attach = require("./tree/attach");
 var create = require("./tree/create");
@@ -1823,5 +1884,5 @@ module.exports = {
   events: events
 };
 
-},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":22,"./tree/create":23,"./tree/patch":24,"./tree/remove":25,"./tree/tree":26,"./tree/update":27}]},{},[30])(30)
+},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":22,"./tree/create":23,"./tree/patch":24,"./tree/remove":25,"./tree/tree":26,"./tree/update":27}]},{},[31])(31)
 });

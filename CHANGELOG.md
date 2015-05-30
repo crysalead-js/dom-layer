@@ -2,13 +2,20 @@
 
 ## HEAD
 
+## 0.1.8 (2015-05-30)
+
+  * **Add:** the mount identifier can be now choosed on mounting using any kind of UUID.
+  * **Add:** allows to define the class name(s) property/attribute using an object.
+  * **Bugfix:** sets namespace & type extension of `Tag` to `null` instead fo `""` by default.
+  * **Bugfix:** fixes html rendering of namespaced attributes.
+
 ## 0.1.7 (2015-05-27)
 
   * **Bugfix:** fixes the new patching algorithm.
 
 ## 0.1.6 (2015-05-27)
 
-  * **Add:** Supports type extension (for custom elements).
+  * **Add:** supports type extension (for custom elements).
   * **Add:** refactors the patching algorithm for better performances on updates.
   * **Add:** auto unmounts already mounted virtual trees on `mount()`.
   * **Bugfix:** filters out the value attribute of textarea, select & contenteditable element from rendering.
