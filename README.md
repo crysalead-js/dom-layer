@@ -186,7 +186,7 @@ var html = new Tag("button", {events: {onclick: function() {alert("Hello World!"
 The above piece of logic will be executed server side to generate a full HTML page. Then, client side, the `attach()` method will be used (instead of the `mount()` one) to mount a virtual tree on the rendered DOM element.
 
 ```html
-<div id="mount-point"><div>Hello World !</div></div> <!-- the part rendered by the server side -->
+<div id="mount-point"><button>Click Me !</button></div> <!-- the part rendered by the server side -->
 
 <script type="text/javascript">
   var Tree = domLayer.Tree;
