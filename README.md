@@ -11,7 +11,7 @@ This library is a Virtual DOM implementation ala React. If this implementation i
 * Uses a straightforward `mount()`/`unmount()`/`update()` API
 * Can mount an array of virtual nodes (not limited to a single root node)
 * Delegated event system (via `events`)
-* Supports DOM level O event (via `props`)
+* Supports DOM level 0 event (via `props`)
 * Supports SVG, MathML as well as [Custom Elements & type extension](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/)
 * Animated transitions supported through `"created"` & `"destroy"` callbacks
 * Allows to create his own virtual nodes
@@ -54,17 +54,21 @@ The `Tag` node is configurable with the `options` parameter and the configurable
 }
 ```
 
+- `key`: a unique key to attach to a virtual node
 - `props`: allows to set some DOM Element properties like `"onclick"`, `"id"`.
-- `attrs`: is dedicated to attributes like `"title"`, `"class"`.
+  - `attrs`: is dedicated to attributes like `"title"`, `"class"`.
 - `style`: contains CSS definitions.
 - `attrsNS`: is dedicated to attributes with a namespace like `"xlink:href"`.
 - `events`: allows to store some events managed in a delegated way (requires to run `require("dom-layer").events.init()` first).
 - `callbacks`: are callbacks executed during the virtual node lifetime (e.g `'created'`, `'remove'`)
 - `data`: is optional but can contain some higher level abstraction data.
 
-## The mount/unmount API
+Note:
+The `"key"` property is not really about performance but about identity. During reconciliation of keyed children, it will ensure that any child with a defined key will be correctly reordered (instead of clobbered). If virtual nodes don't have any key defined, it can be an issue with [`<input>` tag for example](http://jsfiddle.net/frosas/S4Dju/).
 
-To mount a virtual tree into a DOM element, it's necessary to mount it first.
+## The mount/unmount/update API
+
+To mount a virtual tree into a DOM element you need to use `mount()`.
 
 #### Example
 
@@ -197,6 +201,24 @@ The above piece of logic will be executed server side to generate a full HTML pa
   var mountId = tree.attach("#mount-point", button); // using `attach()` instead of `mount()`.
 </script>
 ```
+
+## Life cycle hooks
+
+During `Tag` life cycle a number of callback "hooks" are called if defined. The available callbacks for `Tag` are:
+
+```js
+{
+  created: function(node, element) {}
+  updated: function(node, element) {}
+  remove: function(node, element) {}
+  destroy: function(element, destroyCallback) {}
+}
+```
+
+- `"created"` is called once a virtual node has been created. It receives the virtual node and the DOM element as parameter.
+- `"updated"` is called every time an update occur on a virtual node. It receives the virtual node and the DOM element as parameter.
+- `"remove"` is called when a virtual node is going to be removed. It receives the virtual node and the DOM element as parameter.
+- `"destroy"` is called on element removal. It receives the DOM element to remove as parameter as well as the default removing callback (which actually removes the DOM element if called). Useful to delay a DOM element removing for some animation concerns.
 
 ## The rendering loop
 
