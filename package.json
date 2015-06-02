@@ -2,6 +2,7 @@
   "name": "dom-layer",
   "version": "0.1.9",
   "description": "Virtual DOM implementation.",
+  "license": "MIT",
   "keywords": [
     "virtual",
     "dom",
@@ -25,13 +26,19 @@
   },
   "devDependencies": {
     "browserify": "^10.2.1",
+    "browserify-istanbul": "^0.2.1",
+    "coveralls": "^2.11.2",
     "document-register-element": "^0.3.0",
+    "istanbul": "^0.3.14",
     "jasmine": "^2.3.1",
     "testem": "^0.8.3",
     "uglify-js": "^2.4.23"
   },
   "scripts": {
     "test": "testem ci -l firefox",
-    "dist": "browserify --s domLayer index.js > dist/dom-layer.js && browserify --s domLayer index.js | uglifyjs > dist/dom-layer.min.js"
+    "dist": "browserify -s domLayer index.js > dist/dom-layer.js && browserify -s domLayer index.js | uglifyjs > dist/dom-layer.min.js",
+    "coverage-report": "istanbul report",
+    "push-coverage": "cat ./coverage/lcov.info | coveralls",
+    "cleanup": "rm coverage.json && rm -rf ./coverage"
   }
 }

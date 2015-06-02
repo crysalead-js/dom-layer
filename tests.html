@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <title>Test'em</title>
+  <script src="/testem/jasmine2.js"></script>
+  <script src="/testem/jasmine2-html.js"></script>
+  <script src="/testem/jasmine2-boot.js"></script>
+  <script src="/testem.js"></script>
+
+  <script src="spec/browserified.js"></script>
+
+  <link rel="stylesheet" href="/testem/jasmine2.css">
+
+  <script>
+    Testem.on('all-test-results', function(results){
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', 'http://localhost:7358/')
+      xhr.send(JSON.stringify(window.__coverage__))
+    })
+  </script>
+
+</head>
+<body>
+</body>
+</html>

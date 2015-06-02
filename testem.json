@@ -4,8 +4,9 @@
   "src_files": [
     "./**/*.js"
   ],
+  "test_page": "tests.html",
   "src_files_ignore": "node_modules/**/*",
-  "before_tests": "browserify -d spec/index.js -o spec/browserified.js",
+  "before_tests": "browserify -t [ browserify-istanbul --ignore '**/spec/**' ] -d spec/index.js -o spec/browserified.js",
   "on_exit": "rm spec/browserified.js",
   "launch_in_dev": [ "chrome" ]
 }
