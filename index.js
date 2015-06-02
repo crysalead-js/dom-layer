@@ -1,15 +1,15 @@
-var Tree = require("./tree/tree");
-var attach = require("./tree/attach");
-var create = require("./tree/create");
-var update = require("./tree/update");
-var remove = require("./tree/remove");
-var patch = require("./tree/patch");
-var Tag = require("./node/tag");
-var Text = require("./node/text");
-var attrs = require("./node/patcher/attrs");
-var attrsNS = require("./node/patcher/attrs-n-s");
-var props = require("./node/patcher/props");
-var events = require("./events");
+var Tree = require("./src/tree/tree");
+var attach = require("./src/tree/attach");
+var create = require("./src/tree/create");
+var update = require("./src/tree/update");
+var remove = require("./src/tree/remove");
+var patch = require("./src/tree/patch");
+var Tag = require("./src/node/tag");
+var Text = require("./src/node/text");
+var attrs = require("./src/node/patcher/attrs");
+var attrsNS = require("./src/node/patcher/attrs-n-s");
+var props = require("./src/node/patcher/props");
+var events = require("./src/events");
 
 module.exports = {
   Tree: Tree,

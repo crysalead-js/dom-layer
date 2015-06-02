@@ -1,6 +1,6 @@
 var h = require("../helper/h");
-var Tag = require("../../node/tag");
-var Tree = require("../../tree/tree");
+var Tag = require("../../src/node/tag");
+var Tree = require("../../src/tree/tree");
 
 describe("Tag", function() {
 

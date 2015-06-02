@@ -1,7 +1,7 @@
 var domElementValue = require("dom-element-value");
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
-var patch = require("../../../tree/patch");
+var patch = require("../../../src/tree/patch");
 
 describe("attrs", function() {
 

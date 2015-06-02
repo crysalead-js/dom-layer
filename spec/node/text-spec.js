@@ -1,5 +1,5 @@
 var h = require("../helper/h");
-var Text = require("../../node/text");
+var Text = require("../../src/node/text");
 
 describe("Text", function() {
 

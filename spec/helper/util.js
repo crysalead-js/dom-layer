@@ -1,5 +1,5 @@
 var h = require("./h");
-var Tag = require("../../node/tag");
+var Tag = require("../../src/node/tag");
 
 var _ = {};
 

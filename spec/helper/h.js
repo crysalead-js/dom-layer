@@ -1,5 +1,5 @@
-var Tag = require("../../node/tag");
-var Text = require("../../node/text");
+var Tag = require("../../src/node/tag");
+var Text = require("../../src/node/text");
 
 function h(context, children) {
   var context = context || {};

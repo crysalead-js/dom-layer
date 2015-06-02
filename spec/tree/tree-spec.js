@@ -1,6 +1,6 @@
 var h = require("../helper/h");
 var _ = require("../helper/util");
-var Tree = require("../../tree/tree");
+var Tree = require("../../src/tree/tree");
 
 describe("Tree", function() {
 
