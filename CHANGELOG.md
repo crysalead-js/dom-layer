@@ -2,6 +2,11 @@
 
 ## HEAD
 
+## 0.2.0 (2015-06-03)
+
+  * **Bugfix:** fixes minor bug related to dataset update.
+  * **BC break:** repository refactoring some internal path may have changed.
+
 ## 0.1.9 (2015-05-30)
 
   * **Add:** adds an `"updated"` callback to `Tag`.

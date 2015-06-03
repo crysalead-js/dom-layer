@@ -1,4 +1,572 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var toCamelCase = require('to-camel-case');
+var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
+
+/**
+ * Gets/Sets a DOM element property.
+ *
+ * @param  Object        element A DOM element.
+ * @param  String|Object name    The name of a property or an object of values to set.
+ * @param  String        value   The value of the property to set, or none to get the current
+ *                               property value.
+ * @return String                The current/new property value.
+ */
+function css(element, name, value) {
+  var name;
+  if (arguments.length === 3) {
+    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
+    if (value) {
+      element.style[name] = value;
+      return value;
+    }
+    if (hasRemovePropertyInStyle) {
+      element.style.removeProperty(name);
+    } else {
+      element.style[name] = "";
+    }
+    return value;
+  }
+  if (typeof name === "string") {
+    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
+    return element.style[name];
+  }
+
+  var style = name;
+  for (name in style) {
+    css(element, name, style[name]);
+  }
+  return style;
+}
+
+module.exports = css;
+
+},{"to-camel-case":2}],2:[function(require,module,exports){
+
+var toSpace = require('to-space-case');
+
+
+/**
+ * Expose `toCamelCase`.
+ */
+
+module.exports = toCamelCase;
+
+
+/**
+ * Convert a `string` to camel case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toCamelCase (string) {
+  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
+    return letter.toUpperCase();
+  });
+}
+},{"to-space-case":3}],3:[function(require,module,exports){
+
+var clean = require('to-no-case');
+
+
+/**
+ * Expose `toSpaceCase`.
+ */
+
+module.exports = toSpaceCase;
+
+
+/**
+ * Convert a `string` to space case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toSpaceCase (string) {
+  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
+    return match ? ' ' + match : '';
+  });
+}
+},{"to-no-case":4}],4:[function(require,module,exports){
+
+/**
+ * Expose `toNoCase`.
+ */
+
+module.exports = toNoCase;
+
+
+/**
+ * Test whether a string is camel-case.
+ */
+
+var hasSpace = /\s/;
+var hasCamel = /[a-z][A-Z]/;
+var hasSeparator = /[\W_]/;
+
+
+/**
+ * Remove any starting case from a `string`, like camel or snake, but keep
+ * spaces and punctuation that may be important otherwise.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function toNoCase (string) {
+  if (hasSpace.test(string)) return string.toLowerCase();
+
+  if (hasSeparator.test(string)) string = unseparate(string);
+  if (hasCamel.test(string)) string = uncamelize(string);
+  return string.toLowerCase();
+}
+
+
+/**
+ * Separator splitter.
+ */
+
+var separatorSplitter = /[\W_]+(.|$)/g;
+
+
+/**
+ * Un-separate a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function unseparate (string) {
+  return string.replace(separatorSplitter, function (m, next) {
+    return next ? ' ' + next : '';
+  });
+}
+
+
+/**
+ * Camelcase splitter.
+ */
+
+var camelSplitter = /(.)([A-Z]+)/g;
+
+
+/**
+ * Un-camelcase a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function uncamelize (string) {
+  return string.replace(camelSplitter, function (m, previous, uppers) {
+    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
+  });
+}
+},{}],5:[function(require,module,exports){
+/**
+ * DOM element value Getter/Setter.
+ */
+
+/**
+ * Gets/sets DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @param  Object val     The value to set or none to get the current value.
+ * @return mixed          The new/current DOM element value.
+ */
+function value(element, val) {
+  if (arguments.length === 1) {
+    return get(element);
+  }
+  return set(element, val);
+}
+
+/**
+ * Returns the type of a DOM element.
+ *
+ * @param  Object element A DOM element.
+ * @return String         The DOM element type.
+ */
+value.type = function(element) {
+  var name = element.nodeName.toLowerCase();
+  if (name !== "input") {
+    if (name === "select" && element.multiple) {
+      return "select-multiple";
+    }
+    return name;
+  }
+  var type = element.getAttribute('type');
+  if (!type) {
+    return "text";
+  }
+  return type.toLowerCase();
+}
+
+/**
+ * Gets DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @return mixed          The DOM element value
+ */
+function get(element) {
+  var name = value.type(element);
+  switch (name) {
+    case "checkbox":
+    case "radio":
+      if (!element.checked) {
+        return false;
+      }
+      var val = element.getAttribute('value');
+      return val == null ? true : val;
+    case "select":
+    case "select-multiple":
+      var options = element.options;
+      var values = [];
+      for (var i = 0, len = options.length; i < len; i++) {
+        if (options[i].selected) {
+          values.push(options[i].value);
+        }
+      }
+      return name === "select-multiple" ? values : values[0];
+    default:
+      return element.value;
+  }
+}
+
+/**
+ * Sets a DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @param  Object val     The value to set.
+ * @return mixed          The new DOM element value.
+ */
+function set(element, val) {
+  var name = value.type(element);
+  switch (name) {
+    case "checkbox":
+    case "radio":
+      return element.checked = val ? true : false;
+    case "select":
+    case "select-multiple":
+      var found;
+      var options = element.options;
+      var values = Array.isArray(val) ? val : [val];
+      for (var i = 0, leni = options.length; i < leni; i++) {
+        found = 0;
+        for (var j = 0, lenj = values.length; j < lenj; j++) {
+          found |= values[j] === options[i].value;
+        }
+        options[i].selected = (found === 1);
+      }
+      if (name === "select") {
+        return val;
+      }
+      return Array.isArray(val) ? val: [val];
+    default:
+      return element.value = val;
+  }
+}
+
+module.exports = value;
+
+},{}],6:[function(require,module,exports){
+var events = require("component-event");
+
+var isArray = Array.isArray;
+
+/**
+ * Captures all event on at a top level container (`document.body` by default).
+ * When an event occurs, the delegate handler is executed starting form `event.target` up
+ * to the defined container.
+ *
+ * @param Function delegateHandler The event handler function to execute on triggered events.
+ * @param Object   container       A DOM element container.
+ */
+function EventManager(delegateHandler, container) {
+  if (typeof(delegateHandler) !== "function") {
+    throw new Error("The passed handler function is invalid");
+  }
+  this._delegateHandler = delegateHandler;
+  this._container = container || document.body;
+  this._events = Object.create(null);
+}
+
+/**
+ * Binds a event.
+ *
+ * @param String name The event name to catch.
+ */
+EventManager.prototype.bind = function(name) {
+
+  var bubbleEvent = function(e) {
+    e.isPropagationStopped = false;
+    e.delegateTarget = e.target;
+    e.stopPropagation = function() {
+      this.isPropagationStopped = true;
+    }
+    while(e.delegateTarget && e.delegateTarget !== this._container) {
+      this._delegateHandler(name, e);
+      if (e.isPropagationStopped) {
+        break;
+      }
+      e.delegateTarget = e.delegateTarget.parentNode;
+    }
+  }.bind(this);
+
+  if (this._events[name]) {
+    this.unbind(name);
+  }
+  this._events[name] = bubbleEvent;
+  events.bind(this._container, name, bubbleEvent);
+};
+
+/**
+ * Unbinds an event or all events if `name` is not provided.
+ *
+ * @param String name The event name to uncatch or none to unbind all events.
+ */
+EventManager.prototype.unbind = function(name) {
+  if (arguments.length) {
+    if (this._events[name]) {
+      events.unbind(this._container, name, this._events[name]);
+    }
+    return;
+  }
+  for (var key in this._events) {
+    this.unbind(key);
+  }
+};
+
+/**
+ * Returns all binded events.
+ *
+ * @return Array All binded events.
+ */
+EventManager.prototype.binded = function() {
+  return Object.keys(this._events);
+}
+
+/**
+ * Binds some default events.
+ */
+EventManager.prototype.bindDefaultEvents = function() {
+  for (var i = 0, len = EventManager.defaultEvents.length; i < len; i++) {
+    this.bind(EventManager.defaultEvents[i]);
+  }
+};
+
+/**
+ * List of default events.
+ */
+EventManager.defaultEvents = [
+  'blur',
+  'change',
+  'click',
+  'contextmenu',
+  'copy',
+  'cut',
+  'dblclick',
+  'drag',
+  'dragend',
+  'dragenter',
+  'dragexit',
+  'dragleave',
+  'dragover',
+  'dragstart',
+  'drop',
+  'focus',
+  'input',
+  'keydown',
+  'keypress',
+  'keyup',
+  'mousedown',
+  'mouseenter',
+  'mouseleave',
+  'mousemove',
+  'mouseup',
+  'paste',
+  'scroll',
+  'submit',
+  'touchcancel',
+  'touchend',
+  'touchmove',
+  'touchstart',
+  'wheel'
+];
+
+module.exports = EventManager;
+
+},{"component-event":7}],7:[function(require,module,exports){
+var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
+    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
+    prefix = bind !== 'addEventListener' ? 'on' : '';
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.bind = function(el, type, fn, capture){
+  el[bind](prefix + type, fn, capture || false);
+  return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  el[unbind](prefix + type, fn, capture || false);
+  return fn;
+};
+},{}],8:[function(require,module,exports){
+function query(selector, element) {
+  return query.one(selector, element);
+}
+
+var one = function(selector, element) {
+  return element.querySelector(selector);
+}
+
+var all = function(selector, element) {
+  return element.querySelectorAll(selector);
+}
+
+query.one = function(selector, element) {
+  if (!selector) {
+    return;
+  }
+  if (typeof selector === "string") {
+    element = element || document;
+    return one(selector, element);
+  }
+  if (selector.length !== undefined) {
+    return selector[0];
+  }
+  return selector;
+}
+
+query.all = function(selector, element){
+  if (!selector) {
+    return [];
+  }
+  var list;
+  if (typeof selector !== "string") {
+    if (selector.length === undefined) {
+      return [selector];
+    }
+    list = selector;
+  } else {
+    element = element || document;
+    list = all(selector, element);
+  }
+  return Array.prototype.slice.call(list);
+};
+
+query.engine = function(engine){
+  if (!engine.one) {
+    throw new Error('.one callback required');
+  }
+  if (!engine.all) {
+    throw new Error('.all callback required');
+  }
+  one = engine.one;
+  all = engine.all;
+  return query;
+};
+
+module.exports = query;
+
+},{}],9:[function(require,module,exports){
+/**
+ * Escape special characters in the given string of html.
+ *
+ * @param  {String} html
+ * @return {String}
+ * @api private
+ */
+
+module.exports = function(html) {
+  return String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+},{}],10:[function(require,module,exports){
+
+/**
+ * Expose `isEmpty`.
+ */
+
+module.exports = isEmpty;
+
+
+/**
+ * Has.
+ */
+
+var has = Object.prototype.hasOwnProperty;
+
+
+/**
+ * Test whether a value is "empty".
+ *
+ * @param {Mixed} val
+ * @return {Boolean}
+ */
+
+function isEmpty (val) {
+  if (null == val) return true;
+  if ('number' == typeof val) return 0 === val;
+  if (undefined !== val.length) return 0 === val.length;
+  for (var key in val) if (has.call(val, key)) return false;
+  return true;
+}
+},{}],11:[function(require,module,exports){
+/**
+ * This file automatically generated from `pre-publish.js`.
+ * Do not manually edit.
+ */
+
+module.exports = {
+  "area": true,
+  "base": true,
+  "br": true,
+  "col": true,
+  "embed": true,
+  "hr": true,
+  "img": true,
+  "input": true,
+  "keygen": true,
+  "link": true,
+  "menuitem": true,
+  "meta": true,
+  "param": true,
+  "source": true,
+  "track": true,
+  "wbr": true
+};
+
+},{}],12:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
 var EventManager = require("dom-event-manager");
 
@@ -35,7 +603,7 @@ module.exports = {
   init: init
 };
 
-},{"dom-element-value":14,"dom-event-manager":15}],2:[function(require,module,exports){
+},{"dom-element-value":5,"dom-event-manager":6}],13:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -91,7 +659,7 @@ module.exports = {
   namespaces: namespaces
 };
 
-},{}],3:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var style = require("./style");
 var stringifyClass = require("../../util/stringify-class");
 
@@ -197,7 +765,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":28,"./style":7}],4:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./style":18}],15:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -234,7 +802,7 @@ module.exports = {
   patch: patch
 };
 
-},{}],5:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var dataset = require("./dataset");
 var stringifyClass = require("../../util/stringify-class");
 
@@ -275,9 +843,6 @@ function patch(element, previous, props) {
  * @param  Object props     The properties to match on.
  */
 function set(name, element, previous, props) {
-  if (props[name] === undefined) {
-    return;
-  }
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, props);
   } else if (previous[name] !== props[name]) {
@@ -295,7 +860,7 @@ set.handlers = Object.create(null);
  */
 function unset(name, element, previous) {
   if (unset.handlers[name]) {
-    unset.handlers[name](name, element, previous[name], previous);
+    unset.handlers[name](name, element, previous);
   } else {
     element[name] = null;
   }
@@ -306,10 +871,7 @@ unset.handlers = Object.create(null);
  * Custom set handler for the class attribute.
  */
 set.handlers.className = function(name, element, previous, props) {
-  if (props[name] === undefined) {
-    return;
-  }
-  element.className = stringifyClass(props[name]);
+  element.className = props[name] ? stringifyClass(props[name]) : "";
 };
 
 /**
@@ -317,6 +879,13 @@ set.handlers.className = function(name, element, previous, props) {
  */
 set.handlers.dataset = function(name, element, previous, props) {
   dataset.patch(element, previous[name], props[name]);
+};
+
+/**
+ * Custom unset handler for the class attribute.
+ */
+unset.handlers.className = function(name, element, previous) {
+  element.className = "";
 };
 
 /**
@@ -332,7 +901,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":28,"./dataset":4}],6:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./dataset":15}],17:[function(require,module,exports){
 isArray = Array.isArray;
 
 /**
@@ -390,7 +959,7 @@ function populateOptions(node, values) {
 
 module.exports = selectValue;
 
-},{}],7:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var domElementCss = require("dom-element-css");
 
 /**
@@ -428,7 +997,7 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":10}],8:[function(require,module,exports){
+},{"dom-element-css":1}],19:[function(require,module,exports){
 var voidElements = require("void-elements");
 var attach = require("../tree/attach");
 var create = require("../tree/create");
@@ -666,7 +1235,7 @@ Tag.prototype.toHtml = function() {
 
 module.exports = Tag;
 
-},{"../tree/attach":21,"../tree/create":22,"../tree/update":26,"../util/stringify-attrs":27,"./patcher/attrs":3,"./patcher/attrs-n-s":2,"./patcher/props":5,"./patcher/select-value":6,"void-elements":20}],9:[function(require,module,exports){
+},{"../tree/attach":21,"../tree/create":22,"../tree/update":26,"../util/stringify-attrs":27,"./patcher/attrs":14,"./patcher/attrs-n-s":13,"./patcher/props":16,"./patcher/select-value":17,"void-elements":11}],20:[function(require,module,exports){
 var escapeHtml = require("escape-html");
 
 /**
@@ -765,583 +1334,12 @@ Text.prototype.toHtml = function() {
 }
 
 module.exports = Text;
-},{"escape-html":18}],10:[function(require,module,exports){
-var toCamelCase = require('to-camel-case');
-var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
-
-/**
- * Gets/Sets a DOM element property.
- *
- * @param  Object        element A DOM element.
- * @param  String|Object name    The name of a property or an object of values to set.
- * @param  String        value   The value of the property to set, or none to get the current
- *                               property value.
- * @return String                The current/new property value.
- */
-function css(element, name, value) {
-  var name;
-  if (arguments.length === 3) {
-    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
-    if (value) {
-      element.style[name] = value;
-      return value;
-    }
-    if (hasRemovePropertyInStyle) {
-      element.style.removeProperty(name);
-    } else {
-      element.style[name] = "";
-    }
-    return value;
-  }
-  if (typeof name === "string") {
-    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
-    return element.style[name];
-  }
-
-  var style = name;
-  for (name in style) {
-    css(element, name, style[name]);
-  }
-  return style;
-}
-
-module.exports = css;
-
-},{"to-camel-case":11}],11:[function(require,module,exports){
-
-var toSpace = require('to-space-case');
-
-
-/**
- * Expose `toCamelCase`.
- */
-
-module.exports = toCamelCase;
-
-
-/**
- * Convert a `string` to camel case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
-}
-},{"to-space-case":12}],12:[function(require,module,exports){
-
-var clean = require('to-no-case');
-
-
-/**
- * Expose `toSpaceCase`.
- */
-
-module.exports = toSpaceCase;
-
-
-/**
- * Convert a `string` to space case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toSpaceCase (string) {
-  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
-}
-},{"to-no-case":13}],13:[function(require,module,exports){
-
-/**
- * Expose `toNoCase`.
- */
-
-module.exports = toNoCase;
-
-
-/**
- * Test whether a string is camel-case.
- */
-
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
-
-/**
- * Remove any starting case from a `string`, like camel or snake, but keep
- * spaces and punctuation that may be important otherwise.
- *
- * @param {String} string
- * @return {String}
- */
-
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
-}
-
-
-/**
- * Separator splitter.
- */
-
-var separatorSplitter = /[\W_]+(.|$)/g;
-
-
-/**
- * Un-separate a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function unseparate (string) {
-  return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
-}
-
-
-/**
- * Camelcase splitter.
- */
-
-var camelSplitter = /(.)([A-Z]+)/g;
-
-
-/**
- * Un-camelcase a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function uncamelize (string) {
-  return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
-}
-},{}],14:[function(require,module,exports){
-/**
- * DOM element value Getter/Setter.
- */
-
-/**
- * Gets/sets DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object val     The value to set or none to get the current value.
- * @return mixed          The new/current DOM element value.
- */
-function value(element, val) {
-  if (arguments.length === 1) {
-    return get(element);
-  }
-  return set(element, val);
-}
-
-/**
- * Returns the type of a DOM element.
- *
- * @param  Object element A DOM element.
- * @return String         The DOM element type.
- */
-value.type = function(element) {
-  var name = element.nodeName.toLowerCase();
-  if (name !== "input") {
-    if (name === "select" && element.multiple) {
-      return "select-multiple";
-    }
-    return name;
-  }
-  var type = element.getAttribute('type');
-  if (!type) {
-    return "text";
-  }
-  return type.toLowerCase();
-}
-
-/**
- * Gets DOM element value.
- *
- * @param  Object element A DOM element
- * @return mixed          The DOM element value
- */
-function get(element) {
-  var name = value.type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      if (!element.checked) {
-        return false;
-      }
-      var val = element.getAttribute('value');
-      return val == null ? true : val;
-    case "select":
-    case "select-multiple":
-      var options = element.options;
-      var values = [];
-      for (var i = 0, len = options.length; i < len; i++) {
-        if (options[i].selected) {
-          values.push(options[i].value);
-        }
-      }
-      return name === "select-multiple" ? values : values[0];
-    default:
-      return element.value;
-  }
-}
-
-/**
- * Sets a DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object val     The value to set.
- * @return mixed          The new DOM element value.
- */
-function set(element, val) {
-  var name = value.type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      return element.checked = val ? true : false;
-    case "select":
-    case "select-multiple":
-      var found;
-      var options = element.options;
-      var values = Array.isArray(val) ? val : [val];
-      for (var i = 0, leni = options.length; i < leni; i++) {
-        found = 0;
-        for (var j = 0, lenj = values.length; j < lenj; j++) {
-          found |= values[j] === options[i].value;
-        }
-        options[i].selected = (found === 1);
-      }
-      if (name === "select") {
-        return val;
-      }
-      return Array.isArray(val) ? val: [val];
-    default:
-      return element.value = val;
-  }
-}
-
-module.exports = value;
-
-},{}],15:[function(require,module,exports){
-var events = require("component-event");
-
-var isArray = Array.isArray;
-
-/**
- * Captures all event on at a top level container (`document.body` by default).
- * When an event occurs, the delegate handler is executed starting form `event.target` up
- * to the defined container.
- *
- * @param Function delegateHandler The event handler function to execute on triggered events.
- * @param Object   container       A DOM element container.
- */
-function EventManager(delegateHandler, container) {
-  if (typeof(delegateHandler) !== "function") {
-    throw new Error("The passed handler function is invalid");
-  }
-  this._delegateHandler = delegateHandler;
-  this._container = container || document.body;
-  this._events = Object.create(null);
-}
-
-/**
- * Binds a event.
- *
- * @param String name The event name to catch.
- */
-EventManager.prototype.bind = function(name) {
-
-  var bubbleEvent = function(e) {
-    e.isPropagationStopped = false;
-    e.delegateTarget = e.target;
-    e.stopPropagation = function() {
-      this.isPropagationStopped = true;
-    }
-    while(e.delegateTarget && e.delegateTarget !== this._container) {
-      this._delegateHandler(name, e);
-      if (e.isPropagationStopped) {
-        break;
-      }
-      e.delegateTarget = e.delegateTarget.parentNode;
-    }
-  }.bind(this);
-
-  if (this._events[name]) {
-    this.unbind(name);
-  }
-  this._events[name] = bubbleEvent;
-  events.bind(this._container, name, bubbleEvent);
-};
-
-/**
- * Unbinds an event or all events if `name` is not provided.
- *
- * @param String name The event name to uncatch or none to unbind all events.
- */
-EventManager.prototype.unbind = function(name) {
-  if (arguments.length) {
-    if (this._events[name]) {
-      events.unbind(this._container, name, this._events[name]);
-    }
-    return;
-  }
-  for (var key in this._events) {
-    this.unbind(key);
-  }
-};
-
-/**
- * Returns all binded events.
- *
- * @return Array All binded events.
- */
-EventManager.prototype.binded = function() {
-  return Object.keys(this._events);
-}
-
-/**
- * Binds some default events.
- */
-EventManager.prototype.bindDefaultEvents = function() {
-  for (var i = 0, len = EventManager.defaultEvents.length; i < len; i++) {
-    this.bind(EventManager.defaultEvents[i]);
-  }
-};
-
-/**
- * List of default events.
- */
-EventManager.defaultEvents = [
-  'blur',
-  'change',
-  'click',
-  'contextmenu',
-  'copy',
-  'cut',
-  'dblclick',
-  'drag',
-  'dragend',
-  'dragenter',
-  'dragexit',
-  'dragleave',
-  'dragover',
-  'dragstart',
-  'drop',
-  'focus',
-  'input',
-  'keydown',
-  'keypress',
-  'keyup',
-  'mousedown',
-  'mouseenter',
-  'mouseleave',
-  'mousemove',
-  'mouseup',
-  'paste',
-  'scroll',
-  'submit',
-  'touchcancel',
-  'touchend',
-  'touchmove',
-  'touchstart',
-  'wheel'
-];
-
-module.exports = EventManager;
-
-},{"component-event":16}],16:[function(require,module,exports){
-var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
-    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
-    prefix = bind !== 'addEventListener' ? 'on' : '';
-
-/**
- * Bind `el` event `type` to `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.bind = function(el, type, fn, capture){
-  el[bind](prefix + type, fn, capture || false);
-  return fn;
-};
-
-/**
- * Unbind `el` event `type`'s callback `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.unbind = function(el, type, fn, capture){
-  el[unbind](prefix + type, fn, capture || false);
-  return fn;
-};
-},{}],17:[function(require,module,exports){
-function query(selector, element) {
-  return query.one(selector, element);
-}
-
-var one = function(selector, element) {
-  return element.querySelector(selector);
-}
-
-var all = function(selector, element) {
-  return element.querySelectorAll(selector);
-}
-
-query.one = function(selector, element) {
-  if (!selector) {
-    return;
-  }
-  if (typeof selector === "string") {
-    element = element || document;
-    return one(selector, element);
-  }
-  if (selector.length !== undefined) {
-    return selector[0];
-  }
-  return selector;
-}
-
-query.all = function(selector, element){
-  if (!selector) {
-    return [];
-  }
-  var list;
-  if (typeof selector !== "string") {
-    if (selector.length === undefined) {
-      return [selector];
-    }
-    list = selector;
-  } else {
-    element = element || document;
-    list = all(selector, element);
-  }
-  return Array.prototype.slice.call(list);
-};
-
-query.engine = function(engine){
-  if (!engine.one) {
-    throw new Error('.one callback required');
-  }
-  if (!engine.all) {
-    throw new Error('.all callback required');
-  }
-  one = engine.one;
-  all = engine.all;
-  return query;
-};
-
-module.exports = query;
-
-},{}],18:[function(require,module,exports){
-/**
- * Escape special characters in the given string of html.
- *
- * @param  {String} html
- * @return {String}
- * @api private
- */
-
-module.exports = function(html) {
-  return String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-},{}],19:[function(require,module,exports){
-
-/**
- * Expose `isEmpty`.
- */
-
-module.exports = isEmpty;
-
-
-/**
- * Has.
- */
-
-var has = Object.prototype.hasOwnProperty;
-
-
-/**
- * Test whether a value is "empty".
- *
- * @param {Mixed} val
- * @return {Boolean}
- */
-
-function isEmpty (val) {
-  if (null == val) return true;
-  if ('number' == typeof val) return 0 === val;
-  if (undefined !== val.length) return 0 === val.length;
-  for (var key in val) if (has.call(val, key)) return false;
-  return true;
-}
-},{}],20:[function(require,module,exports){
-/**
- * This file automatically generated from `pre-publish.js`.
- * Do not manually edit.
- */
-
-module.exports = {
-  "area": true,
-  "base": true,
-  "br": true,
-  "col": true,
-  "embed": true,
-  "hr": true,
-  "img": true,
-  "input": true,
-  "keygen": true,
-  "link": true,
-  "menuitem": true,
-  "meta": true,
-  "param": true,
-  "source": true,
-  "track": true,
-  "wbr": true
-};
-
-},{}],21:[function(require,module,exports){
+},{"escape-html":9}],21:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
   if (typeof nodes === "function") {
     nodes = nodes(container, parent);
-  }
-  if (nodes == null) {
-    return;
   }
   if (!isArray(nodes)) {
     nodes = [nodes];
@@ -1393,9 +1391,6 @@ var isArray = Array.isArray;
 function create(container, nodes, parent) {
   if (typeof nodes === "function") {
     nodes = nodes(container, parent);
-  }
-  if (nodes == null) {
-    return;
   }
   if (!isArray(nodes)) {
     nodes = [nodes];
@@ -1534,7 +1529,7 @@ patch.node = function(from, to) {
 
 module.exports = patch;
 
-},{"is-empty":19}],24:[function(require,module,exports){
+},{"is-empty":10}],24:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1590,10 +1585,7 @@ Tree.prototype.attach = function(selector, factory, data) {
 Tree.prototype.apply = function(selector, factory, data, processChildren) {
   data = data || {};
   var containers = query.all(selector);
-  if (!containers.length) {
-    return;
-  }
-  if (containers.length > 1) {
+  if (containers.length !== 1) {
     throw new Error("The selector must identify an unique DOM element");
   }
 
@@ -1654,7 +1646,7 @@ Tree.prototype.update = function(mountId, tree) {
     if (mount) {
       var active = document.activeElement;
       mount.children = update(mount.container, mount.children, tree ? tree : mount.factory, null);
-      if (active) {
+      if (document.activeElement !== active) {
         active.focus();
       }
     }
@@ -1680,7 +1672,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":21,"./create":22,"./remove":24,"./update":26,"dom-query":17}],26:[function(require,module,exports){
+},{"./attach":21,"./create":22,"./remove":24,"./update":26,"dom-query":8}],26:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1688,9 +1680,6 @@ var isArray = Array.isArray;
 function update(container, fromNodes, toNodes, parent) {
   if (typeof toNodes === "function") {
     toNodes = toNodes(container, parent);
-  }
-  if (toNodes == null) {
-    return;
   }
   if (!isArray(toNodes)) {
     toNodes = [toNodes];
@@ -1778,18 +1767,18 @@ function stringifyStyle(style) {
 module.exports = stringifyStyle;
 
 },{}],30:[function(require,module,exports){
-var Tree = require("./tree/tree");
-var attach = require("./tree/attach");
-var create = require("./tree/create");
-var update = require("./tree/update");
-var remove = require("./tree/remove");
-var patch = require("./tree/patch");
-var Tag = require("./node/tag");
-var Text = require("./node/text");
-var attrs = require("./node/patcher/attrs");
-var attrsNS = require("./node/patcher/attrs-n-s");
-var props = require("./node/patcher/props");
-var events = require("./events");
+var Tree = require("./src/tree/tree");
+var attach = require("./src/tree/attach");
+var create = require("./src/tree/create");
+var update = require("./src/tree/update");
+var remove = require("./src/tree/remove");
+var patch = require("./src/tree/patch");
+var Tag = require("./src/node/tag");
+var Text = require("./src/node/text");
+var attrs = require("./src/node/patcher/attrs");
+var attrsNS = require("./src/node/patcher/attrs-n-s");
+var props = require("./src/node/patcher/props");
+var events = require("./src/events");
 
 module.exports = {
   Tree: Tree,
@@ -1806,5 +1795,5 @@ module.exports = {
   events: events
 };
 
-},{"./events":1,"./node/patcher/attrs":3,"./node/patcher/attrs-n-s":2,"./node/patcher/props":5,"./node/tag":8,"./node/text":9,"./tree/attach":21,"./tree/create":22,"./tree/patch":23,"./tree/remove":24,"./tree/tree":25,"./tree/update":26}]},{},[30])(30)
+},{"./src/events":12,"./src/node/patcher/attrs":14,"./src/node/patcher/attrs-n-s":13,"./src/node/patcher/props":16,"./src/node/tag":19,"./src/node/text":20,"./src/tree/attach":21,"./src/tree/create":22,"./src/tree/patch":23,"./src/tree/remove":24,"./src/tree/tree":25,"./src/tree/update":26}]},{},[30])(30)
 });
