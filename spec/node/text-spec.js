@@ -9,7 +9,7 @@ describe("Text", function() {
 
   });
 
-  describe("toHtml", function() {
+  describe(".toHtml()", function() {
 
     it('renders a text node', function() {
 

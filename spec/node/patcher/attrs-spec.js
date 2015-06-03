@@ -9,13 +9,9 @@ describe("attrs", function() {
 
     it("sets an attributes", function() {
 
-      var from = h();
-      var to = h({ attrs: { src: "test.jpg" } });
-
+      var from = h({ attrs: { src: "test.jpg" } });
       var element = from.render();
-      patch.node(from, to);
 
-      expect(element).toBe(element);
       expect(element.getAttribute("src")).toBe("test.jpg");
 
     });
@@ -24,90 +20,35 @@ describe("attrs", function() {
 
       var node = h({ tagName: "input", attrs: { name: "input1" } });
       var element = node.render();
+
       expect(element.getAttribute("name")).toBe("input1");
 
     });
 
-    it('sets the `"class"` attributes', function() {
+    it('sets the `"style"` attribute using `null`', function() {
 
-      var from = h();
-      var to = h({ tagName: "div", attrs: { "class": "active" } });
-
+      var from = h({ tagName: "div", attrs: { style: null } });
       var element = from.render();
-      patch.node(from, to);
 
-      expect(element.className).toBe("active");
+      expect(element.style.cssText).toBe("");
 
     });
 
-    it('sets the `"class"` attributes using an object', function() {
+    it('sets the `"style"` attribute', function() {
 
-      var from = h();
-      var to = h({ tagName: "div", attrs: { "class": {
-        active1: true,
-        inactive: false,
-        active2: true
-      } } });
-
+      var from = h({ tagName: "div", attrs: { style: "display: none" } });
       var element = from.render();
-      patch.node(from, to);
-
-      expect(element.classList.contains("active1")).toBe(true);
-      expect(element.classList.contains("inactive")).toBe(false);
-      expect(element.classList.contains("active2")).toBe(true);
-
-    });
-
-    it('sets the `"style"` attributes using an object', function() {
-
-      var from = h();
-      var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
-
-      var element = from.render();
-      patch.node(from, to);
 
       expect(element.style.display).toBe(_.style("display", "none"));
 
     });
 
-    it('sets the `"style"` attributes', function() {
+    it('sets the `"style"` attribute using an object', function() {
 
-      var from = h();
-      var to = h({ tagName: "div", attrs: { style: "display: none" } });
-
+      var from = h({ tagName: "div", attrs: { style: { display: "none" } } });
       var element = from.render();
-      patch.node(from, to);
 
       expect(element.style.display).toBe(_.style("display", "none"));
-
-    });
-
-    it('sets the `"style"` attributes using an object', function() {
-
-      var from = h();
-      var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
-
-      var element = from.render();
-      patch.node(from, to);
-
-      expect(element.style.display).toBe(_.style("display", "none"));
-
-    });
-
-    it("ignores `undefined` attribute", function() {
-
-      var node = h({ tagName: "div", attrs: { "class": undefined } });
-      var element = node.render();
-      expect(element.hasAttribute("class")).toBe(false);
-
-    });
-
-    it("ignores `undefined` value attribute", function() {
-
-      var node = h({ tagName: "div", attrs: { value: undefined } });
-      var element = node.render();
-      expect("value" in element).toBe(false);
-      expect(element.hasAttribute("value")).toBe(false);
 
     });
 
@@ -122,6 +63,18 @@ describe("attrs", function() {
       patch.node(from, to);
       expect(element.getAttribute("foo")).toBe("baz");
       expect(element.getAttribute("bar")).toBe("oops");
+
+    });
+
+    it('patches the `"class"` attributes from an empty value', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { "class": "active" } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.className).toBe("active");
 
     });
 
@@ -194,7 +147,19 @@ describe("attrs", function() {
 
     });
 
-    it('patches the `"style"` attribute from a string to object', function() {
+    it('patches the `"style"` attributes from an empty value object', function() {
+
+      var from = h();
+      var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.style.display).toBe(_.style("display", "none"));
+
+    });
+
+    it('patches the `"style"` attribute from string to object', function() {
 
       var from = h({ tagName: "div", attrs: { style: "width: 10px" } });
       var to = h({ tagName: "div", attrs: { style: { padding: "5px" } } });
@@ -211,15 +176,17 @@ describe("attrs", function() {
 
     it('patches the `"style"` attribute using objects', function() {
 
-      var from = h({ tagName: "div", attrs: { style: { width: "10px" } } });
-      var to = h({ tagName: "div", attrs: { style: { padding: "5px" } } });
+      var from = h({ tagName: "div", attrs: { style: { width: "10px", margin: "10px" } } });
+      var to = h({ tagName: "div", attrs: { style: { padding: "5px", margin: "15px" } } });
 
       var element = from.render();
       expect(element.style.width).toBe(_.style("width", "10px"));
+      expect(element.style.margin).toBe(_.style("margin", "10px"));
 
       patch.node(from, to);
 
       expect(element.style.padding).toBe(_.style("padding", "5px"));
+      expect(element.style.margin).toBe(_.style("margin", "15px"));
       expect(element.style.width).toBe(_.style("width", ""));
 
     });
@@ -236,6 +203,35 @@ describe("attrs", function() {
 
       expect(element.style.padding).toBe(_.style("padding", "5px"));
       expect(element.style.width).toBe(_.style("width", ""));
+
+    });
+
+    it("ignores `undefined` attribute", function() {
+
+      var node = h({ tagName: "div", attrs: { "class": undefined } });
+      var element = node.render();
+      expect(element.hasAttribute("class")).toBe(false);
+
+    });
+
+    it("ignores `undefined` value attribute", function() {
+
+      var node = h({ tagName: "div", attrs: { value: undefined } });
+      var element = node.render();
+      expect("value" in element).toBe(false);
+      expect(element.hasAttribute("value")).toBe(false);
+
+    });
+
+    it('ignores empty `"value"` attribute', function() {
+
+      var select = h({ tagName: "select", attrs: { value: null } }, [
+        h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element)).toBe("foo");
 
     });
 

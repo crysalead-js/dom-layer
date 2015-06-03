@@ -9,10 +9,9 @@ describe("patch.node()", function() {
 
     var from = new Text("hello");
     var to = new Text("good bye");
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -20,10 +19,9 @@ describe("patch.node()", function() {
 
     var from = h({}, ["hello"]);
     var to = h({}, ["good bye"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -31,10 +29,9 @@ describe("patch.node()", function() {
 
     var from = h({}, ["hello"]);
     var to = h({ tagName: "span" }, ["good bye"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).not.toBe(element);
 
   });
 
@@ -42,10 +39,9 @@ describe("patch.node()", function() {
 
     var from = new Text("hello");
     var to = h({ tagName: "span" }, ["good bye"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).not.toBe(element);
 
   });
 
@@ -54,15 +50,14 @@ describe("patch.node()", function() {
     var from = h({}, [h()]);
     var to = h({}, ["text"]);
 
-    var rootNode = from.render();
-    expect(rootNode.childNodes.length).toBe(1);
-    expect(rootNode.childNodes[0].nodeType).toBe(1);
+    var element = from.render();
+    expect(element.childNodes.length).toBe(1);
+    expect(element.childNodes[0].nodeType).toBe(1);
 
-    var newRoot = patch.node(from, to);
+    patch.node(from, to);
 
-    expect(newRoot).toBe(rootNode);
-    expect(newRoot.childNodes.length).toBe(1);
-    expect(newRoot.childNodes[0].nodeType).toBe(3);
+    expect(element.childNodes.length).toBe(1);
+    expect(element.childNodes[0].nodeType).toBe(3);
 
   });
 
@@ -70,10 +65,9 @@ describe("patch.node()", function() {
 
     var from = h({}, ["hello"]);
     var to = h({}, [h({ tagName: "span" }, ["good bye"])]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -81,10 +75,9 @@ describe("patch.node()", function() {
 
     var from = h({}, ["hello"]);
     var to = h({}, ["hello", "to"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -92,10 +85,9 @@ describe("patch.node()", function() {
 
     var from = h({}, [h({ tagName: "span" }, ["hello"])]);
     var to = h({}, [h({ tagName: "span" }, ["hello"]), h({ tagName: "span" }, ["to"])]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -103,10 +95,9 @@ describe("patch.node()", function() {
 
     var to = h({}, ["hello", "to"]);
     var from = h({}, ["hello"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).toBe(element);
 
   });
 
@@ -114,18 +105,17 @@ describe("patch.node()", function() {
 
     var from = h({ tagName: "div", className: "hello" }, ["hello"]);
     var to = h({ tagName: "span", className: "good bye" }, ["good bye"]);
-    var rootNode = from.render();
-    var newNode = to.render();
-    var newRoot = patch.node(from, to);
-    expect(newRoot).toEqual(newNode);
+    var element = from.render();
+
+    expect(patch.node(from, to)).not.toBe(element);
 
   });
 
   it("does not ignores empty textnode", function() {
 
     var empty = h({ tagName: "span" }, [""]);
-    var rootNode = empty.render();
-    expect(rootNode.childNodes.length).toBe(1);
+    var element = empty.render();
+    expect(element.childNodes.length).toBe(1);
 
   });
 
@@ -134,14 +124,14 @@ describe("patch.node()", function() {
     var from = h({ attrs: { xmlns: "testing" } });
     var to = h({ attrs: { xmlns: "undefined" } });
 
-    var rootNode = from.render();
-    expect(rootNode.tagName.toLowerCase()).toBe("div");
-    expect(rootNode.namespaceURI).toBe("testing");
+    var element = from.render();
+    expect(element.tagName.toLowerCase()).toBe("div");
+    expect(element.namespaceURI).toBe("testing");
 
-    rootNode = patch.node(from, to);
+    element = patch.node(from, to);
 
-    expect(rootNode.tagName.toLowerCase()).toBe("div");
-    expect(rootNode.namespaceURI).toBe("undefined");
+    expect(element.tagName.toLowerCase()).toBe("div");
+    expect(element.namespaceURI).toBe("undefined");
 
   });
 
@@ -150,12 +140,12 @@ describe("patch.node()", function() {
     var from = h({ events: { "onclick": function() {} } });
     var to = h({ events: { "onclick": function() {} } });
 
-    var rootNode = from.render();
-    expect(rootNode.domLayerNode).toBe(from);
+    var element = from.render();
+    expect(element.domLayerNode).toBe(from);
 
-    rootNode = patch.node(from, to);
+    element = patch.node(from, to);
 
-    expect(rootNode.domLayerNode).toBe(to);
+    expect(element.domLayerNode).toBe(to);
 
   });
 
@@ -164,12 +154,41 @@ describe("patch.node()", function() {
     var from = h({ events: { "onclick": function() {} } });
     var to = h();
 
-    var rootNode = from.render();
-    expect(rootNode.domLayerNode).toBe(from);
+    var element = from.render();
+    expect(element.domLayerNode).toBe(from);
 
-    rootNode = patch.node(from, to);
+    element = patch.node(from, to);
 
-    expect(rootNode.domLayerNode).toBe(undefined);
+    expect(element.domLayerNode).toBe(undefined);
+
+  });
+
+  it("replaces the created element in the parent child list when ", function() {
+
+    var testBody = document.getElementById("test");
+    testBody.innerHTML = '<div id="mount-point"></div>';
+    var mountPoint = document.getElementById("mount-point");
+
+    var from = h({ tagName: "div" });
+    var element = from.render();
+
+    mountPoint.appendChild(element);
+    expect(mountPoint.firstChild).toBe(element);
+
+    var to = h({ tagName: "span" });
+    var newElement = patch.node(from, to);
+
+    expect(newElement).not.toBe(element);
+    expect(mountPoint.firstChild).toBe(newElement);
+
+  });
+
+  it("bails out when trying to patch the same node", function() {
+
+    var from = new Text("hello");
+    var element = from.render();
+
+    expect(patch.node(from, from)).toBe(element);
 
   });
 

@@ -43,10 +43,7 @@ Tree.prototype.attach = function(selector, factory, data) {
 Tree.prototype.apply = function(selector, factory, data, processChildren) {
   data = data || {};
   var containers = query.all(selector);
-  if (!containers.length) {
-    return;
-  }
-  if (containers.length > 1) {
+  if (containers.length !== 1) {
     throw new Error("The selector must identify an unique DOM element");
   }
 
@@ -107,7 +104,7 @@ Tree.prototype.update = function(mountId, tree) {
     if (mount) {
       var active = document.activeElement;
       mount.children = update(mount.container, mount.children, tree ? tree : mount.factory, null);
-      if (active) {
+      if (document.activeElement !== active) {
         active.focus();
       }
     }

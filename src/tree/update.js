@@ -6,9 +6,6 @@ function update(container, fromNodes, toNodes, parent) {
   if (typeof toNodes === "function") {
     toNodes = toNodes(container, parent);
   }
-  if (toNodes == null) {
-    return;
-  }
   if (!isArray(toNodes)) {
     toNodes = [toNodes];
   }

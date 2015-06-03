@@ -157,7 +157,7 @@ describe("Tag", function() {
       testBody.innerHTML = '';
     });
 
-    it('calls the `"created"` callback on create', function() {
+    it('calls the `"created"` callback on creation', function() {
 
       var params;
 
@@ -171,7 +171,21 @@ describe("Tag", function() {
 
     });
 
-    it('calls the `"updated"` callback on updates', function() {
+    it('calls the `"created"` callback on attachement', function() {
+
+      var params;
+
+      var tag = h({ callbacks: { created : function() {
+        params = Array.prototype.slice.call(arguments);
+      } } });
+
+      var element = tag.attach(document.createElement("div"));
+
+      expect(params).toEqual([tag, element]);
+
+    });
+
+    it('calls the `"updated"` callback on update', function() {
 
       var params = [];
       var callbacks = { updated : function() {
@@ -219,7 +233,26 @@ describe("Tag", function() {
 
   });
 
-  describe("toHtml", function() {
+  describe(".destroy()", function() {
+
+    it("silently aborts if the tag hasn't been rendered", function() {
+
+      var tag = h();
+      expect(tag.destroy()).toBe(undefined);
+
+    });
+
+    it("silently aborts if the tag has no parent", function() {
+
+      var tag = h();
+      tag.render();
+      expect(tag.destroy()).toBe(undefined);
+
+    });
+
+  });
+
+  describe(".toHtml()", function() {
 
     it("renders a select multiple using groups", function() {
 
@@ -249,6 +282,15 @@ describe("Tag", function() {
       var html = image.toHtml();
 
       expect(html).toBe('<input type="file" multiple="multiple" capture="capture" accept="image/*">');
+    });
+
+    it('renders a `"style"` attribute using an string', function() {
+
+      var div = h({ tagName: "div", attrs: { style: "border:1px solid rgb(0, 0, 0);padding:2px" } });
+      var html = div.toHtml();
+
+      expect(html).toBe('<div style="border:1px solid rgb(0, 0, 0);padding:2px"></div>');
+
     });
 
     it('renders a `"style"` attribute using an object', function() {

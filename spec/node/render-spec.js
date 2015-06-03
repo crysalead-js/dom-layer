@@ -154,9 +154,9 @@ describe(".render()", function() {
 
   });
 
-  it("respects namespace", function() {
+  it("respects the namespace", function() {
 
-    var svgURI = "http://www.w3.org/2000/svgcustom";
+    var svgURI = "http://www.w3.org/2000/custom-namespace";
     var node = h({ tagName: "svg", attrs: { xmlns: svgURI } });
     var element = node.render();
 
@@ -165,7 +165,7 @@ describe(".render()", function() {
 
   });
 
-  it("respects type extension", function() {
+  it("respects the type extension", function() {
 
     var MegaButton = document.registerElement('mega-button', {
       prototype: Object.create(HTMLButtonElement.prototype),
@@ -178,6 +178,25 @@ describe(".render()", function() {
     expect(element instanceof MegaButton).toBe(true);
 
   });
+
+  it("respects the namespace and the type extension", function() {
+
+    var MegaCircle = document.registerElement('mega-circle', {
+      prototype: Object.create(SVGCircleElement.prototype),
+      extends: 'circle'
+    });
+
+    var svgURI = "http://www.w3.org/2000/svg";
+    var node = h({ tagName: "circle", attrs: { xmlns: svgURI, is: "mega-circle" } });
+    var element = node.render();
+
+    expect(element.tagName.toLowerCase()).toBe("circle");
+    expect(element.namespaceURI).toBe(svgURI);
+    // `|| element instanceof SVGCircleElement` is required since the polyfill is bugged
+    expect(element instanceof MegaCircle || element instanceof SVGCircleElement).toBe(true);
+
+  });
+
 
   it("checks that `domLayerNode` is correctly set when `events` is defined", function() {
 

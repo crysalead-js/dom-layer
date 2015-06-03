@@ -12,11 +12,10 @@ describe("props", function() {
       var from = h();
       var to = h({ props: { className: "active" } });
 
-      var rootNode = from.render();
-      var newRoot = patch.node(from, to);
+      var element = from.render();
+      patch.node(from, to);
 
-      expect(newRoot).toBe(rootNode);
-      expect(newRoot.className).toBe("active");
+      expect(element.className).toBe("active");
 
     });
 
@@ -37,6 +36,18 @@ describe("props", function() {
       patch.node(from, to);
 
       expect(element.className).toBe("active");
+
+    });
+
+    it("sets an `className` property using `null`", function() {
+
+      var from = h();
+      var to = h({ tagName: "div", props: { className: null } });
+
+      var element = from.render();
+      patch.node(from, to);
+
+      expect(element.className).toBe("");
 
     });
 
@@ -61,38 +72,63 @@ describe("props", function() {
     it("sets the `dataset` property", function() {
 
       var a = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
-      var rootNode = a.render();
+      var element = a.render();
 
-      expect(rootNode.dataset.foo).toBe("bar");
-      expect(rootNode.dataset.bar).toBe("oops");
+      expect(element.dataset.foo).toBe("bar");
+      expect(element.dataset.bar).toBe("oops");
+
+    });
+
+    it("ignores `dataset` if `null`", function() {
+
+      var from = h({ tagName: "div", props: { dataset: null } });
+      var element = from.render();
+
+      var defined = 0;
+      for (var key in element.dataset) {
+        defined++;
+      }
+      expect(defined).toBe(0);
 
     });
 
     it("ignores `undefined` property", function() {
 
       var node = h({ tagName: "div", props: { special: undefined } });
-      var rootNode = node.render();
-      expect("special" in rootNode).toBe(false);
+      var element = node.render();
+      expect("special" in element).toBe(false);
 
     });
 
     it("ignores `undefined` value property", function() {
 
       var node = h({ tagName: "div", props: { value: undefined } });
-      var rootNode = node.render();
-      expect("value" in rootNode).toBe(false);
+      var element = node.render();
+      expect("value" in element).toBe(false);
 
     });
 
     it("patches a property", function() {
 
+      var from = h({ props: { title: "hello" } });
+      var to = h({ props: { title: "world" } });
+      var element = from.render();
+      expect(element.title).toBe("hello");
+
+      patch.node(from, to);
+      expect(element.title).toBe("world");
+
+    });
+
+    it("patches the `className` property", function() {
+
       var from = h({ props: { className: "hello" } });
       var to = h({ props: { className: "world" } });
-      var rootNode = from.render();
-      expect(rootNode.className).toBe("hello");
+      var element = from.render();
+      expect(element.className).toBe("hello");
 
-      var newRoot = patch.node(from, to);
-      expect(newRoot.className).toBe("world");
+      patch.node(from, to);
+      expect(element.className).toBe("world");
 
     });
 
@@ -168,13 +204,25 @@ describe("props", function() {
 
       var from = h({ props: { dataset: { foo: "bar", bar: "oops" } } });
       var to = h({ props: { dataset: { foo: "baz", bar: "oops" } } });
-      var rootNode = from.render();
-      expect(rootNode.dataset.foo).toBe("bar");
-      expect(rootNode.dataset.bar).toBe("oops");
+      var element = from.render();
+      expect(element.dataset.foo).toBe("bar");
+      expect(element.dataset.bar).toBe("oops");
 
-      var newRoot = patch.node(from, to);
-      expect(newRoot.dataset.foo).toBe("baz");
-      expect(newRoot.dataset.bar).toBe("oops");
+      patch.node(from, to);
+      expect(element.dataset.foo).toBe("baz");
+      expect(element.dataset.bar).toBe("oops");
+
+    });
+
+    it('ignores empty `value` property', function() {
+
+      var select = h({ tagName: "select", props: { value: null } }, [
+        h({tagName: "option", props: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", props: {value: "bar"}}, ["bar"])
+      ]);
+
+      var element = select.render();
+      expect(domElementValue(element)).toBe("foo");
 
     });
 
@@ -221,39 +269,79 @@ describe("props", function() {
     it("unsets a property", function() {
 
       var from = h({ tagName: "div", props: { onclick: function() {} }});
-      var rootNode = from.render();
-      expect(typeof rootNode.onclick).toBe("function");
+      var element = from.render();
+      expect(typeof element.onclick).toBe("function");
 
       var to = h({ tagName: "div", props: {}});
-      var newRoot = patch.node(from, to);
-      expect(rootNode.onclick).toBe(null);
+      patch.node(from, to);
+      expect(element.onclick).toBe(null);
+
+    });
+
+    it("unsets the `className` property", function() {
+
+      var from = h({ props: { className: "hello" } });
+      var to = h();
+      var element = from.render();
+      expect(element.className).toBe("hello");
+
+      patch.node(from, to);
+      expect(element.className).toBe("");
 
     });
 
     it("unsets a property when equal to `undefined`", function() {
 
       var from = h({ tagName: "div", props: { onclick: function() {} } });
-      var rootNode = from.render();
-      expect(typeof rootNode.onclick).toBe("function");
+      var element = from.render();
+      expect(typeof element.onclick).toBe("function");
 
       var to = h({ tagName: "div", props: { onclick: undefined } });
-      var newRoot = patch.node(from, to);
-      expect(rootNode.onclick).toBe(null);
+      patch.node(from, to);
+      expect(element.onclick).toBe(null);
 
     });
 
-    it("unsets dataset", function() {
+    it("unsets `dataset` property", function() {
 
       var from = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
-      var rootNode = from.render();
+      var element = from.render();
 
       var to = h({ tagName: "div", props: { dataset: { foo: "bar", baz: "hello" } } });
-      var newRoot = patch.node(from, to);
+      patch.node(from, to);
 
-      expect(rootNode).toEqual(newRoot);
-      expect(newRoot.dataset.foo).toBe("bar");
-      expect(newRoot.dataset.bar).toBe(undefined);
-      expect(newRoot.dataset.baz).toBe("hello");
+      expect(element.dataset.foo).toBe("bar");
+      expect(element.dataset.bar).toBe(undefined);
+      expect(element.dataset.baz).toBe("hello");
+
+    });
+
+    it("unsets `dataset` properties", function() {
+
+      var from = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
+      var element = from.render();
+
+      expect(element.dataset.foo).toBe("bar");
+      expect(element.dataset.bar).toBe("oops");
+
+      to = h({ tagName: "div", props: {  } });
+      patch.node(from, to);
+
+      expect(element.dataset.foo).toBe(undefined);
+      expect(element.dataset.bar).toBe(undefined);
+
+    });
+
+    it("unsets `dataset` properties using `null`", function() {
+
+      var from = h({ tagName: "div", props: { dataset: { foo: "bar", bar: "oops" } } });
+      var element = from.render();
+
+      var to = h({ tagName: "div", props: { dataset: null } });
+      patch.node(from, to);
+
+      expect(element.dataset.foo).toBe(undefined);
+      expect(element.dataset.bar).toBe(undefined);
 
     });
 

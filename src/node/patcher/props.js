@@ -38,9 +38,6 @@ function patch(element, previous, props) {
  * @param  Object props     The properties to match on.
  */
 function set(name, element, previous, props) {
-  if (props[name] === undefined) {
-    return;
-  }
   if (set.handlers[name]) {
     set.handlers[name](name, element, previous, props);
   } else if (previous[name] !== props[name]) {
@@ -58,7 +55,7 @@ set.handlers = Object.create(null);
  */
 function unset(name, element, previous) {
   if (unset.handlers[name]) {
-    unset.handlers[name](name, element, previous[name], previous);
+    unset.handlers[name](name, element, previous);
   } else {
     element[name] = null;
   }
@@ -69,10 +66,7 @@ unset.handlers = Object.create(null);
  * Custom set handler for the class attribute.
  */
 set.handlers.className = function(name, element, previous, props) {
-  if (props[name] === undefined) {
-    return;
-  }
-  element.className = stringifyClass(props[name]);
+  element.className = props[name] ? stringifyClass(props[name]) : "";
 };
 
 /**
@@ -80,6 +74,13 @@ set.handlers.className = function(name, element, previous, props) {
  */
 set.handlers.dataset = function(name, element, previous, props) {
   dataset.patch(element, previous[name], props[name]);
+};
+
+/**
+ * Custom unset handler for the class attribute.
+ */
+unset.handlers.className = function(name, element, previous) {
+  element.className = "";
 };
 
 /**

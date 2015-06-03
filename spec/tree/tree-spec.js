@@ -75,6 +75,25 @@ describe("Tree", function() {
 
   describe(".attach()", function() {
 
+    it("attaches a previously rendered html using a function", function() {
+
+      testBody.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
+
+      var from = function() {
+        return h({ tagName: "button", events: { onclick: onclick} }, ["Click me!"]);
+      };
+      var mountId = tree.attach("#mount-point", from);
+      var mountPoint = document.getElementById("mount-point");
+
+      expect(mountPoint.innerHTML).toBe("<button>Click me!</button>");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
+
+      var mount = tree.mounted(mountId);
+      expect(mount.children[0].element).toBe(mountPoint.childNodes[0]);
+      expect(mount.children[0].element.textContent).toBe("Click me!");
+
+    });
+
     it("populates domLayerNode when `events` is set", function() {
 
       testBody.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
@@ -129,6 +148,23 @@ describe("Tree", function() {
 
     });
 
+    it("ignores `null` virtual nodes", function() {
+
+      testBody.innerHTML = '<div id="mount-point"><button>Click me!</button></div>';
+
+      var from = h({ tagName: "button", events: { onclick: onclick} }, [null, "Click me!", null]);
+      var mountId = tree.attach("#mount-point", from);
+      var mountPoint = document.getElementById("mount-point");
+
+      expect(mountPoint.innerHTML).toBe("<button>Click me!</button>");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
+
+      var mount = tree.mounted(mountId);
+      expect(mount.children[0].element).toBe(mountPoint.childNodes[0]);
+      expect(mount.children[0].element.textContent).toBe("Click me!");
+
+    });
+
   });
 
   describe(".umount()", function() {
@@ -141,6 +177,28 @@ describe("Tree", function() {
       tree.unmount(mountId);
       expect(mountPoint.textContent).toBe("");
       expect(mountPoint.domLayerTreeId).toBe(undefined);
+
+    });
+
+    it("unmounts all virtual trees", function() {
+
+      var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
+      expect(mountPoint.textContent).toBe("#1#2#3");
+
+      tree.unmount();
+      expect(mountPoint.textContent).toBe("");
+      expect(mountPoint.domLayerTreeId).toBe(undefined);
+
+    });
+
+    it("bails out with an invalid mount id", function() {
+
+      var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
+      expect(mountPoint.textContent).toBe("#1#2#3");
+
+      tree.unmount("abc");
+      expect(mountPoint.textContent).toBe("#1#2#3");
+      expect(mountPoint.domLayerTreeId).toBe(mountId);
 
     });
 
@@ -212,17 +270,21 @@ describe("Tree", function() {
 
       var from = [
         h({ tagName: 'input', key: 0, attrs: { id: "input1" } }),
-        h({ tagName: 'input', key: 1, attrs: { id: "input2" } })
+        h({ tagName: 'input', key: 1, attrs: { id: "input2" } }),
+        h({ tagName: 'input', key: 2, attrs: { id: "input3" } }),
+        h({ tagName: 'input', key: 3, attrs: { id: "input4" } })
       ];
 
       var to = [
         h({ tagName: 'input', key: 1, attrs: { id: "input2" } }),
+        h({ tagName: 'input', key: 2, attrs: { id: "input3" } }),
+        h({ tagName: 'input', key: 3, attrs: { id: "input4" } }),
         h({ tagName: 'input', key: 0, attrs: { id: "input1" } })
       ];
 
       var mountId = tree.mount("#mount-point", from);
 
-      var input = document.getElementById("input2");
+      var input = document.getElementById("input1");
 
       input.focus();
 
