@@ -14,5 +14,6 @@ before_script:
   - node istanbul_coverage.js &
 
 after_script:
-  - istanbul report
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm coverage.json && rm -rf ./coverage
+  - npm run coverage-report
+  - npm run push-coverage
+  - npm run cleanup
