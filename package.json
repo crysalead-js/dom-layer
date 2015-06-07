@@ -35,7 +35,7 @@
     "uglify-js": "^2.4.23"
   },
   "scripts": {
-    "test": "testem ci -l firefox",
+    "test": "testem ci -l firefox && jasmine",
     "dist": "browserify -s domLayer index.js > dist/dom-layer.js && browserify -s domLayer index.js | uglifyjs > dist/dom-layer.min.js",
     "coverage-report": "istanbul report",
     "push-coverage": "cat ./coverage/lcov.info | coveralls",
