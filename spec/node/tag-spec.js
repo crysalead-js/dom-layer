@@ -362,6 +362,12 @@ describe("Tag", function() {
 
     });
 
+    it('renders the `innerHTML` property if present and no children has been defined', function () {
+      var div = h({ tagName: "div", props: { innerHTML: '<span>Hello World</span>' }});
+      var html = div.toHtml();
+      expect(html).toBe('<div><span>Hello World</span></div>');
+    });
+
     it("renders a void element", function() {
 
       var br = h({ tagName: "br" });

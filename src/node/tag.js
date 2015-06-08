@@ -225,8 +225,14 @@ Tag.prototype.toHtml = function() {
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
   var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
 
-  for (var i = 0, len = this.children.length; i < len ; i++) {
-    html += this.children[i].toHtml();
+  var len = this.children.length;
+
+  if (this.props && this.props.innerHTML && len === 0) {
+    html += this.props.innerHTML;
+  } else {
+    for (var i = 0; i < len ; i++) {
+      html += this.children[i].toHtml();
+    }
   }
   html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
   return html;
