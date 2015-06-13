@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.2.1 (2015-06-13)
+  * **Add:** renders the `innerHTML` property if present and no children has been defined through `toHtml()`.
+
 ## 0.2.0 (2015-06-03)
 
   * **Bugfix:** fixes minor bug related to dataset update.

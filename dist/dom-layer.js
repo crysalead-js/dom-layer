@@ -1,6 +1,35 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Tree = require("./src/tree/tree");
+var attach = require("./src/tree/attach");
+var create = require("./src/tree/create");
+var update = require("./src/tree/update");
+var remove = require("./src/tree/remove");
+var patch = require("./src/tree/patch");
+var Tag = require("./src/node/tag");
+var Text = require("./src/node/text");
+var attrs = require("./src/node/patcher/attrs");
+var attrsNS = require("./src/node/patcher/attrs-n-s");
+var props = require("./src/node/patcher/props");
+var events = require("./src/events");
+
+module.exports = {
+  Tree: Tree,
+  Tag: Tag,
+  Text: Text,
+  attach: attach,
+  create: create,
+  update: update,
+  remove: remove,
+  patch: patch,
+  attrs: attrs,
+  attrsNS: attrsNS,
+  props: props,
+  events: events
+};
+
+},{"./src/events":13,"./src/node/patcher/attrs":15,"./src/node/patcher/attrs-n-s":14,"./src/node/patcher/props":17,"./src/node/tag":20,"./src/node/text":21,"./src/tree/attach":22,"./src/tree/create":23,"./src/tree/patch":24,"./src/tree/remove":25,"./src/tree/tree":26,"./src/tree/update":27}],2:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
-var hasRemovePropertyInStyle = "removeProperty" in document.createElement("a").style;
+var hasRemovePropertyInStyle = typeof document !== "undefined" && "removeProperty" in document.createElement("a").style;
 
 /**
  * Gets/Sets a DOM element property.
@@ -40,7 +69,7 @@ function css(element, name, value) {
 
 module.exports = css;
 
-},{"to-camel-case":2}],2:[function(require,module,exports){
+},{"to-camel-case":3}],3:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -65,7 +94,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":3}],3:[function(require,module,exports){
+},{"to-space-case":4}],4:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -90,7 +119,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":4}],4:[function(require,module,exports){
+},{"to-no-case":5}],5:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -165,7 +194,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * DOM element value Getter/Setter.
  */
@@ -272,8 +301,55 @@ function set(element, val) {
 
 module.exports = value;
 
-},{}],6:[function(require,module,exports){
-var events = require("component-event");
+},{}],7:[function(require,module,exports){
+var bind, unbind, prefix = '';
+
+if (typeof window !== "undefined") {
+    bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
+    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
+    prefix = bind !== 'addEventListener' ? 'on' : '';
+} else {
+    bind = unbind = function() {};
+}
+
+var event = {};
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+event.bind = function(el, type, fn, capture){
+  el[bind](prefix + type, fn, capture || false);
+  return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+event.unbind = function(el, type, fn, capture){
+  el[unbind](prefix + type, fn, capture || false);
+  return fn;
+};
+
+module.exports = event;
+
+},{}],8:[function(require,module,exports){
+var event = require("./event");
 
 var isArray = Array.isArray;
 
@@ -320,7 +396,7 @@ EventManager.prototype.bind = function(name) {
     this.unbind(name);
   }
   this._events[name] = bubbleEvent;
-  events.bind(this._container, name, bubbleEvent);
+  event.bind(this._container, name, bubbleEvent);
 };
 
 /**
@@ -331,7 +407,7 @@ EventManager.prototype.bind = function(name) {
 EventManager.prototype.unbind = function(name) {
   if (arguments.length) {
     if (this._events[name]) {
-      events.unbind(this._container, name, this._events[name]);
+      event.unbind(this._container, name, this._events[name]);
     }
     return;
   }
@@ -399,43 +475,7 @@ EventManager.defaultEvents = [
 
 module.exports = EventManager;
 
-},{"component-event":7}],7:[function(require,module,exports){
-var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
-    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
-    prefix = bind !== 'addEventListener' ? 'on' : '';
-
-/**
- * Bind `el` event `type` to `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.bind = function(el, type, fn, capture){
-  el[bind](prefix + type, fn, capture || false);
-  return fn;
-};
-
-/**
- * Unbind `el` event `type`'s callback `fn`.
- *
- * @param {Element} el
- * @param {String} type
- * @param {Function} fn
- * @param {Boolean} capture
- * @return {Function}
- * @api public
- */
-
-exports.unbind = function(el, type, fn, capture){
-  el[unbind](prefix + type, fn, capture || false);
-  return fn;
-};
-},{}],8:[function(require,module,exports){
+},{"./event":7}],9:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -493,16 +533,29 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+/*!
+ * escape-html
+ * Copyright(c) 2012-2013 TJ Holowaychuk
+ * MIT Licensed
+ */
+
+/**
+ * Module exports.
+ * @public
+ */
+
+module.exports = escapeHtml;
+
 /**
  * Escape special characters in the given string of html.
  *
- * @param  {String} html
- * @return {String}
- * @api private
+ * @param  {string} str The string to escape for inserting into HTML
+ * @return {string}
+ * @public
  */
 
-module.exports = function(html) {
+function escapeHtml(html) {
   return String(html)
     .replace(/&/g, '&amp;')
     .replace(/"/g, '&quot;')
@@ -511,7 +564,7 @@ module.exports = function(html) {
     .replace(/>/g, '&gt;');
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -541,7 +594,7 @@ function isEmpty (val) {
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * This file automatically generated from `pre-publish.js`.
  * Do not manually edit.
@@ -566,7 +619,7 @@ module.exports = {
   "wbr": true
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var domElementValue = require("dom-element-value");
 var EventManager = require("dom-event-manager");
 
@@ -603,7 +656,7 @@ module.exports = {
   init: init
 };
 
-},{"dom-element-value":5,"dom-event-manager":6}],13:[function(require,module,exports){
+},{"dom-element-value":6,"dom-event-manager":8}],14:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -659,7 +712,7 @@ module.exports = {
   namespaces: namespaces
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var style = require("./style");
 var stringifyClass = require("../../util/stringify-class");
 
@@ -765,7 +818,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":28,"./style":18}],15:[function(require,module,exports){
+},{"../../util/stringify-class":29,"./style":19}],16:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -802,7 +855,7 @@ module.exports = {
   patch: patch
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var dataset = require("./dataset");
 var stringifyClass = require("../../util/stringify-class");
 
@@ -901,7 +954,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":28,"./dataset":15}],17:[function(require,module,exports){
+},{"../../util/stringify-class":29,"./dataset":16}],18:[function(require,module,exports){
 isArray = Array.isArray;
 
 /**
@@ -959,7 +1012,7 @@ function populateOptions(node, values) {
 
 module.exports = selectValue;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var domElementCss = require("dom-element-css");
 
 /**
@@ -997,7 +1050,7 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":1}],19:[function(require,module,exports){
+},{"dom-element-css":2}],20:[function(require,module,exports){
 var voidElements = require("void-elements");
 var attach = require("../tree/attach");
 var create = require("../tree/create");
@@ -1225,8 +1278,14 @@ Tag.prototype.toHtml = function() {
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
   var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
 
-  for (var i = 0, len = this.children.length; i < len ; i++) {
-    html += this.children[i].toHtml();
+  var len = this.children.length;
+
+  if (this.props && this.props.innerHTML && len === 0) {
+    html += this.props.innerHTML;
+  } else {
+    for (var i = 0; i < len ; i++) {
+      html += this.children[i].toHtml();
+    }
   }
   html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
   return html;
@@ -1235,7 +1294,7 @@ Tag.prototype.toHtml = function() {
 
 module.exports = Tag;
 
-},{"../tree/attach":21,"../tree/create":22,"../tree/update":26,"../util/stringify-attrs":27,"./patcher/attrs":14,"./patcher/attrs-n-s":13,"./patcher/props":16,"./patcher/select-value":17,"void-elements":11}],20:[function(require,module,exports){
+},{"../tree/attach":22,"../tree/create":23,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":15,"./patcher/attrs-n-s":14,"./patcher/props":17,"./patcher/select-value":18,"void-elements":12}],21:[function(require,module,exports){
 var escapeHtml = require("escape-html");
 
 /**
@@ -1334,7 +1393,7 @@ Text.prototype.toHtml = function() {
 }
 
 module.exports = Text;
-},{"escape-html":9}],21:[function(require,module,exports){
+},{"escape-html":10}],22:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
@@ -1385,7 +1444,7 @@ function attach(container, nodes, parent) {
 
 module.exports = attach;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function create(container, nodes, parent) {
@@ -1405,7 +1464,7 @@ function create(container, nodes, parent) {
 
 module.exports = create;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var isEmpty = require("is-empty");
 
 var isArray = Array.isArray;
@@ -1529,7 +1588,7 @@ patch.node = function(from, to) {
 
 module.exports = patch;
 
-},{"is-empty":10}],24:[function(require,module,exports){
+},{"is-empty":11}],25:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1539,7 +1598,7 @@ function remove(nodes, parent) {
 
 module.exports = remove;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var query = require("dom-query");
 var attach = require("./attach");
 var create = require("./create");
@@ -1672,7 +1731,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":21,"./create":22,"./remove":24,"./update":26,"dom-query":8}],26:[function(require,module,exports){
+},{"./attach":22,"./create":23,"./remove":25,"./update":27,"dom-query":9}],27:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1689,7 +1748,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":23}],27:[function(require,module,exports){
+},{"./patch":24}],28:[function(require,module,exports){
 var stringifyStyle = require("./stringify-style");
 var stringifyClass = require("./stringify-class");
 
@@ -1722,7 +1781,7 @@ function stringifyAttrs(attrs, tagName) {
 
 module.exports = stringifyAttrs;
 
-},{"./stringify-class":28,"./stringify-style":29}],28:[function(require,module,exports){
+},{"./stringify-class":29,"./stringify-style":30}],29:[function(require,module,exports){
 /**
  * Returns a `'class1 class3" ...'` string from
  * a `{ class1: true, class2: false, class3: true }` object.
@@ -1745,7 +1804,7 @@ function stringifyClass(classAttr) {
 
 module.exports = stringifyClass;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * Returns a `'key1:value1;key2:value2" ...'` string from
  * a `{ key1: "value1", key2: "value2" }` object.
@@ -1766,34 +1825,5 @@ function stringifyStyle(style) {
 
 module.exports = stringifyStyle;
 
-},{}],30:[function(require,module,exports){
-var Tree = require("./src/tree/tree");
-var attach = require("./src/tree/attach");
-var create = require("./src/tree/create");
-var update = require("./src/tree/update");
-var remove = require("./src/tree/remove");
-var patch = require("./src/tree/patch");
-var Tag = require("./src/node/tag");
-var Text = require("./src/node/text");
-var attrs = require("./src/node/patcher/attrs");
-var attrsNS = require("./src/node/patcher/attrs-n-s");
-var props = require("./src/node/patcher/props");
-var events = require("./src/events");
-
-module.exports = {
-  Tree: Tree,
-  Tag: Tag,
-  Text: Text,
-  attach: attach,
-  create: create,
-  update: update,
-  remove: remove,
-  patch: patch,
-  attrs: attrs,
-  attrsNS: attrsNS,
-  props: props,
-  events: events
-};
-
-},{"./src/events":12,"./src/node/patcher/attrs":14,"./src/node/patcher/attrs-n-s":13,"./src/node/patcher/props":16,"./src/node/tag":19,"./src/node/text":20,"./src/tree/attach":21,"./src/tree/create":22,"./src/tree/patch":23,"./src/tree/remove":24,"./src/tree/tree":25,"./src/tree/update":26}]},{},[30])(30)
+},{}]},{},[1])(1)
 });
