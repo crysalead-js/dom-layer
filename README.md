@@ -3,9 +3,17 @@
 [![Build Status](https://travis-ci.org/crysalead-js/dom-layer.svg?branch=master)](https://travis-ci.org/crysalead-js/dom-layer)
 [![Coverage Status](https://coveralls.io/repos/crysalead-js/dom-layer/badge.svg)](https://coveralls.io/r/crysalead-js/dom-layer)
 
-This library is a Virtual DOM implementation ala React. If this implementation is not the fastest one (though close to the fastest according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
+This library is a Virtual DOM implementation. If this implementation is not the fastest one (though close to the fastest according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
 
 *You can however see some live benchmark in the [examples/speedtest](http://rawgit.com/crysalead-js/dom-layer/master/examples/speedtest/speedtest.html) directory.*
+
+## Install
+
+### Node.js
+
+```
+npm install dom-layer --save
+```
 
 ## The Virtual DOM API
 
@@ -14,13 +22,13 @@ This library is a Virtual DOM implementation ala React. If this implementation i
 * Delegated event system (via `events`)
 * Supports DOM level 0 event (via `props`)
 * Supports SVG, MathML as well as [Custom Elements & type extension](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/)
-* Animated transitions supported through `"created"` & `"destroy"` callbacks
+* Animated transitions facilities through `"created"` & `"destroy"` callbacks
 * Allows to create his own virtual nodes
 * Server side rendering facilities
 
 ### The different type of virtual node
 
-Out of the box, only the `Tag` and `Text` node are available for representing DOM elements. It should be enough for most abstractions. However it still possible to build your own ones. For example you can create your own virutal nodes like `Comment` or `Doctype` for some particular reason or some `ShadowTag` to play with [Web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM). Since all virtual nodes embed their rendering & patching strategy, all options are possible. For example you can image a `StaticHtml` node which render some static HTML and just bail out on patching.
+Out of the box, only the `Tag` and `Text` node are available for representing DOM elements. It should be enough for most abstractions. However it still possible to build your own ones. For example you can create your own virutal nodes like `Comment` or `Doctype` for some particular reason or some `ShadowTag` to play with [Web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM). Since all virtual nodes embed their rendering & patching strategy, all options are possible.
 
 #### Example
 
@@ -35,11 +43,11 @@ var root = new Tag("div", {attrs: {id: "message"}}, [new Text("Hello World!")]);
 
 The first parameter of `Tag` is the tag name to represent. The second parameter is an object of options and the last parameter is the children array (which can also be a function which returns a children array, like a `render()` function).
 
-Note: This is the verbose way to build a virtual tree but it was never the way to write a web application with. You should now build your own abstraction on top of it. React uses JSX for example as an abstraction layer but it would be possible to make it work with some old school html templating too.
+Note: This is the verbose way to build a virtual tree but it was never the way to write a web application with. You should now build your own abstraction on top of it. React uses JSX for example as an abstraction layer but it would be possible to make it work with some old school html templating too or using a custom [hyperscript function](https://github.com/Matt-Esch/virtual-dom/tree/master/virtual-hyperscript).
 
 ### The `Tag`'s options
 
-The `Tag` node is configurable with the `options` parameter and the configurable values are the following:
+The `Tag` node is configurable with the following options:
 
 ```js
 {
@@ -57,11 +65,11 @@ The `Tag` node is configurable with the `options` parameter and the configurable
 
 - `key`: a unique key to attach to a virtual node
 - `props`: allows to set some DOM Element properties like `"onclick"`, `"id"`.
-  - `attrs`: is dedicated to attributes like `"title"`, `"class"`.
-- `style`: contains CSS definitions.
+- `attrs`: is dedicated to attributes like `"title"`, `"class"`.
+  - `style`: contains CSS definitions.
 - `attrsNS`: is dedicated to attributes with a namespace like `"xlink:href"`.
-- `events`: allows to store some events managed in a delegated way (requires to run `require("dom-layer").events.init()` first).
-- `callbacks`: are callbacks executed during the virtual node lifetime (e.g `'created'`, `'remove'`)
+- `events`: it contains delegated event callbacks (requires to run `require("dom-layer").events.init()` first).
+- `callbacks`: are callbacks executed during the virtual node lifetime (i.e. `'created'`, `'updated'`, `'remove'`, `'destroy'`)
 - `data`: is optional but can contain some higher level abstraction data.
 
 Note:
@@ -115,7 +123,7 @@ Component.prototype.render = function() {
 };
 ```
 
-So according to the `order` value represent the states of the component, and the text sequence will be displayed either sorted or reversed depending on the `order` value. Let's see how we can mount it:
+The "states" of the component is in a way the `order` value, and the text sequence will be displayed either sorted or reversed depending on if it's equal to `'asc'` or `'desc'`. Let's see how we can mount it:
 
 ```js
 var component = new Component();
@@ -124,8 +132,6 @@ var factory = component.render.bind(component);
 
 // We are now using the `render()` function as the second parameter of `mount()`
 var mountId = tree.mount("#mount-point", factory);
-
-var mountPoint = document.getElementById("mount-point");
 
 // Changing the order here doesn't change anything on screen since we need to run `update()` first.
 component.order = "desc";
@@ -136,7 +142,7 @@ tree.update(mountId);
 
 During updates, the "factory function" (i.e the `render()` function) is executed and returns the new virtual tree to render. Then the DOM is patched according to changes.
 
-The example above is rudimentary but shows how to connect a higher abtraction on this virtual dom implementation.
+The example above is rudimentary but shows how to connect a higher abtraction with `dom-layer`.
 
 Finally to unmount a virtual tree, the `unmount()` function needs to be called with the mount identifier. For example:
 
@@ -154,9 +160,13 @@ var button = new Tag("button", {props: {onclick: function() {alert("Hello World!
 ]);
 ```
 
-This kind of events are DOM level 0 events which mean that a function is registered as an event handler on the DOM element.
+This kind of events are DOM level 0 events which mean that a function is registered as an event handler on the DOM element. In other words it's equivalent to the following html:
 
-The other built-in event system is a delegated event system ala React which use the following syntax:
+```html
+<button onclick="alert('Hello World!')">Click Me !</button>
+```
+
+The other built-in event system is a delegated event system (similar to [React](https://facebook.github.io/react/) or [deku](https://github.com/dekujs/deku)). It uses the following syntax:
 
 ```js
 domLayer = require("dom-layer");
@@ -170,7 +180,7 @@ var button = new Tag("button", {events: {onclick: function() {alert("Hello World
 With delegated events, events are not attached to DOM element directly. The events are listened at the a level element (i.e `document.body` in this case) using a single event listener. This strategy is probably the most advantageous especially for virtual dom implementations. It tends to perform faster when the number of event handlers is high and works in a transparent manner. So that's why the DOM level 2 events (i.e which requires numerous `addEventListener()/removeEventListener()` on DOM patching) hasn't been implemented.
 
 Note:
-Make sure you initialized the event manager first by using `domLayer.events.init()` otherwise the events won't be catched on `document.body` (and therefore "forwarded" on the defined event handler).
+Make sure you initialized the event manager first by using `domLayer.events.init()` otherwise the events won't be catched on `document.body` (and therefore "forwarded" up to the event handler).
 
 You can check an [example here](http://rawgit.com/crysalead-js/dom-layer/master/examples/input/input.html).
 
@@ -202,6 +212,8 @@ The above piece of logic will be executed server side to generate a full HTML pa
   var mountId = tree.attach("#mount-point", button); // using `attach()` instead of `mount()`.
 </script>
 ```
+
+Note: the virtual tree rendered server side using `toHtml()` must be the one used with `attach()` client side. Attaching random virtual tree & templates won't work.
 
 ## Life cycle hooks
 
