@@ -72,7 +72,9 @@ function patch(container, children, toChildren, parent) {
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {
-      fromChildren[fromStartIndex].remove();
+      if (fromChildren[fromStartIndex] !== undefined) {
+        fromChildren[fromStartIndex].remove();
+      }
     }
   }
   return toChildren;

@@ -374,6 +374,21 @@ describe("patch.node()", function() {
 
     });
 
+    it("keeps a central pivot", function() {
+
+      var from = _.buildNodes(["1", "2", "3"]);
+      var to = _.buildNodes(["4", "2", "5"]);
+
+      var rootNode = from.render();
+      var childNodes = _.rewrap(rootNode.childNodes);
+
+      var newRoot = patch.node(from, to);
+      expect(newRoot, rootNode);
+
+      expect(newRoot.textContent).toBe('425');
+
+    });
+
   });
 
 });
