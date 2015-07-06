@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.2.2 (2015-07-06)
+  * **Bugfix:** fixes the patching algorithm when an element has been moved between two nodes to remove.
+
 ## 0.2.1 (2015-06-13)
   * **Add:** renders the `innerHTML` property if present and no children has been defined through `toHtml()`.
 

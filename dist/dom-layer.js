@@ -1539,7 +1539,9 @@ function patch(container, children, toChildren, parent) {
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {
-      fromChildren[fromStartIndex].remove();
+      if (fromChildren[fromStartIndex] !== undefined) {
+        fromChildren[fromStartIndex].remove();
+      }
     }
   }
   return toChildren;
@@ -1560,30 +1562,6 @@ function keysIndexes(children, startIndex, endIndex) {
     }
   }
   return keys;
-}
-
-/**
- * Patches an existing node to be "identical" to a new node.
- *
- * @param  Object from      The initial virtual node to patch.
- * @param  Object to        The new virtual node value.
- * @param  Number fromIndex The index of the `from` node inside parent's children.
- * @param  Object container The container.
- * @return Object           The corresponding DOMElement.
- */
-patch.node = function(from, to) {
-  var element = from.element;
-
-  if (from === to) {
-    return element;
-  }
-  var next = from.patch(to);
-
-  var container = element.parentNode;
-  if (container && next !== element) {
-    container.replaceChild(next, element);
-  }
-  return next;
 }
 
 module.exports = patch;
