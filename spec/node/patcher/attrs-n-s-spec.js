@@ -74,7 +74,7 @@ describe("attrsNS", function() {
       });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
       expect(element.getAttributeNS(namespaces["xlink"], "href")).toBeFalsy();
     });
 

@@ -208,6 +208,18 @@ describe("Tree", function() {
 
     it("updates a mounted tree", function() {
 
+      testBody.innerHTML = '<div id="mount-point"></div>';
+
+      var mountId = tree.mount("#mount-point", h({ tagName: "div" }, ['from']));
+      tree.update(mountId, h({ tagName: "span" }, ['to']));
+
+      var mountPoint = document.getElementById("mount-point");
+      expect(mountPoint.textContent).toBe("to");
+
+    });
+
+    it("updates a mounted tree using a factory", function() {
+
       function Component() {
         this.order = "asc";
       }

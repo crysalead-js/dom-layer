@@ -60,7 +60,7 @@ describe("attrs", function() {
       expect(element.getAttribute("foo")).toBe("bar");
       expect(element.getAttribute("bar")).toBe("oops");
 
-      patch.node(from, to);
+      from.patch(to);
       expect(element.getAttribute("foo")).toBe("baz");
       expect(element.getAttribute("bar")).toBe("oops");
 
@@ -72,7 +72,7 @@ describe("attrs", function() {
       var to = h({ tagName: "div", attrs: { "class": "active" } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("active");
 
@@ -91,7 +91,7 @@ describe("attrs", function() {
       var element = from.render();
       expect(element.className).toBe("default-class");
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.classList.contains("active1")).toBe(true);
       expect(element.classList.contains("inactive")).toBe(false);
@@ -118,7 +118,7 @@ describe("attrs", function() {
       expect(element.classList.contains("inactive")).toBe(false);
       expect(element.classList.contains("active2")).toBe(true);
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.classList.contains("active1")).toBe(false);
       expect(element.classList.contains("inactive")).toBe(true);
@@ -141,7 +141,7 @@ describe("attrs", function() {
       expect(element.classList.contains("inactive")).toBe(false);
       expect(element.classList.contains("active2")).toBe(true);
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("default-class");
 
@@ -153,7 +153,7 @@ describe("attrs", function() {
       var to = h({ tagName: "div", attrs: { style: { display: "none" } } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.style.display).toBe(_.style("display", "none"));
 
@@ -167,7 +167,7 @@ describe("attrs", function() {
       var element = from.render();
       expect(element.style.width).toBe(_.style("width", "10px"));
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.style.padding).toBe(_.style("padding", "5px"));
       expect(element.style.width).toBe(_.style("width", ""));
@@ -183,7 +183,7 @@ describe("attrs", function() {
       expect(element.style.width).toBe(_.style("width", "10px"));
       expect(element.style.margin).toBe(_.style("margin", "10px"));
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.style.padding).toBe(_.style("padding", "5px"));
       expect(element.style.margin).toBe(_.style("margin", "15px"));
@@ -199,7 +199,7 @@ describe("attrs", function() {
       var element = from.render();
       expect(element.style.width).toBe(_.style("width", "10px"));
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.style.padding).toBe(_.style("padding", "5px"));
       expect(element.style.width).toBe(_.style("width", ""));
@@ -308,7 +308,7 @@ describe("attrs", function() {
       var to = h({ tagName: "input", attrs: { value: null } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.hasAttribute("value")).toBe(true);
       expect(element.value).toBe("");
@@ -321,7 +321,7 @@ describe("attrs", function() {
       var to = h({ attrs: { a: "1", c: "3" } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.getAttribute("a")).toBe("1");
       expect(element.getAttribute("b")).toBe(null);
@@ -335,7 +335,7 @@ describe("attrs", function() {
       var to = h();
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.getAttribute("a")).toBe(null);
       expect(element.getAttribute("b")).toBe(null);
@@ -350,7 +350,7 @@ describe("attrs", function() {
       var to = h({ attrs: { style: undefined } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.style.display).toBe(_.style("display", ""));
       expect(element.style.width).toBe(_.style("width", ""));
@@ -363,7 +363,7 @@ describe("attrs", function() {
       var to = h({ tagName: "input", attrs: { custom: null } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.hasAttribute("custom")).toBe(false);
       expect(element.custom).toBe(undefined);

@@ -13,7 +13,7 @@ describe("props", function() {
       var to = h({ props: { className: "active" } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("active");
 
@@ -33,7 +33,7 @@ describe("props", function() {
       var to = h({ tagName: "div", props: { className: "active" } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("active");
 
@@ -45,7 +45,7 @@ describe("props", function() {
       var to = h({ tagName: "div", props: { className: null } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("");
 
@@ -61,7 +61,7 @@ describe("props", function() {
       } } });
 
       var element = from.render();
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.classList.contains("active1")).toBe(true);
       expect(element.classList.contains("inactive")).toBe(false);
@@ -115,7 +115,7 @@ describe("props", function() {
       var element = from.render();
       expect(element.title).toBe("hello");
 
-      patch.node(from, to);
+      from.patch(to);
       expect(element.title).toBe("world");
 
     });
@@ -127,7 +127,7 @@ describe("props", function() {
       var element = from.render();
       expect(element.className).toBe("hello");
 
-      patch.node(from, to);
+      from.patch(to);
       expect(element.className).toBe("world");
 
     });
@@ -144,7 +144,7 @@ describe("props", function() {
       var element = from.render();
       expect(element.className).toBe("default-class");
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.classList.contains("active1")).toBe(true);
       expect(element.classList.contains("inactive")).toBe(false);
@@ -171,7 +171,7 @@ describe("props", function() {
       expect(element.classList.contains("inactive")).toBe(false);
       expect(element.classList.contains("active2")).toBe(true);
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.classList.contains("active1")).toBe(false);
       expect(element.classList.contains("inactive")).toBe(true);
@@ -194,7 +194,7 @@ describe("props", function() {
       expect(element.classList.contains("inactive")).toBe(false);
       expect(element.classList.contains("active2")).toBe(true);
 
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.className).toBe("default-class");
 
@@ -208,7 +208,7 @@ describe("props", function() {
       expect(element.dataset.foo).toBe("bar");
       expect(element.dataset.bar).toBe("oops");
 
-      patch.node(from, to);
+      from.patch(to);
       expect(element.dataset.foo).toBe("baz");
       expect(element.dataset.bar).toBe("oops");
 
@@ -273,7 +273,7 @@ describe("props", function() {
       expect(typeof element.onclick).toBe("function");
 
       var to = h({ tagName: "div", props: {}});
-      patch.node(from, to);
+      from.patch(to);
       expect(element.onclick).toBe(null);
 
     });
@@ -285,7 +285,7 @@ describe("props", function() {
       var element = from.render();
       expect(element.className).toBe("hello");
 
-      patch.node(from, to);
+      from.patch(to);
       expect(element.className).toBe("");
 
     });
@@ -297,7 +297,7 @@ describe("props", function() {
       expect(typeof element.onclick).toBe("function");
 
       var to = h({ tagName: "div", props: { onclick: undefined } });
-      patch.node(from, to);
+      from.patch(to);
       expect(element.onclick).toBe(null);
 
     });
@@ -308,7 +308,7 @@ describe("props", function() {
       var element = from.render();
 
       var to = h({ tagName: "div", props: { dataset: { foo: "bar", baz: "hello" } } });
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.dataset.foo).toBe("bar");
       expect(element.dataset.bar).toBe(undefined);
@@ -325,7 +325,7 @@ describe("props", function() {
       expect(element.dataset.bar).toBe("oops");
 
       to = h({ tagName: "div", props: {  } });
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.dataset.foo).toBe(undefined);
       expect(element.dataset.bar).toBe(undefined);
@@ -338,7 +338,7 @@ describe("props", function() {
       var element = from.render();
 
       var to = h({ tagName: "div", props: { dataset: null } });
-      patch.node(from, to);
+      from.patch(to);
 
       expect(element.dataset.foo).toBe(undefined);
       expect(element.dataset.bar).toBe(undefined);

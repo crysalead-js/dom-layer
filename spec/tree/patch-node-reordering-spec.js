@@ -2,7 +2,7 @@ var h = require("../helper/h");
 var _ = require("../helper/util");
 var patch = require("../../src/tree/patch");
 
-describe("patch.node()", function() {
+describe(".patch()", function() {
 
   describe("when using regular nodes", function() {
 
@@ -14,7 +14,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('#0#1#2#3');
@@ -29,7 +29,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('#0#1#2#3');
@@ -44,7 +44,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('#0#1');
@@ -59,7 +59,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('');
@@ -78,7 +78,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('#0#1#2#3');
@@ -93,7 +93,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0#1#2a');
@@ -108,7 +108,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0#1a#3');
@@ -123,7 +123,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0#1#2#3a#5');
@@ -138,7 +138,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0a#2');
@@ -153,7 +153,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0a#2');
@@ -168,7 +168,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('#0edc#4a');
@@ -187,7 +187,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('12340');
@@ -202,7 +202,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('74326testgood1');
@@ -217,7 +217,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('bc');
@@ -232,7 +232,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('c');
@@ -247,7 +247,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('abc');
@@ -262,7 +262,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('abc');
@@ -277,7 +277,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('ab');
@@ -292,7 +292,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('a');
@@ -307,7 +307,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('abc');
@@ -322,7 +322,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('abc');
@@ -337,7 +337,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('edca');
@@ -352,7 +352,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot).toBe(rootNode);
 
       expect(newRoot.textContent).toBe('abce');
@@ -367,7 +367,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('');
@@ -382,7 +382,7 @@ describe("patch.node()", function() {
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
 
-      var newRoot = patch.node(from, to);
+      var newRoot = from.patch(to);
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('425');
