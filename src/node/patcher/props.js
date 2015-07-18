@@ -67,7 +67,7 @@ unset.handlers = Object.create(null);
  * When changed the value is restored (IE compatibility).
  */
 set.handlers.type = function(name, element, previous, props) {
-  if (previous[name] === attrs[name]) {
+  if (previous[name] === props[name]) {
     return;
   }
   var value = element.value;

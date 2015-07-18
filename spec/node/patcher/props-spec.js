@@ -266,6 +266,24 @@ describe("props", function() {
 
     });
 
+    it('keeps `"value"` unchanged when `"type"` is modified', function() {
+
+      var from = h({ tagName: "input", props: { type: "text", value: "hello" } });
+      var to = h({ tagName: "input", props: { type: "checkbox", value: "hello" } });
+
+      var element = from.render();
+      expect(element.type).toBe("text");
+      expect(element.value).toBe("hello");
+
+      from.patch(to);
+
+      expect(element.hasAttribute("value")).toBe(true);
+      expect(element.type).toBe("checkbox");
+      expect(element.value).toBe("hello");
+
+    });
+
+
     it("unsets a property", function() {
 
       var from = h({ tagName: "div", props: { onclick: function() {} }});
