@@ -63,6 +63,19 @@ function unset(name, element, previous) {
 unset.handlers = Object.create(null);
 
 /**
+ * Custom set handler for the type attribute.
+ * When changed the value is restored (IE compatibility).
+ */
+set.handlers.type = function(name, element, previous, props) {
+  if (previous[name] === attrs[name]) {
+    return;
+  }
+  var value = element.value;
+  element[name] = props[name];
+  element.value = value;
+};
+
+/**
  * Custom set handler for the class attribute.
  */
 set.handlers.className = function(name, element, previous, props) {
