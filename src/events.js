@@ -30,6 +30,7 @@ function init() {
 }
 
 module.exports = {
+  EventManager: EventManager,
   getManager: getManager,
   init: init
 };
