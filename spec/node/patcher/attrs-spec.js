@@ -332,6 +332,23 @@ describe("attrs", function() {
 
     });
 
+    it('bails out when `"type"` is not modified', function() {
+
+      var from = h({ tagName: "input", attrs: { type: "text", value: "hello" } });
+      var to = h({ tagName: "input", attrs: { type: "text", value: "hello" } });
+
+      var element = from.render();
+      expect(element.type).toBe("text");
+      expect(element.value).toBe("hello");
+
+      from.patch(to);
+
+      expect(element.hasAttribute("value")).toBe(true);
+      expect(element.type).toBe("text");
+      expect(element.value).toBe("hello");
+
+    });
+
     it("unsets an attribute", function() {
 
       var from = h({ attrs: { a: "1", b: "2", c: "3" } });
