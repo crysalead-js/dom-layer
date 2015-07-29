@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.2.5 (2015-07-29)
+  * **Add:** exposes the EventManager library.
+
 ## 0.2.4 (2015-07-18)
   * **Bugfix:** fixes an IE related issue when the type attribute/property of input was modified and cleared up the value.
 

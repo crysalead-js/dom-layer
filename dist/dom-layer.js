@@ -353,6 +353,11 @@ var event = require("./event");
 
 var isArray = Array.isArray;
 
+var capturable = {
+  'blur': true,
+  'focus': true
+};
+
 /**
  * Captures all event on at a top level container (`document.body` by default).
  * When an event occurs, the delegate handler is executed starting form `event.target` up
@@ -366,7 +371,7 @@ function EventManager(delegateHandler, container) {
     throw new Error("The passed handler function is invalid");
   }
   this._delegateHandler = delegateHandler;
-  this._container = container || document.body;
+  this._container = container || document;
   this._events = Object.create(null);
 }
 
@@ -383,7 +388,7 @@ EventManager.prototype.bind = function(name) {
     e.stopPropagation = function() {
       this.isPropagationStopped = true;
     }
-    while(e.delegateTarget && e.delegateTarget !== this._container) {
+    while(e.delegateTarget !== null && e.delegateTarget !== this._container.parentNode) {
       this._delegateHandler(name, e);
       if (e.isPropagationStopped) {
         break;
@@ -396,7 +401,7 @@ EventManager.prototype.bind = function(name) {
     this.unbind(name);
   }
   this._events[name] = bubbleEvent;
-  event.bind(this._container, name, bubbleEvent);
+  event.bind(this._container, name, bubbleEvent, capturable[name] !== undefined);
 };
 
 /**
@@ -407,7 +412,7 @@ EventManager.prototype.bind = function(name) {
 EventManager.prototype.unbind = function(name) {
   if (arguments.length) {
     if (this._events[name]) {
-      event.unbind(this._container, name, this._events[name]);
+      event.unbind(this._container, name, this._events[name], capturable[name] !== undefined);
     }
     return;
   }
@@ -652,6 +657,7 @@ function init() {
 }
 
 module.exports = {
+  EventManager: EventManager,
   getManager: getManager,
   init: init
 };
