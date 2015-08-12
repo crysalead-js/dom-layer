@@ -19,7 +19,7 @@ describe("Tag", function() {
     expect(tag.attrs).toBe(undefined);
     expect(tag.attrsNS).toBe(undefined);
     expect(tag.events).toBe(undefined);
-    expect(tag.callbacks).toBe(undefined);
+    expect(tag.hooks).toBe(undefined);
     expect(tag.data).toBe(undefined);
     expect(tag.element).toBe(undefined);
     expect(tag.parent).toBe(undefined);
@@ -77,11 +77,11 @@ describe("Tag", function() {
 
   });
 
-  it("sets the `callbacks` property", function() {
+  it("sets the `hooks` property", function() {
 
-    var callbacks = {};
-    var tag = h({ callbacks: callbacks });
-    expect(tag.callbacks).toBe(callbacks);
+    var hooks = {};
+    var tag = h({ hooks: hooks });
+    expect(tag.hooks).toBe(hooks);
 
   });
 
@@ -142,7 +142,7 @@ describe("Tag", function() {
 
   });
 
-  describe('with `"callbacks"` defined', function() {
+  describe('with `"hooks"` defined', function() {
 
     var testBody, tree, mountPoint;
 
@@ -161,7 +161,7 @@ describe("Tag", function() {
 
       var params;
 
-      var tag = h({ callbacks: { created : function() {
+      var tag = h({ hooks: { created : function() {
         params = Array.prototype.slice.call(arguments);
       } } });
 
@@ -175,7 +175,7 @@ describe("Tag", function() {
 
       var params;
 
-      var tag = h({ callbacks: { created : function() {
+      var tag = h({ hooks: { created : function() {
         params = Array.prototype.slice.call(arguments);
       } } });
 
@@ -188,17 +188,17 @@ describe("Tag", function() {
     it('calls the `"updated"` callback on update', function() {
 
       var params = [];
-      var callbacks = { updated : function() {
+      var hooks = { updated : function() {
         params.push(Array.prototype.slice.call(arguments));
       } };
 
-      var from = h({ callbacks: callbacks });
+      var from = h({ hooks: hooks });
       var element = from.render();
 
-      var to1 = h({ callbacks: callbacks });
+      var to1 = h({ hooks: hooks });
       from.patch(to1);
 
-      var to2 = h({ callbacks: callbacks });
+      var to2 = h({ hooks: hooks });
       to1.patch(to2);
 
       expect(params).toEqual([[to1, element], [to2, element]]);
@@ -210,7 +210,7 @@ describe("Tag", function() {
       var destroyCallback;
       var params = [];
 
-      var tag = h({ callbacks: {
+      var tag = h({ hooks: {
           remove : function() {
             params.push(Array.prototype.slice.call(arguments));
           },
@@ -236,13 +236,13 @@ describe("Tag", function() {
 
       var logs = [];
 
-      var tag = h({ callbacks: {
+      var tag = h({ hooks: {
           remove : function() {
             logs.push('parent removed last');
           }
         }
       }, [
-        h({ callbacks: {
+        h({ hooks: {
             remove : function() {
               logs.push('child removed first');
             }

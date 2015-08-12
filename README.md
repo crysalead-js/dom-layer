@@ -22,7 +22,7 @@ npm install dom-layer --save
 * Delegated event system (via `events`)
 * Supports DOM level 0 event (via `props`)
 * Supports SVG, MathML as well as [Custom Elements & type extension](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/)
-* Animated transitions facilities through `"created"` & `"destroy"` callbacks
+* Animated transitions facilities through `"created"` & `"destroy"` hooks
 * Allows to create his own virtual nodes
 * Server side rendering facilities
 
@@ -52,13 +52,13 @@ The `Tag` node is configurable with the following options:
 ```js
 {
   key: String|Integer // The node key value
-  props: {}           // The properties
+  props: {},          // The properties
   attrs: {            // The attributes
     style: String|{}  // The style
   },
   attrsNS: {},        // The namespaced attributes (for SVG elements only)
-  events: {}          // Delegated events (requires to create an event manager),
-  callbacks: {}       // The callbacks to call during the node life cycle.
+  events: {},         // Delegated events (requires to create an event manager),
+  hooks: {},          // The callbacks to call during the node life cycle.
   data: {}            // Some custom data you want to embed with your virtual node.
 }
 ```
@@ -69,7 +69,7 @@ The `Tag` node is configurable with the following options:
   - `style`: contains CSS definitions.
 - `attrsNS`: is dedicated to attributes with a namespace like `"xlink:href"`.
 - `events`: it contains delegated event callbacks (requires to run `require("dom-layer").events.init()` first).
-- `callbacks`: are callbacks executed during the virtual node lifetime (i.e. `'created'`, `'updated'`, `'remove'`, `'destroy'`)
+- `hooks`: are callbacks executed during the virtual node lifetime (i.e. `'created'`, `'updated'`, `'remove'`, `'destroy'`)
 - `data`: is optional but can contain some higher level abstraction data.
 
 Note:
@@ -217,7 +217,7 @@ Note: the virtual tree rendered server side using `toHtml()` must be the one use
 
 ## Life cycle hooks
 
-During `Tag` life cycle a number of callback "hooks" are called if defined. The available callbacks for `Tag` are:
+During `Tag` life cycle a number of callback "hooks" are called if defined. The available hooks for `Tag` are:
 
 ```js
 {

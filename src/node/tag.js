@@ -23,7 +23,7 @@ function Tag(tagName, config, children) {
   this.attrs = config.attrs;
   this.attrsNS = config.attrsNS;
   this.events = config.events;
-  this.callbacks = config.callbacks;
+  this.hooks = config.hooks;
   this.data = config.data;
   this.element = undefined;
   this.parent = undefined;
@@ -91,8 +91,8 @@ Tag.prototype.render = function(parent) {
 
   create(element, this.children, this);
 
-  if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, element);
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
   }
   return element;
 };
@@ -113,8 +113,8 @@ Tag.prototype.attach = function(element, parent) {
 
   attach(element, this.children, this);
 
-  if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, element);
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
   }
   return element;
 }
@@ -163,8 +163,8 @@ Tag.prototype.patch = function(to) {
     to.element.domLayerNode = undefined;
   }
 
-  if (this.callbacks && this.callbacks.updated) {
-    this.callbacks.updated(this, to.element);
+  if (this.hooks && this.hooks.updated) {
+    this.hooks.updated(this, to.element);
   }
 
   return to.element;
@@ -193,10 +193,10 @@ Tag.prototype.destroy = function() {
   if (!parentNode) {
     return;
   }
-  if (!this.callbacks || !this.callbacks.destroy) {
+  if (!this.hooks || !this.hooks.destroy) {
     return parentNode.removeChild(element);
   }
-  return this.callbacks.destroy(element, function() {
+  return this.hooks.destroy(element, function() {
     return parentNode.removeChild(element);
   });
 };
@@ -210,8 +210,8 @@ function broadcastRemove(node) {
       broadcastRemove(node.children[i]);
     }
   }
-  if (node.callbacks && node.callbacks.remove) {
-    node.callbacks.remove(node, node.element);
+  if (node.hooks && node.hooks.remove) {
+    node.hooks.remove(node, node.element);
   }
 }
 
