@@ -211,14 +211,15 @@ describe("Tag", function() {
       var params = [];
 
       var tag = h({ callbacks: {
-        remove : function() {
-          params.push(Array.prototype.slice.call(arguments));
-        },
-        destroy : function(element, callback) {
-          destroyCallback = callback;
-          params.push([element, destroyCallback]);
-        },
-      } });
+          remove : function() {
+            params.push(Array.prototype.slice.call(arguments));
+          },
+          destroy : function(element, callback) {
+            destroyCallback = callback;
+            params.push([element, destroyCallback]);
+          }
+        }
+      });
 
       var mountId = tree.mount("#mount-point", tag);
       tree.unmount(mountId);
@@ -228,6 +229,31 @@ describe("Tag", function() {
 
       destroyCallback();
       expect(mountPoint.innerHTML).toBe("");
+
+    });
+
+    it('calls `"remove"` on children first', function() {
+
+      var logs = [];
+
+      var tag = h({ callbacks: {
+          remove : function() {
+            logs.push('parent removed last');
+          }
+        }
+      }, [
+        h({ callbacks: {
+            remove : function() {
+              logs.push('child removed first');
+            }
+          }
+        })
+      ]);
+
+      var mountId = tree.mount("#mount-point", tag);
+      tree.unmount(mountId);
+
+      expect(logs).toEqual(['child removed first', 'parent removed last']);
 
     });
 

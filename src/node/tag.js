@@ -205,14 +205,13 @@ Tag.prototype.destroy = function() {
  * Broadcasts the remove "event".
  */
 function broadcastRemove(node) {
+  if (node.children) {
+    for(var i = 0, len = node.children.length; i < len; i++) {
+      broadcastRemove(node.children[i]);
+    }
+  }
   if (node.callbacks && node.callbacks.remove) {
     node.callbacks.remove(node, node.element);
-  }
-  if (!node.children) {
-    return;
-  }
-  for(var i = 0, len = node.children.length; i < len; i++) {
-    broadcastRemove(node.children[i]);
   }
 }
 
