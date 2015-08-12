@@ -1,4 +1,4 @@
-isArray = Array.isArray;
+var isArray = Array.isArray;
 
 /**
  * This is a convenience function which preprocesses the value attribute/property
