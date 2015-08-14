@@ -13,7 +13,7 @@ function eventHandler(name, e) {
   if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
     value = domElementValue(element);
   }
-  return element.domLayerNode.events[eventName](e, value);
+  return element.domLayerNode.events[eventName](e, value, element.domLayerNode);
 }
 
 function getManager() {
