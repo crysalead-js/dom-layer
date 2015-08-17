@@ -6,8 +6,8 @@ var escapeHtml = require("escape-html");
  * @param  String tagName  The tag name.
  * @param  Array  children An array for children.
  */
-function Text(text) {
-  this.text = text;
+function Text(data) {
+  this.data = data;
   this.element = undefined;
 }
 
@@ -19,7 +19,7 @@ Text.prototype.type = "Text";
  * @return Object A DOM node.
  */
 Text.prototype.create = function() {
-  return document.createTextNode(this.text);
+  return document.createTextNode(this.data);
 }
 
 /**
@@ -65,8 +65,8 @@ Text.prototype.patch = function(to) {
     return to.render();
   }
   to.element = this.element;
-  if (this.text !== to.text) {
-    this.element.replaceData(0, this.element.length, to.text);
+  if (this.data !== to.data) {
+    this.element.data = to.data;
   }
   return this.element;
 }
@@ -92,7 +92,7 @@ Text.prototype.destroy = function() {
  * Returns an html representation of the text node.
  */
 Text.prototype.toHtml = function() {
-  return escapeHtml(this.text);
+  return escapeHtml(this.data);
 }
 
 module.exports = Text;

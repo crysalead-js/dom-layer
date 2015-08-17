@@ -131,9 +131,9 @@ describe("Tree", function() {
 
       expect(children[0].element).toBe(childNodes[0].childNodes[0]);
       expect(children[0].element.textContent).toBe("#1#2#3");
-      expect(children[0].text).toBe("#1#2#3");
-      expect(children[1].text).toBe("");
-      expect(children[2].text).toBe("");
+      expect(children[0].data).toBe("#1#2#3");
+      expect(children[1].data).toBe("");
+      expect(children[2].data).toBe("");
 
     });
 

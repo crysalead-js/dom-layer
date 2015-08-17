@@ -40,8 +40,8 @@ describe("Tag", function() {
 
     var tag = h({}, ["child1", "child2"]);
     expect(tag.children.length).toBe(2);
-    expect(tag.children[0].text).toBe("child1");
-    expect(tag.children[1].text).toBe("child2");
+    expect(tag.children[0].data).toBe("child1");
+    expect(tag.children[1].data).toBe("child2");
 
   });
 

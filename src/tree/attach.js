@@ -27,17 +27,17 @@ function attach(container, nodes, parent) {
       // work out of the box in a transparent manner if this principle is not
       // respected in a virtual tree.
 
-      size = nodes[i].text.length;
+      size = nodes[i].data.length;
       text = childNodes[j].data;
 
-      nodes[i].text = text;
+      nodes[i].data = text;
       nodes[i].attach(childNodes[j], parent);
       i++;
 
       textLen = text.length;
       while (size < textLen && i < nodesLen) {
-        size += nodes[i].text.length;
-        nodes[i].text = "";
+        size += nodes[i].data.length;
+        nodes[i].data = "";
         i++;
       }
     }
