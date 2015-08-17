@@ -84,10 +84,18 @@ Tag.prototype.render = function(parent) {
     element.domLayerNode = this;
   }
 
-  selectValue(this);
-  props.patch(element, {}, this.props);
-  attrs.patch(element, {}, this.attrs);
-  attrsNS.patch(element, {}, this.attrsNS);
+  if (this.tagName === "select") {
+    selectValue(this);
+  }
+  if (this.props) {
+    props.patch(element, {}, this.props);
+  }
+  if (this.attrs) {
+    attrs.patch(element, {}, this.attrs);
+  }
+  if (this.attrsNS) {
+    attrsNS.patch(element, {}, this.attrsNS);
+  }
 
   create(element, this.children, this);
 
@@ -150,10 +158,18 @@ Tag.prototype.patch = function(to) {
   }
   to.element = this.element;
 
-  selectValue(to);
-  props.patch(to.element, this.props, to.props);
-  attrs.patch(to.element, this.attrs, to.attrs);
-  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+  if (this.tagName === "select") {
+    selectValue(to);
+  }
+  if (this.props || to.props) {
+    props.patch(to.element, this.props, to.props);
+  }
+  if (this.attrs || to.attrs) {
+    attrs.patch(to.element, this.attrs, to.attrs);
+  }
+  if (this.attrsNS || to.attrsNS) {
+    attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+  }
 
   update(to.element, this.children, to.children);
 
