@@ -9,6 +9,7 @@ var escapeHtml = require("escape-html");
 function Text(data) {
   this.data = data;
   this.element = undefined;
+  this.parent = undefined;
 }
 
 Text.prototype.type = "Text";
@@ -25,10 +26,16 @@ Text.prototype.create = function() {
 /**
  * Renders virtual text node.
  *
- * @return Object        A textual DOM element.
+ * @param  Object  container The container to render in.
+ * @param  Object  parent    A parent node.
+ * @return Object            A textual DOM element.
  */
-Text.prototype.render = function() {
-  return this.element = this.create();
+Text.prototype.render = function(container, parent) {
+  this.parent = parent;
+  this.element = this.create();
+  container = container ? container : document.createDocumentFragment();
+  container.appendChild(this.element);
+  return this.element
 }
 
 /**
@@ -37,7 +44,8 @@ Text.prototype.render = function() {
  * @param  Object element A textual DOM element.
  * @return Object         The textual DOM element.
  */
-Text.prototype.attach = function(element) {
+Text.prototype.attach = function(element, parent) {
+  this.parent = parent;
   return this.element = element;
 }
 
@@ -62,7 +70,7 @@ Text.prototype.match = function(to) {
 Text.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render();
+    return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
   if (this.data !== to.data) {

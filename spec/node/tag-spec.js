@@ -268,11 +268,13 @@ describe("Tag", function() {
 
     });
 
-    it("silently aborts if the tag has no parent", function() {
+    it("destroys a tag", function() {
 
       var tag = h();
-      tag.render();
-      expect(tag.destroy()).toBe(undefined);
+      var element = tag.render();
+      var fragment = element.parentNode;
+      expect(tag.destroy()).toBe(element);
+      expect(fragment.hasChildNodes()).toBe(false);
 
     });
 

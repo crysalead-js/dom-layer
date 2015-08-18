@@ -1,6 +1,6 @@
 var voidElements = require("void-elements");
 var attach = require("../tree/attach");
-var create = require("../tree/create");
+var render = require("../tree/render");
 var update = require("../tree/update");
 var props = require("./patcher/props");
 var attrs = require("./patcher/attrs");
@@ -62,10 +62,11 @@ Tag.prototype.create = function() {
 /**
  * Renders the virtual node.
  *
- * @param  Object  parent A parent node.
- * @return Object         A root DOM node.
+ * @param  Object  container The container to render in.
+ * @param  Object  parent    A parent node.
+ * @return Object            The rendered DOM element.
  */
-Tag.prototype.render = function(parent) {
+Tag.prototype.render = function(container, parent) {
   this.parent = parent;
 
   if (!this.namespace) {
@@ -97,7 +98,10 @@ Tag.prototype.render = function(parent) {
     attrsNS.patch(element, {}, this.attrsNS);
   }
 
-  create(element, this.children, this);
+  container = container ? container : document.createDocumentFragment();
+  container.appendChild(element);
+
+  render(element, this.children, this);
 
   if (this.hooks && this.hooks.created) {
     this.hooks.created(this, element);
@@ -154,7 +158,7 @@ Tag.prototype.match = function(to) {
 Tag.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render(this.parent);
+    return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
 
