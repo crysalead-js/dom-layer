@@ -2,6 +2,12 @@
 
 ## HEAD
 
+## 0.2.6 (2015-08-22)
+  * **Optimization:** refactors node insertion logic because for reaching better performance on IE.
+  * **BC break:** makes `Text` node API more close to DOM text element API.
+  * **BC break:** renames `callbacks` into `hooks`.
+  * **BC break:** executes remove hooks on children first.
+
 ## 0.2.5 (2015-07-29)
   * **Add:** exposes the EventManager library.
 
