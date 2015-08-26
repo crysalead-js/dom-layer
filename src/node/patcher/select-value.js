@@ -34,6 +34,12 @@ function selectValue(node) {
   }
 }
 
+/**
+ * Populates values to options node.
+ *
+ * @param  Object node      A starting node (generaly a select node).
+ * @param  Object values    The selected values to populate.
+ */
 function populateOptions(node, values) {
   if (node.tagName !== "option") {
     for (var i = 0, len = node.children.length; i < len ; i++) {

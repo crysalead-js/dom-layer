@@ -282,6 +282,24 @@ describe("Tag", function() {
 
   describe(".toHtml()", function() {
 
+    it("renders a select", function() {
+
+      var select = h({ tagName: "select", attrs: { value: "bar" } }, [
+        h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
+        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+      ]);
+
+      var html = select.toHtml();
+
+      var expected = '<select>';
+      expected += '<option value="foo">foo</option>';
+      expected += '<option value="bar" selected="selected">bar</option>';
+      expected += '</select>';
+
+      expect(html).toBe(expected);
+
+    });
+
     it("renders a select multiple using groups", function() {
 
       var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
@@ -296,8 +314,8 @@ describe("Tag", function() {
       var html = select.toHtml();
 
       var expected = '<select multiple="multiple">';
-      expected += '<optgroup label="foo-group"><option value="foo">foo</option></optgroup>';
-      expected += '<optgroup label="bar-group"><option value="bar">bar</option></optgroup>';
+      expected += '<optgroup label="foo-group"><option value="foo" selected="selected">foo</option></optgroup>';
+      expected += '<optgroup label="bar-group"><option value="bar" selected="selected">bar</option></optgroup>';
       expected += '</select>';
 
       expect(html).toBe(expected);
@@ -374,26 +392,28 @@ describe("Tag", function() {
 
     });
 
-    it("ignores textarea value attribute", function() {
+    it("doesn't ignore textarea value attribute", function() {
 
-      var textarea = h({ tagName: "textarea", attrs: { value: "should be ignored" } });
+      var textarea = h({ tagName: "textarea", attrs: { value: "should not be ignored" } });
       var html = textarea.toHtml();
-      expect(html).toBe('<textarea></textarea>');
+      expect(html).toBe('<textarea>should not be ignored</textarea>');
 
     });
 
-    it("ignores contenteditable value attribute", function() {
+    it("doesn't ignore contenteditable value attribute", function() {
 
-      var div = h({ tagName: "div", attrs: { contenteditable: "true", value: "should be ignored" } });
+      var div = h({ tagName: "div", attrs: { contenteditable: "true", value: "should not be ignored" } });
       var html = div.toHtml();
-      expect(html).toBe('<div contenteditable="true"></div>');
+      expect(html).toBe('<div contenteditable="true">should not be ignored</div>');
 
     });
 
     it('renders the `innerHTML` property if present and no children has been defined', function () {
+
       var div = h({ tagName: "div", props: { innerHTML: '<span>Hello World</span>' }});
       var html = div.toHtml();
       expect(html).toBe('<div><span>Hello World</span></div>');
+
     });
 
     it("renders a void element", function() {

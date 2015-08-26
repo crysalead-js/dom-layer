@@ -20,9 +20,6 @@ function stringifyAttrs(attrs, tagName) {
     } else if (key === "class") {
       value = stringifyClass(value);
     }
-    if (key === "value" && (/^(?:textarea|select)$/i.test(tagName) || attrs.contenteditable)) {
-      continue;
-    }
     attributes.push(key + '="' + String(value).replace(/"/g, '\\"') + '"');
   }
   return attributes.join(" ");

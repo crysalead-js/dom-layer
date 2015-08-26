@@ -7,6 +7,7 @@ var attrs = require("./patcher/attrs");
 var attrsNS = require("./patcher/attrs-n-s");
 var selectValue = require("./patcher/select-value");
 var stringifyAttrs = require("../util/stringify-attrs");
+var Text = require("./text");
 
 /**
  * The Virtual Tag constructor.
@@ -240,17 +241,33 @@ function broadcastRemove(node) {
  */
 Tag.prototype.toHtml = function() {
 
-  var attrs = stringifyAttrs(this.attrs, this.tagName);
+  var children = this.children;
+  var attributes = {};
+
+  for (var key in this.attrs) {
+    if (key === 'value') {
+      if (this.tagName === 'select') {
+        selectValue(this);
+        continue;
+      } else if (this.tagName === 'textarea' || this.attrs.contenteditable) {
+        children = [new Text(this.attrs[key])];
+        continue;
+      }
+    }
+    attributes[key] = this.attrs[key];
+  }
+
+  var attrs = stringifyAttrs(attributes, this.tagName);
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
   var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
 
-  var len = this.children.length;
+  var len = children.length;
 
   if (this.props && this.props.innerHTML && len === 0) {
     html += this.props.innerHTML;
   } else {
     for (var i = 0; i < len ; i++) {
-      html += this.children[i].toHtml();
+      html += children[i].toHtml();
     }
   }
   html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
