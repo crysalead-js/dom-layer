@@ -36,6 +36,14 @@ describe("attrsNS", function() {
 
     });
 
+    it("bails out when attributes are empty", function() {
+
+      var element = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      attrsNS.patch(element);
+      expect(element).toBe(element);
+
+    });
+
     it("sets namespaced attributes", function() {
 
       var from = h({

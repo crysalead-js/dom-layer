@@ -2,6 +2,7 @@ var domElementValue = require("dom-element-value");
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
 var patch = require("../../../src/tree/patch");
+var attrs = require("../../../src/node/patcher/attrs");
 
 describe("attrs", function() {
 
@@ -346,6 +347,14 @@ describe("attrs", function() {
       expect(element.hasAttribute("value")).toBe(true);
       expect(element.type).toBe("text");
       expect(element.value).toBe("hello");
+
+    });
+
+    it("bails out when attributes are empty", function() {
+
+      var element = document.createElement("div");
+      attrs.patch(element);
+      expect(element).toBe(element);
 
     });
 

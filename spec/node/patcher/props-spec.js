@@ -2,6 +2,7 @@ var domElementValue = require("dom-element-value");
 var h = require("../../helper/h");
 var _ = require("../../helper/util");
 var patch = require("../../../src/tree/patch");
+var props = require("../../../src/node/patcher/props");
 
 describe("props", function() {
 
@@ -283,6 +284,13 @@ describe("props", function() {
 
     });
 
+    it("bails out when properties are empty", function() {
+
+      var element = document.createElement("div");
+      props.patch(element);
+      expect(element).toBe(element);
+
+    });
 
     it("unsets a property", function() {
 
