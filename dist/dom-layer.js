@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Tree = require("./src/tree/tree");
 var attach = require("./src/tree/attach");
-var create = require("./src/tree/create");
+var render = require("./src/tree/render");
 var update = require("./src/tree/update");
 var remove = require("./src/tree/remove");
 var patch = require("./src/tree/patch");
@@ -17,7 +17,7 @@ module.exports = {
   Tag: Tag,
   Text: Text,
   attach: attach,
-  create: create,
+  render: render,
   update: update,
   remove: remove,
   patch: patch,
@@ -27,7 +27,7 @@ module.exports = {
   events: events
 };
 
-},{"./src/events":13,"./src/node/patcher/attrs":15,"./src/node/patcher/attrs-n-s":14,"./src/node/patcher/props":17,"./src/node/tag":20,"./src/node/text":21,"./src/tree/attach":22,"./src/tree/create":23,"./src/tree/patch":24,"./src/tree/remove":25,"./src/tree/tree":26,"./src/tree/update":27}],2:[function(require,module,exports){
+},{"./src/events":13,"./src/node/patcher/attrs":15,"./src/node/patcher/attrs-n-s":14,"./src/node/patcher/props":17,"./src/node/tag":20,"./src/node/text":21,"./src/tree/attach":22,"./src/tree/patch":23,"./src/tree/remove":24,"./src/tree/render":25,"./src/tree/tree":26,"./src/tree/update":27}],2:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 var hasRemovePropertyInStyle = typeof document !== "undefined" && "removeProperty" in document.createElement("a").style;
 
@@ -355,7 +355,9 @@ var isArray = Array.isArray;
 
 var capturable = {
   'blur': true,
-  'focus': true
+  'focus': true,
+  'mouseenter': true,
+  'mouseleave': true
 };
 
 /**
@@ -466,6 +468,8 @@ EventManager.defaultEvents = [
   'mousedown',
   'mouseenter',
   'mouseleave',
+  'mouseover',
+  'mouseout',
   'mousemove',
   'mouseup',
   'paste',
@@ -640,7 +644,7 @@ function eventHandler(name, e) {
   if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
     value = domElementValue(element);
   }
-  return element.domLayerNode.events[eventName](e, value);
+  return element.domLayerNode.events[eventName](e, value, element.domLayerNode);
 }
 
 function getManager() {
@@ -988,7 +992,7 @@ module.exports = {
 };
 
 },{"../../util/stringify-class":29,"./dataset":16}],18:[function(require,module,exports){
-isArray = Array.isArray;
+var isArray = Array.isArray;
 
 /**
  * This is a convenience function which preprocesses the value attribute/property
@@ -1024,6 +1028,12 @@ function selectValue(node) {
   }
 }
 
+/**
+ * Populates values to options node.
+ *
+ * @param  Object node      A starting node (generaly a select node).
+ * @param  Object values    The selected values to populate.
+ */
 function populateOptions(node, values) {
   if (node.tagName !== "option") {
     for (var i = 0, len = node.children.length; i < len ; i++) {
@@ -1086,13 +1096,14 @@ module.exports = {
 },{"dom-element-css":2}],20:[function(require,module,exports){
 var voidElements = require("void-elements");
 var attach = require("../tree/attach");
-var create = require("../tree/create");
+var render = require("../tree/render");
 var update = require("../tree/update");
 var props = require("./patcher/props");
 var attrs = require("./patcher/attrs");
 var attrsNS = require("./patcher/attrs-n-s");
 var selectValue = require("./patcher/select-value");
 var stringifyAttrs = require("../util/stringify-attrs");
+var Text = require("./text");
 
 /**
  * The Virtual Tag constructor.
@@ -1109,7 +1120,7 @@ function Tag(tagName, config, children) {
   this.attrs = config.attrs;
   this.attrsNS = config.attrsNS;
   this.events = config.events;
-  this.callbacks = config.callbacks;
+  this.hooks = config.hooks;
   this.data = config.data;
   this.element = undefined;
   this.parent = undefined;
@@ -1148,10 +1159,11 @@ Tag.prototype.create = function() {
 /**
  * Renders the virtual node.
  *
- * @param  Object  parent A parent node.
- * @return Object         A root DOM node.
+ * @param  Object  container The container to render in.
+ * @param  Object  parent    A parent node.
+ * @return Object            The rendered DOM element.
  */
-Tag.prototype.render = function(parent) {
+Tag.prototype.render = function(container, parent) {
   this.parent = parent;
 
   if (!this.namespace) {
@@ -1166,19 +1178,30 @@ Tag.prototype.render = function(parent) {
 
   var element = this.element = this.create();
 
-  if (this.events) {
+  if (this.events || this.data) {
     element.domLayerNode = this;
   }
 
-  selectValue(this);
-  props.patch(element, {}, this.props);
-  attrs.patch(element, {}, this.attrs);
-  attrsNS.patch(element, {}, this.attrsNS);
+  if (this.tagName === "select") {
+    selectValue(this);
+  }
+  if (this.props) {
+    props.patch(element, {}, this.props);
+  }
+  if (this.attrs) {
+    attrs.patch(element, {}, this.attrs);
+  }
+  if (this.attrsNS) {
+    attrsNS.patch(element, {}, this.attrsNS);
+  }
 
-  create(element, this.children, this);
+  container = container ? container : document.createDocumentFragment();
+  container.appendChild(element);
 
-  if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, element);
+  render(element, this.children, this);
+
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
   }
   return element;
 };
@@ -1192,15 +1215,15 @@ Tag.prototype.render = function(parent) {
 Tag.prototype.attach = function(element, parent) {
   this.parent = parent;
   this.element = element;
-  if (this.events) {
+  if (this.events || this.data) {
     element.domLayerNode = this;
   }
   props.patch(element, {}, this.props);
 
   attach(element, this.children, this);
 
-  if (this.callbacks && this.callbacks.created) {
-    this.callbacks.created(this, element);
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
   }
   return element;
 }
@@ -1232,25 +1255,33 @@ Tag.prototype.match = function(to) {
 Tag.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render(this.parent);
+    return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
 
-  selectValue(to);
-  props.patch(to.element, this.props, to.props);
-  attrs.patch(to.element, this.attrs, to.attrs);
-  attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+  if (this.tagName === "select") {
+    selectValue(to);
+  }
+  if (this.props || to.props) {
+    props.patch(to.element, this.props, to.props);
+  }
+  if (this.attrs || to.attrs) {
+    attrs.patch(to.element, this.attrs, to.attrs);
+  }
+  if (this.attrsNS || to.attrsNS) {
+    attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
+  }
 
   update(to.element, this.children, to.children);
 
-  if (to.events) {
+  if (to.events || to.data) {
     to.element.domLayerNode = to;
-  } else if (this.events) {
+  } else if (this.events || this.data) {
     to.element.domLayerNode = undefined;
   }
 
-  if (this.callbacks && this.callbacks.updated) {
-    this.callbacks.updated(this, to.element);
+  if (this.hooks && this.hooks.updated) {
+    this.hooks.updated(this, to.element);
   }
 
   return to.element;
@@ -1279,10 +1310,10 @@ Tag.prototype.destroy = function() {
   if (!parentNode) {
     return;
   }
-  if (!this.callbacks || !this.callbacks.destroy) {
+  if (!this.hooks || !this.hooks.destroy) {
     return parentNode.removeChild(element);
   }
-  return this.callbacks.destroy(element, function() {
+  return this.hooks.destroy(element, function() {
     return parentNode.removeChild(element);
   });
 };
@@ -1291,14 +1322,13 @@ Tag.prototype.destroy = function() {
  * Broadcasts the remove "event".
  */
 function broadcastRemove(node) {
-  if (node.callbacks && node.callbacks.remove) {
-    node.callbacks.remove(node, node.element);
+  if (node.children) {
+    for(var i = 0, len = node.children.length; i < len; i++) {
+      broadcastRemove(node.children[i]);
+    }
   }
-  if (!node.children) {
-    return;
-  }
-  for(var i = 0, len = node.children.length; i < len; i++) {
-    broadcastRemove(node.children[i]);
+  if (node.hooks && node.hooks.remove) {
+    node.hooks.remove(node, node.element);
   }
 }
 
@@ -1307,17 +1337,33 @@ function broadcastRemove(node) {
  */
 Tag.prototype.toHtml = function() {
 
-  var attrs = stringifyAttrs(this.attrs, this.tagName);
+  var children = this.children;
+  var attributes = {};
+
+  for (var key in this.attrs) {
+    if (key === 'value') {
+      if (this.tagName === 'select') {
+        selectValue(this);
+        continue;
+      } else if (this.tagName === 'textarea' || this.attrs.contenteditable) {
+        children = [new Text(this.attrs[key])];
+        continue;
+      }
+    }
+    attributes[key] = this.attrs[key];
+  }
+
+  var attrs = stringifyAttrs(attributes, this.tagName);
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
   var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
 
-  var len = this.children.length;
+  var len = children.length;
 
   if (this.props && this.props.innerHTML && len === 0) {
     html += this.props.innerHTML;
   } else {
     for (var i = 0; i < len ; i++) {
-      html += this.children[i].toHtml();
+      html += children[i].toHtml();
     }
   }
   html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
@@ -1327,7 +1373,7 @@ Tag.prototype.toHtml = function() {
 
 module.exports = Tag;
 
-},{"../tree/attach":22,"../tree/create":23,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":15,"./patcher/attrs-n-s":14,"./patcher/props":17,"./patcher/select-value":18,"void-elements":12}],21:[function(require,module,exports){
+},{"../tree/attach":22,"../tree/render":25,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":15,"./patcher/attrs-n-s":14,"./patcher/props":17,"./patcher/select-value":18,"./text":21,"void-elements":12}],21:[function(require,module,exports){
 var escapeHtml = require("escape-html");
 
 /**
@@ -1336,9 +1382,10 @@ var escapeHtml = require("escape-html");
  * @param  String tagName  The tag name.
  * @param  Array  children An array for children.
  */
-function Text(text) {
-  this.text = text;
+function Text(data) {
+  this.data = data;
   this.element = undefined;
+  this.parent = undefined;
 }
 
 Text.prototype.type = "Text";
@@ -1349,16 +1396,22 @@ Text.prototype.type = "Text";
  * @return Object A DOM node.
  */
 Text.prototype.create = function() {
-  return document.createTextNode(this.text);
+  return document.createTextNode(this.data);
 }
 
 /**
  * Renders virtual text node.
  *
- * @return Object        A textual DOM element.
+ * @param  Object  container The container to render in.
+ * @param  Object  parent    A parent node.
+ * @return Object            A textual DOM element.
  */
-Text.prototype.render = function() {
-  return this.element = this.create();
+Text.prototype.render = function(container, parent) {
+  this.parent = parent;
+  this.element = this.create();
+  container = container ? container : document.createDocumentFragment();
+  container.appendChild(this.element);
+  return this.element
 }
 
 /**
@@ -1367,7 +1420,8 @@ Text.prototype.render = function() {
  * @param  Object element A textual DOM element.
  * @return Object         The textual DOM element.
  */
-Text.prototype.attach = function(element) {
+Text.prototype.attach = function(element, parent) {
+  this.parent = parent;
   return this.element = element;
 }
 
@@ -1392,11 +1446,11 @@ Text.prototype.match = function(to) {
 Text.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render();
+    return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
-  if (this.text !== to.text) {
-    this.element.replaceData(0, this.element.length, to.text);
+  if (this.data !== to.data) {
+    this.element.data = to.data;
   }
   return this.element;
 }
@@ -1422,7 +1476,7 @@ Text.prototype.destroy = function() {
  * Returns an html representation of the text node.
  */
 Text.prototype.toHtml = function() {
-  return escapeHtml(this.text);
+  return escapeHtml(this.data);
 }
 
 module.exports = Text;
@@ -1456,17 +1510,17 @@ function attach(container, nodes, parent) {
       // work out of the box in a transparent manner if this principle is not
       // respected in a virtual tree.
 
-      size = nodes[i].text.length;
+      size = nodes[i].data.length;
       text = childNodes[j].data;
 
-      nodes[i].text = text;
+      nodes[i].data = text;
       nodes[i].attach(childNodes[j], parent);
       i++;
 
       textLen = text.length;
       while (size < textLen && i < nodesLen) {
-        size += nodes[i].text.length;
-        nodes[i].text = "";
+        size += nodes[i].data.length;
+        nodes[i].data = "";
         i++;
       }
     }
@@ -1478,26 +1532,6 @@ function attach(container, nodes, parent) {
 module.exports = attach;
 
 },{}],23:[function(require,module,exports){
-var isArray = Array.isArray;
-
-function create(container, nodes, parent) {
-  if (typeof nodes === "function") {
-    nodes = nodes(container, parent);
-  }
-  if (!isArray(nodes)) {
-    nodes = [nodes];
-  }
-  for (var i = 0, len = nodes.length; i < len; i++) {
-    if (nodes[i]) {
-      container.appendChild(nodes[i].render(parent));
-    }
-  }
-  return nodes;
-}
-
-module.exports = create;
-
-},{}],24:[function(require,module,exports){
 var isEmpty = require("is-empty");
 
 var isArray = Array.isArray;
@@ -1599,7 +1633,7 @@ function keysIndexes(children, startIndex, endIndex) {
 
 module.exports = patch;
 
-},{"is-empty":11}],25:[function(require,module,exports){
+},{"is-empty":11}],24:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1609,10 +1643,30 @@ function remove(nodes, parent) {
 
 module.exports = remove;
 
+},{}],25:[function(require,module,exports){
+var isArray = Array.isArray;
+
+function render(container, nodes, parent) {
+  if (typeof nodes === "function") {
+    nodes = nodes(container, parent);
+  }
+  if (!isArray(nodes)) {
+    nodes = [nodes];
+  }
+  for (var i = 0, len = nodes.length; i < len; i++) {
+    if (nodes[i]) {
+      nodes[i].render(container, parent);
+    }
+  }
+  return nodes;
+}
+
+module.exports = render;
+
 },{}],26:[function(require,module,exports){
 var query = require("dom-query");
 var attach = require("./attach");
-var create = require("./create");
+var render = require("./render");
 var update = require("./update");
 var remove = require("./remove");
 var isArray = Array.isArray;
@@ -1629,7 +1683,25 @@ function Tree() {
  * @param Object          data     Some extra data to attach to the mount.
  */
 Tree.prototype.mount = function(selector, factory, data) {
-  return this.apply(selector, factory, data, create);
+  data = data || {};
+  var containers = query.all(selector);
+  if (containers.length !== 1) {
+    throw new Error("The selector must identify an unique DOM element");
+  }
+
+  var container = containers[0];
+  if (container.domLayerTreeId) {
+    this.unmount(container.domLayerTreeId);
+  }
+
+  var mountId = data.mountId ? data.mountId : this.uuid();
+  var fragment = document.createDocumentFragment();
+  data.container = container;
+  data.factory = factory;
+  data.children = render(fragment, factory, null);
+  container.appendChild(fragment);
+  this._mounted[mountId] = data;
+  return container.domLayerTreeId = mountId;
 };
 
 /**
@@ -1641,18 +1713,6 @@ Tree.prototype.mount = function(selector, factory, data) {
  * @param Object          data     Some extra data to attach to the mount.
  */
 Tree.prototype.attach = function(selector, factory, data) {
-  return this.apply(selector, factory, data, attach);
-};
-
-/**
- * Applies a virtual tree into a passed selector.
- *
- * @param String|Object   selector        A CSS string selector or a DOMElement identifying the mounting point.
- * @param Function|Object factory         A factory function which returns a virtual tree or the virtual tree itself.
- * @param Object          data            Some extra data to attach to the mount.
- * @param function        processChildren The function to process node children.
- */
-Tree.prototype.apply = function(selector, factory, data, processChildren) {
   data = data || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
@@ -1667,7 +1727,7 @@ Tree.prototype.apply = function(selector, factory, data, processChildren) {
   var mountId = data.mountId ? data.mountId : this.uuid();
   data.container = container;
   data.factory = factory;
-  data.children = processChildren(container, factory, null);
+  data.children = attach(container, factory, null);
   this._mounted[mountId] = data;
   return container.domLayerTreeId = mountId;
 };
@@ -1742,7 +1802,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":22,"./create":23,"./remove":25,"./update":27,"dom-query":9}],27:[function(require,module,exports){
+},{"./attach":22,"./remove":24,"./render":25,"./update":27,"dom-query":9}],27:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;
@@ -1759,7 +1819,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":24}],28:[function(require,module,exports){
+},{"./patch":23}],28:[function(require,module,exports){
 var stringifyStyle = require("./stringify-style");
 var stringifyClass = require("./stringify-class");
 
@@ -1781,9 +1841,6 @@ function stringifyAttrs(attrs, tagName) {
       value = stringifyStyle(value);
     } else if (key === "class") {
       value = stringifyClass(value);
-    }
-    if (key === "value" && (/^(?:textarea|select)$/i.test(tagName) || attrs.contenteditable)) {
-      continue;
     }
     attributes.push(key + '="' + String(value).replace(/"/g, '\\"') + '"');
   }

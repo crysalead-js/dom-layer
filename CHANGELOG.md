@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.2.7 (2016-02-06)
+  * **Add:** maintains a `domLayerNode` attribute on DOM node which have some events or data defined.
+
 ## 0.2.6 (2015-08-22)
   * **Optimization:** refactors node insertion logic because for reaching better performance on IE.
   * **BC break:** makes `Text` node API more close to DOM text element API.
