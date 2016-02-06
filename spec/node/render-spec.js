@@ -206,4 +206,12 @@ describe(".render()", function() {
 
   });
 
+  it("checks that `domLayerNode` is correctly set when `data` is defined", function() {
+
+    var node = h({ data: { varname: 'value' } });
+    var element = node.render();
+    expect(element.domLayerNode).toBe(node);
+
+  });
+
 });

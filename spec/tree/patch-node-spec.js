@@ -149,9 +149,37 @@ describe(".patch()", function() {
 
   });
 
-  it("checks that `domLayerNode` is unsetted when no more `events` are defined", function() {
+  it("checks that `domLayerNode` is unsetted when no `events` are defined", function() {
 
     var from = h({ events: { "onclick": function() {} } });
+    var to = h();
+
+    var element = from.render();
+    expect(element.domLayerNode).toBe(from);
+
+    element = from.patch(to);
+
+    expect(element.domLayerNode).toBe(undefined);
+
+  });
+
+  it("checks that `domLayerNode` is correctly updated when `data` is defined", function() {
+
+    var from = h({ data: { varname: 'value1' } });
+    var to = h({ data: { varname: 'value2' } });
+
+    var element = from.render();
+    expect(element.domLayerNode).toBe(from);
+
+    element = from.patch(to);
+
+    expect(element.domLayerNode).toBe(to);
+
+  });
+
+  it("checks that `domLayerNode` is unsetted when no `data` are defined", function() {
+
+    var from = h({ data: { varname: 'value' } });
     var to = h();
 
     var element = from.render();

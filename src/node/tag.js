@@ -82,7 +82,7 @@ Tag.prototype.render = function(container, parent) {
 
   var element = this.element = this.create();
 
-  if (this.events) {
+  if (this.events || this.data) {
     element.domLayerNode = this;
   }
 
@@ -119,7 +119,7 @@ Tag.prototype.render = function(container, parent) {
 Tag.prototype.attach = function(element, parent) {
   this.parent = parent;
   this.element = element;
-  if (this.events) {
+  if (this.events || this.data) {
     element.domLayerNode = this;
   }
   props.patch(element, {}, this.props);
@@ -178,9 +178,9 @@ Tag.prototype.patch = function(to) {
 
   update(to.element, this.children, to.children);
 
-  if (to.events) {
+  if (to.events || to.data) {
     to.element.domLayerNode = to;
-  } else if (this.events) {
+  } else if (this.events || this.data) {
     to.element.domLayerNode = undefined;
   }
 
