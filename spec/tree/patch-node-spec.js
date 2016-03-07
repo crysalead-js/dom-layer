@@ -79,6 +79,15 @@ describe(".patch()", function() {
 
     expect(from.patch(to)).toBe(element);
 
+    // Verify assumption that children in `from` tree have a parent
+    from.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
+
+    // Verify that children in `to` tree have a parent after patching
+    to.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
   });
 
   it("inserts an additionnal tag node", function() {
@@ -89,6 +98,15 @@ describe(".patch()", function() {
 
     expect(from.patch(to)).toBe(element);
 
+    // Verify assumption that children in `from` tree have a parent
+    from.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
+
+    // Verify that children in `to` tree have a parent after patching
+    to.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
   });
 
   it("removes a text node", function () {

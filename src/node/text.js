@@ -73,6 +73,8 @@ Text.prototype.patch = function(to) {
     return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
+  to.parent = this.parent;
+
   if (this.data !== to.data) {
     this.element.data = to.data;
   }
