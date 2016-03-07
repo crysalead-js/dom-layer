@@ -162,6 +162,7 @@ Tag.prototype.patch = function(to) {
     return to.render(this.element.parentNode, this.parent);
   }
   to.element = this.element;
+  to.parent = this.parent;
 
   if (this.tagName === "select") {
     selectValue(to);
@@ -176,7 +177,7 @@ Tag.prototype.patch = function(to) {
     attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
   }
 
-  update(to.element, this.children, to.children);
+  update(to.element, this.children, to.children, to);
 
   if (to.events || to.data) {
     to.element.domLayerNode = to;
