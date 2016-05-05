@@ -16,23 +16,23 @@
     "url": "http://github.com/crysalead-js/dom-layer.git"
   },
   "dependencies": {
-    "dom-element-css": "^1.0.1",
+    "dom-element-css": "^1.0.3",
     "dom-element-value": "^1.0.2",
-    "dom-event-manager": "^1.0.1",
+    "dom-event-manager": "^1.0.5",
     "dom-query": "^1.0.1",
-    "escape-html": "^1.0.1",
-    "is-empty": "0.0.1",
+    "escape-html": "^1.0.3",
+    "is-empty": "1.0.0",
     "void-elements": "^2.0.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.1",
-    "browserify-istanbul": "^0.2.1",
-    "coveralls": "^2.11.2",
-    "document-register-element": "^0.3.0",
-    "istanbul": "^0.3.14",
-    "jasmine": "^2.3.1",
-    "testem": "^0.8.3",
-    "uglify-js": "^2.4.23"
+    "browserify": "^13.0.0",
+    "browserify-istanbul": "^2.0.0",
+    "coveralls": "^2.11.9",
+    "document-register-element": "^0.5.4",
+    "istanbul": "^0.4.3",
+    "jasmine": "^2.4.1",
+    "testem": "^1.6.0",
+    "uglify-js": "^2.6.2"
   },
   "scripts": {
     "test": "testem ci -l firefox && jasmine",
