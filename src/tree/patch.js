@@ -54,7 +54,7 @@ function patch(container, children, toChildren, parent) {
       }
       index = indexes[toStartNode.key];
       if (index === undefined) {
-        container.insertBefore(toStartNode.render(parent), fromStartNode.element);
+        container.insertBefore(toStartNode.render(container, parent), fromStartNode.element);
         toStartNode = toChildren[++toStartIndex];
       } else {
         node = fromChildren[index];
@@ -68,7 +68,7 @@ function patch(container, children, toChildren, parent) {
   if (fromStartIndex > fromEndIndex) {
     before = toChildren[toEndIndex + 1] === undefined ? null : toChildren[toEndIndex + 1].element;
     for (; toStartIndex <= toEndIndex; toStartIndex++) {
-      container.insertBefore(toChildren[toStartIndex].render(parent), before);
+      container.insertBefore(toChildren[toStartIndex].render(container, parent), before);
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {

@@ -81,6 +81,24 @@ describe(".patch()", function() {
 
   });
 
+  it("maintains text node's parent on patch", function() {
+
+    var from = h({}, ["hello"]);
+    var to = h({}, ["hello", "to"]);
+    var element = from.render();
+
+    expect(from.patch(to)).toBe(element);
+
+    from.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
+
+    to.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
+
+  });
+
   it("inserts an additionnal tag node", function() {
 
     var from = h({}, [h({ tagName: "span" }, ["hello"])]);
@@ -88,6 +106,24 @@ describe(".patch()", function() {
     var element = from.render();
 
     expect(from.patch(to)).toBe(element);
+
+  });
+
+  it("maintains tag node's parent on patch", function() {
+
+    var from = h({}, [h({ tagName: "span" }, ["hello"])]);
+    var to = h({}, [h({ tagName: "span" }, ["hello"]), h({ tagName: "span" }, ["to"])]);
+    var element = from.render();
+
+    expect(from.patch(to)).toBe(element);
+
+    from.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
+
+    to.children.forEach(function (child) {
+      expect(child.parent).toBeTruthy();
+    });
 
   });
 
