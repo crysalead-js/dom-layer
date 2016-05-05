@@ -29,7 +29,6 @@ module.exports = {
 
 },{"./src/events":13,"./src/node/patcher/attrs":15,"./src/node/patcher/attrs-n-s":14,"./src/node/patcher/props":17,"./src/node/tag":20,"./src/node/text":21,"./src/tree/attach":22,"./src/tree/patch":23,"./src/tree/remove":24,"./src/tree/render":25,"./src/tree/tree":26,"./src/tree/update":27}],2:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
-var hasRemovePropertyInStyle = typeof document !== "undefined" && "removeProperty" in document.createElement("a").style;
 
 /**
  * Gets/Sets a DOM element property.
@@ -41,160 +40,24 @@ var hasRemovePropertyInStyle = typeof document !== "undefined" && "removePropert
  * @return String                The current/new property value.
  */
 function css(element, name, value) {
-  var name;
+  if (typeof name === 'object') {
+    var style = name;
+    for (name in style) {
+      css(element, name, style[name]);
+    }
+    return style;
+  }
+  var attribute = toCamelCase((name === 'float') ? 'cssFloat' : name);
   if (arguments.length === 3) {
-    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
-    if (value) {
-      element.style[name] = value;
-      return value;
-    }
-    if (hasRemovePropertyInStyle) {
-      element.style.removeProperty(name);
-    } else {
-      element.style[name] = "";
-    }
+    element.style[name] = value || "";
     return value;
   }
-  if (typeof name === "string") {
-    name = toCamelCase((name === 'float') ? 'cssFloat' : name);
-    return element.style[name];
-  }
-
-  var style = name;
-  for (name in style) {
-    css(element, name, style[name]);
-  }
-  return style;
+  return element.style[name];
 }
 
 module.exports = css;
 
-},{"to-camel-case":3}],3:[function(require,module,exports){
-
-var toSpace = require('to-space-case');
-
-
-/**
- * Expose `toCamelCase`.
- */
-
-module.exports = toCamelCase;
-
-
-/**
- * Convert a `string` to camel case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toCamelCase (string) {
-  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
-    return letter.toUpperCase();
-  });
-}
-},{"to-space-case":4}],4:[function(require,module,exports){
-
-var clean = require('to-no-case');
-
-
-/**
- * Expose `toSpaceCase`.
- */
-
-module.exports = toSpaceCase;
-
-
-/**
- * Convert a `string` to space case.
- *
- * @param {String} string
- * @return {String}
- */
-
-
-function toSpaceCase (string) {
-  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
-    return match ? ' ' + match : '';
-  });
-}
-},{"to-no-case":5}],5:[function(require,module,exports){
-
-/**
- * Expose `toNoCase`.
- */
-
-module.exports = toNoCase;
-
-
-/**
- * Test whether a string is camel-case.
- */
-
-var hasSpace = /\s/;
-var hasCamel = /[a-z][A-Z]/;
-var hasSeparator = /[\W_]/;
-
-
-/**
- * Remove any starting case from a `string`, like camel or snake, but keep
- * spaces and punctuation that may be important otherwise.
- *
- * @param {String} string
- * @return {String}
- */
-
-function toNoCase (string) {
-  if (hasSpace.test(string)) return string.toLowerCase();
-
-  if (hasSeparator.test(string)) string = unseparate(string);
-  if (hasCamel.test(string)) string = uncamelize(string);
-  return string.toLowerCase();
-}
-
-
-/**
- * Separator splitter.
- */
-
-var separatorSplitter = /[\W_]+(.|$)/g;
-
-
-/**
- * Un-separate a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function unseparate (string) {
-  return string.replace(separatorSplitter, function (m, next) {
-    return next ? ' ' + next : '';
-  });
-}
-
-
-/**
- * Camelcase splitter.
- */
-
-var camelSplitter = /(.)([A-Z]+)/g;
-
-
-/**
- * Un-camelcase a `string`.
- *
- * @param {String} string
- * @return {String}
- */
-
-function uncamelize (string) {
-  return string.replace(camelSplitter, function (m, previous, uppers) {
-    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
-  });
-}
-},{}],6:[function(require,module,exports){
+},{"to-camel-case":9}],3:[function(require,module,exports){
 /**
  * DOM element value Getter/Setter.
  */
@@ -301,7 +164,7 @@ function set(element, val) {
 
 module.exports = value;
 
-},{}],7:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var bind, unbind, prefix = '';
 
 if (typeof window !== "undefined") {
@@ -348,7 +211,7 @@ event.unbind = function(el, type, fn, capture){
 
 module.exports = event;
 
-},{}],8:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var event = require("./event");
 
 var isArray = Array.isArray;
@@ -468,9 +331,9 @@ EventManager.defaultEvents = [
   'mousedown',
   'mouseenter',
   'mouseleave',
-  'mouseover',
-  'mouseout',
   'mousemove',
+  'mouseout',
+  'mouseover',
   'mouseup',
   'paste',
   'scroll',
@@ -484,7 +347,7 @@ EventManager.defaultEvents = [
 
 module.exports = EventManager;
 
-},{"./event":7}],9:[function(require,module,exports){
+},{"./event":4}],6:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -542,12 +405,23 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],10:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
  * escape-html
  * Copyright(c) 2012-2013 TJ Holowaychuk
+ * Copyright(c) 2015 Andreas Lubbe
+ * Copyright(c) 2015 Tiancheng "Timothy" Gu
  * MIT Licensed
  */
+
+'use strict';
+
+/**
+ * Module variables.
+ * @private
+ */
+
+var matchHtmlRegExp = /["'&<>]/;
 
 /**
  * Module exports.
@@ -559,21 +433,59 @@ module.exports = escapeHtml;
 /**
  * Escape special characters in the given string of html.
  *
- * @param  {string} str The string to escape for inserting into HTML
+ * @param  {string} string The string to escape for inserting into HTML
  * @return {string}
  * @public
  */
 
-function escapeHtml(html) {
-  return String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+function escapeHtml(string) {
+  var str = '' + string;
+  var match = matchHtmlRegExp.exec(str);
+
+  if (!match) {
+    return str;
+  }
+
+  var escape;
+  var html = '';
+  var index = 0;
+  var lastIndex = 0;
+
+  for (index = match.index; index < str.length; index++) {
+    switch (str.charCodeAt(index)) {
+      case 34: // "
+        escape = '&quot;';
+        break;
+      case 38: // &
+        escape = '&amp;';
+        break;
+      case 39: // '
+        escape = '&#39;';
+        break;
+      case 60: // <
+        escape = '&lt;';
+        break;
+      case 62: // >
+        escape = '&gt;';
+        break;
+      default:
+        continue;
+    }
+
+    if (lastIndex !== index) {
+      html += str.substring(lastIndex, index);
+    }
+
+    lastIndex = index + 1;
+    html += escape;
+  }
+
+  return lastIndex !== index
+    ? html + str.substring(lastIndex, index)
+    : html;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -598,12 +510,139 @@ var has = Object.prototype.hasOwnProperty;
 
 function isEmpty (val) {
   if (null == val) return true;
+  if ('boolean' == typeof val) return false;
   if ('number' == typeof val) return 0 === val;
   if (undefined !== val.length) return 0 === val.length;
   for (var key in val) if (has.call(val, key)) return false;
   return true;
 }
-},{}],12:[function(require,module,exports){
+
+},{}],9:[function(require,module,exports){
+
+var toSpace = require('to-space-case');
+
+
+/**
+ * Expose `toCamelCase`.
+ */
+
+module.exports = toCamelCase;
+
+
+/**
+ * Convert a `string` to camel case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toCamelCase (string) {
+  return toSpace(string).replace(/\s(\w)/g, function (matches, letter) {
+    return letter.toUpperCase();
+  });
+}
+},{"to-space-case":11}],10:[function(require,module,exports){
+
+/**
+ * Expose `toNoCase`.
+ */
+
+module.exports = toNoCase;
+
+
+/**
+ * Test whether a string is camel-case.
+ */
+
+var hasSpace = /\s/;
+var hasCamel = /[a-z][A-Z]/;
+var hasSeparator = /[\W_]/;
+
+
+/**
+ * Remove any starting case from a `string`, like camel or snake, but keep
+ * spaces and punctuation that may be important otherwise.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function toNoCase (string) {
+  if (hasSpace.test(string)) return string.toLowerCase();
+
+  if (hasSeparator.test(string)) string = unseparate(string);
+  if (hasCamel.test(string)) string = uncamelize(string);
+  return string.toLowerCase();
+}
+
+
+/**
+ * Separator splitter.
+ */
+
+var separatorSplitter = /[\W_]+(.|$)/g;
+
+
+/**
+ * Un-separate a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function unseparate (string) {
+  return string.replace(separatorSplitter, function (m, next) {
+    return next ? ' ' + next : '';
+  });
+}
+
+
+/**
+ * Camelcase splitter.
+ */
+
+var camelSplitter = /(.)([A-Z]+)/g;
+
+
+/**
+ * Un-camelcase a `string`.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+function uncamelize (string) {
+  return string.replace(camelSplitter, function (m, previous, uppers) {
+    return previous + ' ' + uppers.toLowerCase().split('').join(' ');
+  });
+}
+},{}],11:[function(require,module,exports){
+
+var clean = require('to-no-case');
+
+
+/**
+ * Expose `toSpaceCase`.
+ */
+
+module.exports = toSpaceCase;
+
+
+/**
+ * Convert a `string` to space case.
+ *
+ * @param {String} string
+ * @return {String}
+ */
+
+
+function toSpaceCase (string) {
+  return clean(string).replace(/[\W_]+(.|$)/g, function (matches, match) {
+    return match ? ' ' + match : '';
+  });
+}
+},{"to-no-case":10}],12:[function(require,module,exports){
 /**
  * This file automatically generated from `pre-publish.js`.
  * Do not manually edit.
@@ -666,7 +705,7 @@ module.exports = {
   init: init
 };
 
-},{"dom-element-value":6,"dom-event-manager":8}],14:[function(require,module,exports){
+},{"dom-element-value":3,"dom-event-manager":5}],14:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -1129,6 +1168,12 @@ function Tag(tagName, config, children) {
 
   this.namespace = config.attrs && config.attrs.xmlns || null;
   this.is = config.attrs && config.attrs.is || null;
+
+  for(var i = 0, len = this.children.length; i < len; i++) {
+    if (typeof this.children[i] === 'string') {
+      this.children[i] = new Text(this.children[i]);
+    }
+  }
 };
 
 Tag.prototype.type = "Tag";
@@ -1255,9 +1300,10 @@ Tag.prototype.match = function(to) {
 Tag.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render(this.element.parentNode, this.parent);
+    return to.render(this.element.parentNode, to.parent);
   }
   to.element = this.element;
+  to.parent = this.parent;
 
   if (this.tagName === "select") {
     selectValue(to);
@@ -1272,7 +1318,7 @@ Tag.prototype.patch = function(to) {
     attrsNS.patch(to.element, this.attrsNS, to.attrsNS);
   }
 
-  update(to.element, this.children, to.children);
+  update(to.element, this.children, to.children, to);
 
   if (to.events || to.data) {
     to.element.domLayerNode = to;
@@ -1446,9 +1492,11 @@ Text.prototype.match = function(to) {
 Text.prototype.patch = function(to) {
   if (!this.match(to)) {
     this.remove(false);
-    return to.render(this.element.parentNode, this.parent);
+    return to.render(this.element.parentNode, to.parent);
   }
   to.element = this.element;
+  to.parent = this.parent;
+
   if (this.data !== to.data) {
     this.element.data = to.data;
   }
@@ -1480,7 +1528,7 @@ Text.prototype.toHtml = function() {
 }
 
 module.exports = Text;
-},{"escape-html":10}],22:[function(require,module,exports){
+},{"escape-html":7}],22:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
@@ -1588,7 +1636,7 @@ function patch(container, children, toChildren, parent) {
       }
       index = indexes[toStartNode.key];
       if (index === undefined) {
-        container.insertBefore(toStartNode.render(parent), fromStartNode.element);
+        container.insertBefore(toStartNode.render(container, parent), fromStartNode.element);
         toStartNode = toChildren[++toStartIndex];
       } else {
         node = fromChildren[index];
@@ -1602,7 +1650,7 @@ function patch(container, children, toChildren, parent) {
   if (fromStartIndex > fromEndIndex) {
     before = toChildren[toEndIndex + 1] === undefined ? null : toChildren[toEndIndex + 1].element;
     for (; toStartIndex <= toEndIndex; toStartIndex++) {
-      container.insertBefore(toChildren[toStartIndex].render(parent), before);
+      container.insertBefore(toChildren[toStartIndex].render(container, parent), before);
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {
@@ -1633,7 +1681,7 @@ function keysIndexes(children, startIndex, endIndex) {
 
 module.exports = patch;
 
-},{"is-empty":11}],24:[function(require,module,exports){
+},{"is-empty":8}],24:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1802,7 +1850,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":22,"./remove":24,"./render":25,"./update":27,"dom-query":9}],27:[function(require,module,exports){
+},{"./attach":22,"./remove":24,"./render":25,"./update":27,"dom-query":6}],27:[function(require,module,exports){
 var patch = require("./patch");
 
 var isArray = Array.isArray;

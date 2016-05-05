@@ -2,6 +2,10 @@
 
 ## HEAD
 
+## 0.2.8 (2016-05-05)
+  * **Add:** casts strings in `children` as Text node by default.
+  * **Bugfix:** maintains tag node's parent on patch.
+
 ## 0.2.7 (2016-02-06)
   * **Add:** maintains a `domLayerNode` attribute on DOM node which have some events or data defined.
 
