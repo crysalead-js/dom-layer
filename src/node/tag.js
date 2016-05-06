@@ -33,12 +33,6 @@ function Tag(tagName, config, children) {
 
   this.namespace = config.attrs && config.attrs.xmlns || null;
   this.is = config.attrs && config.attrs.is || null;
-
-  for(var i = 0, len = this.children.length; i < len; i++) {
-    if (typeof this.children[i] === 'string') {
-      this.children[i] = new Text(this.children[i]);
-    }
-  }
 };
 
 Tag.prototype.type = "Tag";

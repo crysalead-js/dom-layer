@@ -10,15 +10,6 @@ describe("Tag", function() {
 
   });
 
-  it("casts strings in `children` as Text node", function() {
-
-    var tag = new Tag('div', {}, ["child1", "child2"]);
-    expect(tag.children.length).toBe(2);
-    expect(tag.children[0].data).toBe("child1");
-    expect(tag.children[1].data).toBe("child2");
-
-  });
-
   it("sets some defaults value on new instance", function() {
 
     var tag = h();
