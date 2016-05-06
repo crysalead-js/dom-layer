@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.2.9 (2016-05-06)
+  * **Revert:** casts strings in `children` as Text node by default.
+
 ## 0.2.8 (2016-05-05)
   * **Add:** casts strings in `children` as Text node by default.
   * **Bugfix:** maintains tag node's parent on patch.
