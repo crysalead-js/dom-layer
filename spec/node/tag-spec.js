@@ -424,6 +424,14 @@ describe("Tag", function() {
 
     });
 
+    it("ignores null elements", function() {
+
+      var br = h({ tagName: "div" }, ["child1", null, "child2"]);
+      var html = br.toHtml();
+      expect(html).toBe("<div>child1child2</div>");
+
+    });
+
   });
 
 });
