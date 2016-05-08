@@ -1403,7 +1403,9 @@ Tag.prototype.toHtml = function() {
     html += this.props.innerHTML;
   } else {
     for (var i = 0; i < len ; i++) {
-      html += children[i].toHtml();
+      if (children[i]) {
+        html += children[i].toHtml();
+      }
     }
   }
   html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
