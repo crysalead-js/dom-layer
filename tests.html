@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<title>My Test Page</title>
+<link rel="stylesheet" href="/node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+<script src="/node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+<script src="/node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+<script src="/node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+<script src="/testem.js"></script>
+<script>
+  Testem.afterTests(
+    function(config, data, callback) {
+      var coverage = JSON.stringify(window.__coverage__);
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          callback();
+        }
+      };
+      xhr.open('POST', 'http://localhost:7358/', true);
+      xhr.send(coverage);
+    });
+</script>
+<script src="spec/browserified.js"></script>
+</head>
+<body>
+<h1>Test Page</h1>
+<div id="jasmine_content"></div>
+</body>
+</html>

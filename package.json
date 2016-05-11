@@ -25,13 +25,13 @@
     "void-elements": "^2.0.1"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^13.0.1",
     "browserify-istanbul": "^2.0.0",
     "coveralls": "^2.11.9",
     "document-register-element": "^0.5.4",
     "istanbul": "^0.4.3",
     "jasmine": "^2.4.1",
-    "testem": "^1.6.0",
+    "testem": "^1.7.0",
     "uglify-js": "^2.6.2"
   },
   "scripts": {
