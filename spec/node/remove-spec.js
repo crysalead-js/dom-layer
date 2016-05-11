@@ -1,17 +1,17 @@
-var h = require("../helper/h");
-var _ = require("../helper/util");
+var h = require('../helper/h');
+var _ = require('../helper/util');
 
 describe(".remove()", function() {
 
   var container;
 
   beforeEach(function() {
-    container = document.createElement("div");
+    container = document.createElement('div');
   });
 
   it("remove a text node", function() {
 
-    var node = h("hello");
+    var node = h('hello');
     var element = node.render();
 
     container.appendChild(element);
@@ -24,7 +24,7 @@ describe(".remove()", function() {
 
   it("remove a tag node", function() {
 
-    var node = h({ tagName: "div" });
+    var node = h({ tagName: 'div' });
     var element = node.render();
 
     container.appendChild(element);

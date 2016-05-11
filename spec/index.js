@@ -1,8 +1,8 @@
-require("document-register-element") // document.registerElement polyfill
+require('document-register-element') // document.registerElement polyfill
 
-document.addEventListener("DOMContentLoaded", function(event) {
-  var test = document.createElement("div");
-  test.id = "test";
+document.addEventListener('DOMContentLoaded', function(event) {
+  var test = document.createElement('div');
+  test.id = 'test';
   document.body.appendChild(test);
 });
 

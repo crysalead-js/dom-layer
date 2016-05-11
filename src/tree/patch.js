@@ -1,4 +1,4 @@
-var isEmpty = require("is-empty");
+var isEmpty = require('is-empty');
 
 var isArray = Array.isArray;
 
@@ -6,7 +6,7 @@ var isArray = Array.isArray;
  * Patches & Reorders child nodes of a container (i.e represented by `fromChildren`) to match `toChildren`.
  *
  * Since finding the longest common subsequence problem is NP-hard, this implementation
- * is a simple heuristic for reordering nodes with a "minimum" of moves in O(n).
+ * is a simple heuristic for reordering nodes with a 'minimum' of moves in O(n).
  *
  * @param Object container    The parent container.
  * @param Array  children     The current array of children.

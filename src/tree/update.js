@@ -1,9 +1,9 @@
-var patch = require("./patch");
+var patch = require('./patch');
 
 var isArray = Array.isArray;
 
 function update(container, fromNodes, toNodes, parent) {
-  if (typeof toNodes === "function") {
+  if (typeof toNodes === 'function') {
     toNodes = toNodes(container, parent);
   }
   if (!isArray(toNodes)) {

@@ -1,12 +1,12 @@
 /**
- * Returns a `'class1 class3" ...'` string from
+ * Returns a `'class1 class3' ...'` string from
  * a `{ class1: true, class2: false, class3: true }` object.
  *
  * @param  Object className The keys/values object to stringify.
  * @return String           The corresponding string.
  */
 function stringifyClass(classAttr) {
-  if (typeof classAttr === "string") {
+  if (typeof classAttr === 'string') {
     return classAttr;
   }
   var classes = [];
@@ -15,7 +15,7 @@ function stringifyClass(classAttr) {
       classes.push(key);
     }
   }
-  return classes.join(" ");
+  return classes.join(' ');
 }
 
 module.exports = stringifyClass;

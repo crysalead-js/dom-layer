@@ -1,5 +1,5 @@
-var style = require("./style");
-var stringifyClass = require("../../util/stringify-class");
+var style = require('./style');
+var stringifyClass = require('../../util/stringify-class');
 
 /**
  * Maintains state of element attributes.
@@ -84,13 +84,13 @@ set.handlers.value = function(name, element, previous, attrs) {
     return;
   }
   element.setAttribute(name, attrs[name]);
-  element[name] = attrs[name] ? attrs[name] : "";
+  element[name] = attrs[name] ? attrs[name] : '';
 };
 
 /**
  * Custom set handler for the class attribute.
  */
-set.handlers["class"] = function(name, element, previous, attrs) {
+set.handlers['class'] = function(name, element, previous, attrs) {
   if (attrs[name] == null) {
     return;
   }

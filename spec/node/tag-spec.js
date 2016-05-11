@@ -1,19 +1,19 @@
-var h = require("../helper/h");
-var Tag = require("../../src/node/tag");
-var Tree = require("../../src/tree/tree");
+var h = require('../helper/h');
+var Tag = require('../../src/node/tag');
+var Tree = require('../../src/tree/tree');
 
 describe("Tag", function() {
 
   it("verifies the type value", function() {
 
-      expect(new Tag().type).toBe("Tag");
+      expect(new Tag().type).toBe('Tag');
 
   });
 
   it("sets some defaults value on new instance", function() {
 
     var tag = h();
-    expect(tag.tagName).toBe("div");
+    expect(tag.tagName).toBe('div');
     expect(tag.children).toEqual([]);
     expect(tag.props).toBe(undefined);
     expect(tag.attrs).toBe(undefined);
@@ -31,17 +31,17 @@ describe("Tag", function() {
 
   it("sets the `tagName` property", function() {
 
-    var tag = h({ tagName: "span" });
-    expect(tag.tagName).toBe("span");
+    var tag = h({ tagName: 'span' });
+    expect(tag.tagName).toBe('span');
 
   });
 
   it("sets the `children` property", function() {
 
-    var tag = h({}, ["child1", "child2"]);
+    var tag = h({}, ['child1', 'child2']);
     expect(tag.children.length).toBe(2);
-    expect(tag.children[0].data).toBe("child1");
-    expect(tag.children[1].data).toBe("child2");
+    expect(tag.children[0].data).toBe('child1');
+    expect(tag.children[1].data).toBe('child2');
 
   });
 
@@ -95,61 +95,61 @@ describe("Tag", function() {
 
   it("sets the `key` property", function() {
 
-    var tag = h({ key: "10" });
-    expect(tag.key).toBe("10");
+    var tag = h({ key: '10' });
+    expect(tag.key).toBe('10');
 
   });
 
   it("sets the namespace", function() {
 
-    var tag = h({ tagName: "circle", attrs : { xmlns: "http://www.w3.org/2000/svg" } });
-    expect(tag.namespace).toBe("http://www.w3.org/2000/svg");
+    var tag = h({ tagName: 'circle', attrs : { xmlns: 'http://www.w3.org/2000/svg' } });
+    expect(tag.namespace).toBe('http://www.w3.org/2000/svg');
 
   });
 
   it("sets the type extension", function() {
 
-    var tag = h({ tagName: "button", attrs : { is: "mega-button" } });
-    expect(tag.is).toBe("mega-button");
+    var tag = h({ tagName: 'button', attrs : { is: 'mega-button' } });
+    expect(tag.is).toBe('mega-button');
 
   });
 
   it("sets SVG as default namespace for <svg>", function() {
 
-    var tag = h({ tagName: "svg" });
+    var tag = h({ tagName: 'svg' });
     var element = tag.render();
-    expect(tag.namespace).toBe("http://www.w3.org/2000/svg");
-    expect(element.namespaceURI).toBe("http://www.w3.org/2000/svg");
+    expect(tag.namespace).toBe('http://www.w3.org/2000/svg');
+    expect(element.namespaceURI).toBe('http://www.w3.org/2000/svg');
 
   });
 
   it("sets MathML as default namespace for <math>", function() {
 
-    var tag = h({ tagName: "math" });
+    var tag = h({ tagName: 'math' });
     var element = tag.render();
-    expect(tag.namespace).toBe("http://www.w3.org/1998/Math/MathML");
-    expect(element.namespaceURI).toBe("http://www.w3.org/1998/Math/MathML");
+    expect(tag.namespace).toBe('http://www.w3.org/1998/Math/MathML');
+    expect(element.namespaceURI).toBe('http://www.w3.org/1998/Math/MathML');
 
   });
 
   it("uses the parent namespace by default", function() {
 
-    var circle = h({ tagName: "circle" });
-    var tag = h({ tagName: "svg" }, [circle]);
+    var circle = h({ tagName: 'circle' });
+    var tag = h({ tagName: 'svg' }, [circle]);
     var element = tag.render();
-    expect(circle.namespace).toBe("http://www.w3.org/2000/svg");
-    expect(element.childNodes[0].namespaceURI).toBe("http://www.w3.org/2000/svg");
+    expect(circle.namespace).toBe('http://www.w3.org/2000/svg');
+    expect(element.childNodes[0].namespaceURI).toBe('http://www.w3.org/2000/svg');
 
   });
 
-  describe('with `"hooks"` defined', function() {
+  describe("with `hooks` defined", function() {
 
     var testBody, tree, mountPoint;
 
     beforeEach(function() {
-      testBody = document.getElementById("test");
+      testBody = document.getElementById('test');
       testBody.innerHTML = '<div id="mount-point"></div>';
-      mountPoint = document.getElementById("mount-point");
+      mountPoint = document.getElementById('mount-point');
       tree = new Tree();
     })
 
@@ -157,7 +157,7 @@ describe("Tag", function() {
       testBody.innerHTML = '';
     });
 
-    it('calls the `"created"` callback on creation', function() {
+    it("calls the `created` callback on creation", function() {
 
       var params;
 
@@ -171,7 +171,7 @@ describe("Tag", function() {
 
     });
 
-    it('calls the `"created"` callback on attachement', function() {
+    it("calls the `created` callback on attachement", function() {
 
       var params;
 
@@ -179,13 +179,13 @@ describe("Tag", function() {
         params = Array.prototype.slice.call(arguments);
       } } });
 
-      var element = tag.attach(document.createElement("div"));
+      var element = tag.attach(document.createElement('div'));
 
       expect(params).toEqual([tag, element]);
 
     });
 
-    it('calls the `"updated"` callback on update', function() {
+    it("calls the `updated` callback on update", function() {
 
       var params = [];
       var hooks = { updated : function() {
@@ -205,7 +205,7 @@ describe("Tag", function() {
 
     });
 
-    it('calls the `"remove"` & `"destroy"` callback on remove', function() {
+    it("calls the `remove` & `destroy` callback on remove", function() {
 
       var destroyCallback;
       var params = [];
@@ -221,18 +221,18 @@ describe("Tag", function() {
         }
       });
 
-      var mountId = tree.mount("#mount-point", tag);
+      var mountId = tree.mount('#mount-point', tag);
       tree.unmount(mountId);
 
-      expect(mountPoint.innerHTML).toBe("<div></div>");
+      expect(mountPoint.innerHTML).toBe('<div></div>');
       expect(params).toEqual([[tag, tag.element], [tag.element, destroyCallback]]);
 
       destroyCallback();
-      expect(mountPoint.innerHTML).toBe("");
+      expect(mountPoint.innerHTML).toBe('');
 
     });
 
-    it('calls `"remove"` on children first', function() {
+    it("calls `remove` on children first", function() {
 
       var logs = [];
 
@@ -250,7 +250,7 @@ describe("Tag", function() {
         })
       ]);
 
-      var mountId = tree.mount("#mount-point", tag);
+      var mountId = tree.mount('#mount-point', tag);
       tree.unmount(mountId);
 
       expect(logs).toEqual(['child removed first', 'parent removed last']);
@@ -284,9 +284,9 @@ describe("Tag", function() {
 
     it("renders a select", function() {
 
-      var select = h({ tagName: "select", attrs: { value: "bar" } }, [
-        h({tagName: "option", attrs: {value: "foo"}}, ["foo"]),
-        h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+      var select = h({ tagName: 'select', attrs: { value: 'bar' } }, [
+        h({tagName: 'option', attrs: {value: 'foo'}}, ['foo']),
+        h({tagName: 'option', attrs: {value: 'bar'}}, ['bar'])
       ]);
 
       var html = select.toHtml();
@@ -302,12 +302,12 @@ describe("Tag", function() {
 
     it("renders a select multiple using groups", function() {
 
-      var select = h({ tagName: "select", attrs: { multiple: "multiple", value: ["foo", "bar"] } }, [
-        h({tagName: "optgroup", attrs: {label: "foo-group"}}, [
-          h({tagName: "option", attrs: {value: "foo"}}, ["foo"])
+      var select = h({ tagName: 'select', attrs: { multiple: 'multiple', value: ['foo', 'bar'] } }, [
+        h({tagName: 'optgroup', attrs: {label: 'foo-group'}}, [
+          h({tagName: 'option', attrs: {value: 'foo'}}, ['foo'])
         ]),
-        h({tagName: "optgroup", attrs: {label: "bar-group"}}, [
-          h({tagName: "option", attrs: {value: "bar"}}, ["bar"])
+        h({tagName: 'optgroup', attrs: {label: 'bar-group'}}, [
+          h({tagName: 'option', attrs: {value: 'bar'}}, ['bar'])
         ])
       ]);
 
@@ -324,26 +324,26 @@ describe("Tag", function() {
 
     it("renders a select multiple using groups", function() {
 
-      var image = h({ tagName: "input", attrs: { type: "file", multiple: "multiple", capture: "capture", accept: "image/*" } });
+      var image = h({ tagName: 'input', attrs: { type: 'file', multiple: 'multiple', capture: 'capture', accept: 'image/*' } });
       var html = image.toHtml();
 
       expect(html).toBe('<input type="file" multiple="multiple" capture="capture" accept="image/*">');
     });
 
-    it('renders a `"style"` attribute using an string', function() {
+    it("renders a `style` attribute using an string", function() {
 
-      var div = h({ tagName: "div", attrs: { style: "border:1px solid rgb(0, 0, 0);padding:2px" } });
+      var div = h({ tagName: 'div', attrs: { style: 'border:1px solid rgb(0, 0, 0);padding:2px' } });
       var html = div.toHtml();
 
       expect(html).toBe('<div style="border:1px solid rgb(0, 0, 0);padding:2px"></div>');
 
     });
 
-    it('renders a `"style"` attribute using an object', function() {
+    it("renders a `style` attribute using an object", function() {
 
-      var div = h({ tagName: "div", attrs: { style: {
-        border: "1px solid rgb(0, 0, 0)",
-        padding: "2px"
+      var div = h({ tagName: 'div', attrs: { style: {
+        border: '1px solid rgb(0, 0, 0)',
+        padding: '2px'
       } } });
 
       var html = div.toHtml();
@@ -352,9 +352,9 @@ describe("Tag", function() {
 
     });
 
-    it('renders a `"class"` attribute using an object', function() {
+    it("renders a `class` attribute using an object", function() {
 
-      var div = h({ tagName: "div", attrs: { "class": {
+      var div = h({ tagName: 'div', attrs: { 'class': {
         active1: true,
         inavtive: false,
         active2: true
@@ -369,12 +369,12 @@ describe("Tag", function() {
     it("renders namespaced attributes", function() {
 
       var div = h({
-        tagName: "image",
+        tagName: 'image',
         attrs: {
-          xmlns: "http://www.w3.org/2000/svg"
+          xmlns: 'http://www.w3.org/2000/svg'
         },
         attrsNS: {
-          "xlink:href": "test.jpg"
+          'xlink:href': 'test.jpg'
         }
       });
 
@@ -386,7 +386,7 @@ describe("Tag", function() {
 
     it("casts rendered attributes to string value", function() {
 
-      var checkbox = h({ tagName: "input", attrs: { type: "checkbox", value: true } });
+      var checkbox = h({ tagName: 'input', attrs: { type: 'checkbox', value: true } });
       var html = checkbox.toHtml();
       expect(html).toBe('<input type="checkbox" value="true">');
 
@@ -394,7 +394,7 @@ describe("Tag", function() {
 
     it("doesn't ignore textarea value attribute", function() {
 
-      var textarea = h({ tagName: "textarea", attrs: { value: "should not be ignored" } });
+      var textarea = h({ tagName: 'textarea', attrs: { value: 'should not be ignored' } });
       var html = textarea.toHtml();
       expect(html).toBe('<textarea>should not be ignored</textarea>');
 
@@ -402,7 +402,7 @@ describe("Tag", function() {
 
     it("doesn't ignore contenteditable value attribute", function() {
 
-      var div = h({ tagName: "div", attrs: { contenteditable: "true", value: "should not be ignored" } });
+      var div = h({ tagName: 'div', attrs: { contenteditable: 'true', value: 'should not be ignored' } });
       var html = div.toHtml();
       expect(html).toBe('<div contenteditable="true">should not be ignored</div>');
 
@@ -410,7 +410,7 @@ describe("Tag", function() {
 
     it('renders the `innerHTML` property if present and no children has been defined', function () {
 
-      var div = h({ tagName: "div", props: { innerHTML: '<span>Hello World</span>' }});
+      var div = h({ tagName: 'div', props: { innerHTML: '<span>Hello World</span>' }});
       var html = div.toHtml();
       expect(html).toBe('<div><span>Hello World</span></div>');
 
@@ -418,17 +418,17 @@ describe("Tag", function() {
 
     it("renders a void element", function() {
 
-      var br = h({ tagName: "br" });
+      var br = h({ tagName: 'br' });
       var html = br.toHtml();
-      expect(html).toBe("<br>");
+      expect(html).toBe('<br>');
 
     });
 
     it("ignores null elements", function() {
 
-      var br = h({ tagName: "div" }, ["child1", null, "child2"]);
+      var br = h({ tagName: 'div' }, ['child1', null, 'child2']);
       var html = br.toHtml();
-      expect(html).toBe("<div>child1child2</div>");
+      expect(html).toBe('<div>child1child2</div>');
 
     });
 

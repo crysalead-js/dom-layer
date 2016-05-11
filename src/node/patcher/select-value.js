@@ -3,11 +3,11 @@ var isArray = Array.isArray;
 /**
  * This is a convenience function which preprocesses the value attribute/property
  * set on a select or select multiple virtual node. The value is first populated over
- * corresponding `<option>` by setting the `"selected"` attribute and then deleted
+ * corresponding `<option>` by setting the `'selected'` attribute and then deleted
  * from the node `attrs` & `props` field.
  */
 function selectValue(node) {
-  if (node.tagName !== "select") {
+  if (node.tagName !== 'select') {
     return;
   }
   var value = node.attrs && node.attrs.value;
@@ -26,10 +26,10 @@ function selectValue(node) {
     }
   }
   populateOptions(node, values);
-  if (node.attrs && node.attrs.hasOwnProperty("value")) {
+  if (node.attrs && node.attrs.hasOwnProperty('value')) {
     delete node.attrs.value;
   }
-  if (node.props && node.props.hasOwnProperty("value")) {
+  if (node.props && node.props.hasOwnProperty('value')) {
     delete node.props.value;
   }
 }
@@ -41,7 +41,7 @@ function selectValue(node) {
  * @param  Object values    The selected values to populate.
  */
 function populateOptions(node, values) {
-  if (node.tagName !== "option") {
+  if (node.tagName !== 'option') {
     for (var i = 0, len = node.children.length; i < len ; i++) {
       populateOptions(node.children[i], values);
     }
@@ -54,7 +54,7 @@ function populateOptions(node, values) {
     return;
   }
   node.attrs = node.attrs || {};
-  node.attrs.selected = "selected";
+  node.attrs.selected = 'selected';
   node.props = node.props || {};
   node.props.selected = true;
 }

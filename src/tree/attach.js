@@ -1,7 +1,7 @@
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
-  if (typeof nodes === "function") {
+  if (typeof nodes === 'function') {
     nodes = nodes(container, parent);
   }
   if (!isArray(nodes)) {
@@ -18,7 +18,7 @@ function attach(container, nodes, parent) {
       i++;
       continue;
     }
-    if (nodes[i].type !== "Text") {
+    if (nodes[i].type !== 'Text') {
       nodes[i].attach(childNodes[j], parent);
       i++;
     } else {
@@ -37,7 +37,7 @@ function attach(container, nodes, parent) {
       textLen = text.length;
       while (size < textLen && i < nodesLen) {
         size += nodes[i].data.length;
-        nodes[i].data = "";
+        nodes[i].data = '';
         i++;
       }
     }

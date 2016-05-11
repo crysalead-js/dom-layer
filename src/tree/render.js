@@ -1,7 +1,7 @@
 var isArray = Array.isArray;
 
 function render(container, nodes, parent) {
-  if (typeof nodes === "function") {
+  if (typeof nodes === 'function') {
     nodes = nodes(container, parent);
   }
   if (!isArray(nodes)) {

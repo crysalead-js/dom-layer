@@ -1,10 +1,10 @@
-var domElementValue = require("dom-element-value");
-var EventManager = require("dom-event-manager");
+var domElementValue = require('dom-element-value');
+var EventManager = require('dom-event-manager');
 
 var eventManager;
 
 function eventHandler(name, e) {
-  var element = e.delegateTarget, eventName = "on" + name;
+  var element = e.delegateTarget, eventName = 'on' + name;
   if (!element.domLayerNode || !element.domLayerNode.events || !element.domLayerNode.events[eventName]) {
     return;
   }

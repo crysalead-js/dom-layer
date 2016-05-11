@@ -1,8 +1,8 @@
-var query = require("dom-query");
-var attach = require("./attach");
-var render = require("./render");
-var update = require("./update");
-var remove = require("./remove");
+var query = require('dom-query');
+var attach = require('./attach');
+var render = require('./render');
+var update = require('./update');
+var remove = require('./remove');
 var isArray = Array.isArray;
 
 function Tree() {
@@ -20,7 +20,7 @@ Tree.prototype.mount = function(selector, factory, mount) {
   mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
-    throw new Error("The selector must identify an unique DOM element");
+    throw new Error('The selector must identify an unique DOM element.');
   }
 
   var container = containers[0];
@@ -60,7 +60,7 @@ Tree.prototype.attach = function(selector, factory, mount) {
   mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
-    throw new Error("The selector must identify an unique DOM element");
+    throw new Error('The selector must identify an unique DOM element.');
   }
 
   var container = containers[0];

@@ -1,13 +1,13 @@
-var voidElements = require("void-elements");
-var attach = require("../tree/attach");
-var render = require("../tree/render");
-var update = require("../tree/update");
-var props = require("./patcher/props");
-var attrs = require("./patcher/attrs");
-var attrsNS = require("./patcher/attrs-n-s");
-var selectValue = require("./patcher/select-value");
-var stringifyAttrs = require("../util/stringify-attrs");
-var Text = require("./text");
+var voidElements = require('void-elements');
+var attach = require('../tree/attach');
+var render = require('../tree/render');
+var update = require('../tree/update');
+var props = require('./patcher/props');
+var attrs = require('./patcher/attrs');
+var attrsNS = require('./patcher/attrs-n-s');
+var selectValue = require('./patcher/select-value');
+var stringifyAttrs = require('../util/stringify-attrs');
+var Text = require('./text');
 
 /**
  * The Virtual Tag constructor.
@@ -17,7 +17,7 @@ var Text = require("./text");
  * @param  Array  children An array for children.
  */
 function Tag(tagName, config, children) {
-  this.tagName = tagName || "div";
+  this.tagName = tagName || 'div';
   config = config || {};
   this.children = children || [];
   this.props = config.props;
@@ -35,7 +35,7 @@ function Tag(tagName, config, children) {
   this.is = config.attrs && config.attrs.is || null;
 };
 
-Tag.prototype.type = "Tag";
+Tag.prototype.type = 'Tag';
 
 /**
  * Creates and return the corresponding DOM node.
@@ -71,10 +71,10 @@ Tag.prototype.render = function(container, parent) {
   this.parent = parent;
 
   if (!this.namespace) {
-    if (this.tagName === "svg" ) {
-      this.namespace = "http://www.w3.org/2000/svg";
-    } else if (this.tagName === "math") {
-      this.namespace = "http://www.w3.org/1998/Math/MathML";
+    if (this.tagName === 'svg' ) {
+      this.namespace = 'http://www.w3.org/2000/svg';
+    } else if (this.tagName === 'math') {
+      this.namespace = 'http://www.w3.org/1998/Math/MathML';
     } else if (parent) {
       this.namespace = parent.namespace;
     }
@@ -86,7 +86,7 @@ Tag.prototype.render = function(container, parent) {
     element.domLayerNode = this;
   }
 
-  if (this.tagName === "select") {
+  if (this.tagName === 'select') {
     selectValue(this);
   }
   if (this.props) {
@@ -164,7 +164,7 @@ Tag.prototype.patch = function(to) {
   to.element = this.element;
   to.parent = this.parent;
 
-  if (this.tagName === "select") {
+  if (this.tagName === 'select') {
     selectValue(to);
   }
   if (this.props || to.props) {
@@ -224,7 +224,7 @@ Tag.prototype.destroy = function() {
 };
 
 /**
- * Broadcasts the remove "event".
+ * Broadcasts the remove 'event'.
  */
 function broadcastRemove(node) {
   if (node.children) {
@@ -260,7 +260,7 @@ Tag.prototype.toHtml = function() {
 
   var attrs = stringifyAttrs(attributes, this.tagName);
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
-  var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
+  var html = '<' + this.tagName + (attrs ? ' ' + attrs : '') + (attrsNS ? ' ' + attrsNS : '') + '>';
 
   var len = children.length;
 
@@ -273,7 +273,7 @@ Tag.prototype.toHtml = function() {
       }
     }
   }
-  html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
+  html += voidElements[this.tagName] ? '' : '</' + this.tagName + '>';
   return html;
 
 };

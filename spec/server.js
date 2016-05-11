@@ -6,12 +6,12 @@ describe("Server side tests", function() {
 
   describe(".toHtml()", function() {
 
-    it("renders a virtual tree", function() {
+    it('renders a virtual tree', function() {
 
-      var html = new Tag("button", {events: {onclick: function() {alert("Hello World!");}}}, [
-        new Text("Click Me !")
+      var html = new Tag('button', {events: {onclick: function() {alert('Hello World!');}}}, [
+        new Text('Click Me !')
       ]).toHtml();
-      expect(html).toBe("<button>Click Me !</button>");
+      expect(html).toBe('<button>Click Me !</button>');
 
     });
 

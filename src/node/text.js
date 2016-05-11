@@ -1,4 +1,4 @@
-var escapeHtml = require("escape-html");
+var escapeHtml = require('escape-html');
 
 /**
  * The Virtual Text constructor.
@@ -12,7 +12,7 @@ function Text(data) {
   this.parent = undefined;
 }
 
-Text.prototype.type = "Text";
+Text.prototype.type = 'Text';
 
 /**
  * Creates and return the corresponding DOM node.

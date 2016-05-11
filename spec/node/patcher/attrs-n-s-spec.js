@@ -1,7 +1,7 @@
-var h = require("../../helper/h");
-var _ = require("../../helper/util");
-var patch = require("../../../src/tree/patch");
-var attrsNS = require("../../../src/node/patcher/attrs-n-s");
+var h = require('../../helper/h');
+var _ = require('../../helper/util');
+var patch = require('../../../src/tree/patch');
+var attrsNS = require('../../../src/node/patcher/attrs-n-s');
 
 var namespaces = attrsNS.namespaces;
 
@@ -11,34 +11,34 @@ describe("attrsNS", function() {
 
     it("accepts empty value as previous attributes", function() {
 
-      var element = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      attrsNS.patch(element, undefined, { "xlink:href": "test.jpg" });
+      var element = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      attrsNS.patch(element, undefined, { 'xlink:href': 'test.jpg' });
 
-      expect(element.getAttributeNS(namespaces["xlink"], "href")).toBe("test.jpg");
+      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBe('test.jpg');
 
     });
 
     it("accepts empty value as previous attributes", function() {
 
-      var element = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      attrsNS.patch(element, undefined, { "xlink:href": "test.jpg" });
+      var element = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      attrsNS.patch(element, undefined, { 'xlink:href': 'test.jpg' });
 
-      expect(element.getAttributeNS(namespaces["xlink"], "href")).toBe("test.jpg");
+      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBe('test.jpg');
 
     });
 
     it("bails out when an attribute hasn't been modified", function() {
 
-      var element = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      attrsNS.patch(element, { "xlink:href": "test.jpg" }, { "xlink:href": "test.jpg" });
+      var element = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      attrsNS.patch(element, { 'xlink:href': 'test.jpg' }, { 'xlink:href': 'test.jpg' });
 
-      expect(element.getAttributeNS(namespaces["xlink"], "href")).toBe(null);
+      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBe(null);
 
     });
 
     it("bails out when attributes are empty", function() {
 
-      var element = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      var element = document.createElementNS('http://www.w3.org/2000/svg', 'image');
       attrsNS.patch(element);
       expect(element).toBe(element);
 
@@ -47,43 +47,43 @@ describe("attrsNS", function() {
     it("sets namespaced attributes", function() {
 
       var from = h({
-        tagName: "image",
+        tagName: 'image',
         attrs: {
-          xmlns: "http://www.w3.org/2000/svg"
+          xmlns: 'http://www.w3.org/2000/svg'
         },
         attrsNS: {
-          "xlink:href": "test.jpg"
+          'xlink:href': 'test.jpg'
         }
       });
 
       var element = from.render();
-      expect(element.getAttributeNS(namespaces["xlink"], "href")).toBe("test.jpg");
+      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBe('test.jpg');
 
     });
 
     it("unsets namespaced attributes", function() {
 
       var from = h({
-        tagName: "image",
+        tagName: 'image',
         attrs: {
-          xmlns: "http://www.w3.org/2000/svg"
+          xmlns: 'http://www.w3.org/2000/svg'
         },
         attrsNS: {
-          "xlink:href": "test.jpg"
+          'xlink:href': 'test.jpg'
         }
       });
 
       var to = h({
-        tagName: "image",
+        tagName: 'image',
         attrs: {
-          xmlns: "http://www.w3.org/2000/svg"
+          xmlns: 'http://www.w3.org/2000/svg'
         },
         attrsNS: {}
       });
 
       var element = from.render();
       from.patch(to);
-      expect(element.getAttributeNS(namespaces["xlink"], "href")).toBeFalsy();
+      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBeFalsy();
     });
 
   });

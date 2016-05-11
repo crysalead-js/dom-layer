@@ -1,4 +1,4 @@
-var domElementCss = require("dom-element-css");
+var domElementCss = require('dom-element-css');
 
 /**
  * Maintains state of element style attribute.
@@ -12,8 +12,8 @@ function patch(element, previous, style) {
     return style;
   }
   var rule;
-  if (typeof style === "object") {
-    if (typeof previous === "object") {
+  if (typeof style === 'object') {
+    if (typeof previous === 'object') {
       for (rule in previous) {
         if (!style[rule]) {
           domElementCss(element, rule, null);
@@ -22,12 +22,12 @@ function patch(element, previous, style) {
       domElementCss(element, style);
     } else {
       if (previous) {
-        element.setAttribute("style", "");
+        element.setAttribute('style', '');
       }
       domElementCss(element, style);
     }
   } else {
-    element.setAttribute("style", style || "");
+    element.setAttribute('style', style || '');
   }
 }
 

@@ -1,6 +1,6 @@
-var h = require("../helper/h");
-var _ = require("../helper/util");
-var patch = require("../../src/tree/patch");
+var h = require('../helper/h');
+var _ = require('../helper/util');
+var patch = require('../../src/tree/patch');
 
 describe(".patch()", function() {
 
@@ -9,7 +9,7 @@ describe(".patch()", function() {
     it("adds all nodes", function() {
 
       var from = _.buildNodes([]);
-      var to = _.buildNodes(["#0", "#1", "#2", "#3"]);
+      var to = _.buildNodes(['#0', '#1', '#2', '#3']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -23,8 +23,8 @@ describe(".patch()", function() {
 
     it("sizes up", function() {
 
-      var from = _.buildNodes(["#0", "#1"]);
-      var to = _.buildNodes(["#0", "#1", "#2", "#3"]);
+      var from = _.buildNodes(['#0', '#1']);
+      var to = _.buildNodes(['#0', '#1', '#2', '#3']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -38,8 +38,8 @@ describe(".patch()", function() {
 
     it("sizes down", function() {
 
-      var from = _.buildNodes(["#0", "#1", "#2", "#3"]);
-      var to = _.buildNodes(["#0", "#1"]);
+      var from = _.buildNodes(['#0', '#1', '#2', '#3']);
+      var to = _.buildNodes(['#0', '#1']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -53,7 +53,7 @@ describe(".patch()", function() {
 
     it("clears all nodes", function() {
 
-      var from = _.buildNodes(["#0", "#1", "#2", "#3"]);
+      var from = _.buildNodes(['#0', '#1', '#2', '#3']);
       var to = _.buildNodes([]);
 
       var rootNode = from.render();
@@ -72,8 +72,8 @@ describe(".patch()", function() {
 
     it("removes a key", function() {
 
-      var from = _.buildNodes(["1", "#0", "#1", "#2"]);
-      var to = _.buildNodes(["#0", "#1", "#2", "#3"]);
+      var from = _.buildNodes(['1', '#0', '#1', '#2']);
+      var to = _.buildNodes(['#0', '#1', '#2', '#3']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -87,8 +87,8 @@ describe(".patch()", function() {
 
     it("moves a key for start to end", function() {
 
-      var from = _.buildNodes(["a", "#0", "#1", "#2"]);
-      var to = _.buildNodes(["#0", "#1", "#2", "a"]);
+      var from = _.buildNodes(['a', '#0', '#1', '#2']);
+      var to = _.buildNodes(['#0', '#1', '#2', 'a']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -102,8 +102,8 @@ describe(".patch()", function() {
 
     it("moves a key", function() {
 
-      var from = _.buildNodes(["#0", "a", "#2", "#3"]);
-      var to = _.buildNodes(["#0", "#1", "a", "#3"]);
+      var from = _.buildNodes(['#0', 'a', '#2', '#3']);
+      var to = _.buildNodes(['#0', '#1', 'a', '#3']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -117,8 +117,8 @@ describe(".patch()", function() {
 
     it("moves a key with a size up", function() {
 
-      var from = _.buildNodes(["a", "#1", "#2", "#3"]);
-      var to = _.buildNodes(["#0", "#1", "#2", "#3", "a", "#5"]);
+      var from = _.buildNodes(['a', '#1', '#2', '#3']);
+      var to = _.buildNodes(['#0', '#1', '#2', '#3', 'a', '#5']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -132,8 +132,8 @@ describe(".patch()", function() {
 
     it("moves a key with a size down", function() {
 
-      var from = _.buildNodes(["a", "#1", "#2", "#3"]);
-      var to = _.buildNodes(["#0", "a", "#2"]);
+      var from = _.buildNodes(['a', '#1', '#2', '#3']);
+      var to = _.buildNodes(['#0', 'a', '#2']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -147,8 +147,8 @@ describe(".patch()", function() {
 
     it("avoids unnecessary reordering", function() {
 
-      var from = _.buildNodes(["#0", "a", "#2"]);
-      var to = _.buildNodes(["#0", "a", "#2"]);
+      var from = _.buildNodes(['#0', 'a', '#2']);
+      var to = _.buildNodes(['#0', 'a', '#2']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -162,8 +162,8 @@ describe(".patch()", function() {
 
     it("adds and deletes and reorders", function() {
 
-      var from = _.buildNodes(["a", "#1", "b", "#3", "c", "d", "#6"]);
-      var to = _.buildNodes(["#0", "e", "d", "c", "#4", "a"]);
+      var from = _.buildNodes(['a', '#1', 'b', '#3', 'c', 'd', '#6']);
+      var to = _.buildNodes(['#0', 'e', 'd', 'c', '#4', 'a']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -196,8 +196,8 @@ describe(".patch()", function() {
 
     it("gets keys reordered", function () {
 
-      var from = _.buildNodes(["1", "2", "3", "4", "test", "6", "good", "7"]);
-      var to = _.buildNodes(["7", "4", "3", "2", "6", "test", "good", "1"]);
+      var from = _.buildNodes(['1', '2', '3', '4', 'test', '6', 'good', '7']);
+      var to = _.buildNodes(['7', '4', '3', '2', '6', 'test', 'good', '1']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -211,8 +211,8 @@ describe(".patch()", function() {
 
     it("removes one key at the start", function() {
 
-      var from = _.buildNodes(["a", "b", "c"]);
-      var to = _.buildNodes(["b", "c"]);
+      var from = _.buildNodes(['a', 'b', 'c']);
+      var to = _.buildNodes(['b', 'c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -226,8 +226,8 @@ describe(".patch()", function() {
 
     it("removes two keys at the start", function() {
 
-      var from = _.buildNodes(["a", "b", "c"]);
-      var to = _.buildNodes(["c"]);
+      var from = _.buildNodes(['a', 'b', 'c']);
+      var to = _.buildNodes(['c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -241,8 +241,8 @@ describe(".patch()", function() {
 
     it("adds one key to start", function() {
 
-      var from = _.buildNodes(["b", "c"]);
-      var to = _.buildNodes(["a", "b", "c"]);
+      var from = _.buildNodes(['b', 'c']);
+      var to = _.buildNodes(['a', 'b', 'c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -256,8 +256,8 @@ describe(".patch()", function() {
 
     it("adds two key to start", function() {
 
-      var from = _.buildNodes(["c"]);
-      var to = _.buildNodes(["a", "b", "c"]);
+      var from = _.buildNodes(['c']);
+      var to = _.buildNodes(['a', 'b', 'c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -271,8 +271,8 @@ describe(".patch()", function() {
 
     it("removes one key at the end", function() {
 
-      var from = _.buildNodes(["a", "b", "c"]);
-      var to = _.buildNodes(["a", "b"]);
+      var from = _.buildNodes(['a', 'b', 'c']);
+      var to = _.buildNodes(['a', 'b']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -286,8 +286,8 @@ describe(".patch()", function() {
 
     it("removes two keys at the end", function() {
 
-      var from = _.buildNodes(["a", "b", "c"]);
-      var to = _.buildNodes(["a"]);
+      var from = _.buildNodes(['a', 'b', 'c']);
+      var to = _.buildNodes(['a']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -301,8 +301,8 @@ describe(".patch()", function() {
 
     it("adds one key at the end", function() {
 
-      var from = _.buildNodes(["a", "b"]);
-      var to = _.buildNodes(["a", "b", "c"]);
+      var from = _.buildNodes(['a', 'b']);
+      var to = _.buildNodes(['a', 'b', 'c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -316,8 +316,8 @@ describe(".patch()", function() {
 
     it("adds two key at the end", function() {
 
-      var from = _.buildNodes(["a"]);
-      var to = _.buildNodes(["a", "b", "c"]);
+      var from = _.buildNodes(['a']);
+      var to = _.buildNodes(['a', 'b', 'c']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -331,8 +331,8 @@ describe(".patch()", function() {
 
     it("adds to end and deletes from center & reverses", function() {
 
-      var from = _.buildNodes(["a", "b", "c", "d"]);
-      var to = _.buildNodes(["e", "d", "c", "a"]);
+      var from = _.buildNodes(['a', 'b', 'c', 'd']);
+      var to = _.buildNodes(['e', 'd', 'c', 'a']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -346,8 +346,8 @@ describe(".patch()", function() {
 
     it("adds to front and removes", function() {
 
-      var from = _.buildNodes(["c", "d"]);
-      var to = _.buildNodes(["a", "b", "c", "e"]);
+      var from = _.buildNodes(['c', 'd']);
+      var to = _.buildNodes(['a', 'b', 'c', 'e']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
@@ -361,7 +361,7 @@ describe(".patch()", function() {
 
     it("clears all nodes", function() {
 
-      var from = _.buildNodes(["a", "b", "c", "e"]);
+      var from = _.buildNodes(['a', 'b', 'c', 'e']);
       var to = _.buildNodes([]);
 
       var rootNode = from.render();
@@ -376,8 +376,8 @@ describe(".patch()", function() {
 
     it("keeps a central pivot", function() {
 
-      var from = _.buildNodes(["1", "2", "3"]);
-      var to = _.buildNodes(["4", "2", "5"]);
+      var from = _.buildNodes(['1', '2', '3']);
+      var to = _.buildNodes(['4', '2', '5']);
 
       var rootNode = from.render();
       var childNodes = _.rewrap(rootNode.childNodes);
