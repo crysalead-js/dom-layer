@@ -1,16 +1,16 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domLayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Tree = require("./src/tree/tree");
-var attach = require("./src/tree/attach");
-var render = require("./src/tree/render");
-var update = require("./src/tree/update");
-var remove = require("./src/tree/remove");
-var patch = require("./src/tree/patch");
-var Tag = require("./src/node/tag");
-var Text = require("./src/node/text");
-var attrs = require("./src/node/patcher/attrs");
-var attrsNS = require("./src/node/patcher/attrs-n-s");
-var props = require("./src/node/patcher/props");
-var events = require("./src/events");
+var Tree = require('./src/tree/tree');
+var attach = require('./src/tree/attach');
+var render = require('./src/tree/render');
+var update = require('./src/tree/update');
+var remove = require('./src/tree/remove');
+var patch = require('./src/tree/patch');
+var Tag = require('./src/node/tag');
+var Text = require('./src/node/text');
+var attrs = require('./src/node/patcher/attrs');
+var attrsNS = require('./src/node/patcher/attrs-n-s');
+var props = require('./src/node/patcher/props');
+var events = require('./src/events');
 
 module.exports = {
   Tree: Tree,
@@ -668,13 +668,13 @@ module.exports = {
 };
 
 },{}],13:[function(require,module,exports){
-var domElementValue = require("dom-element-value");
-var EventManager = require("dom-event-manager");
+var domElementValue = require('dom-element-value');
+var EventManager = require('dom-event-manager');
 
 var eventManager;
 
 function eventHandler(name, e) {
-  var element = e.delegateTarget, eventName = "on" + name;
+  var element = e.delegateTarget, eventName = 'on' + name;
   if (!element.domLayerNode || !element.domLayerNode.events || !element.domLayerNode.events[eventName]) {
     return;
   }
@@ -762,8 +762,8 @@ module.exports = {
 };
 
 },{}],15:[function(require,module,exports){
-var style = require("./style");
-var stringifyClass = require("../../util/stringify-class");
+var style = require('./style');
+var stringifyClass = require('../../util/stringify-class');
 
 /**
  * Maintains state of element attributes.
@@ -848,13 +848,13 @@ set.handlers.value = function(name, element, previous, attrs) {
     return;
   }
   element.setAttribute(name, attrs[name]);
-  element[name] = attrs[name] ? attrs[name] : "";
+  element[name] = attrs[name] ? attrs[name] : '';
 };
 
 /**
  * Custom set handler for the class attribute.
  */
-set.handlers["class"] = function(name, element, previous, attrs) {
+set.handlers['class'] = function(name, element, previous, attrs) {
   if (attrs[name] == null) {
     return;
   }
@@ -919,8 +919,8 @@ module.exports = {
 };
 
 },{}],17:[function(require,module,exports){
-var dataset = require("./dataset");
-var stringifyClass = require("../../util/stringify-class");
+var dataset = require('./dataset');
+var stringifyClass = require('../../util/stringify-class');
 
 /**
  * Maintains state of element properties.
@@ -1000,7 +1000,7 @@ set.handlers.type = function(name, element, previous, props) {
  * Custom set handler for the class attribute.
  */
 set.handlers.className = function(name, element, previous, props) {
-  element.className = props[name] ? stringifyClass(props[name]) : "";
+  element.className = props[name] ? stringifyClass(props[name]) : '';
 };
 
 /**
@@ -1014,7 +1014,7 @@ set.handlers.dataset = function(name, element, previous, props) {
  * Custom unset handler for the class attribute.
  */
 unset.handlers.className = function(name, element, previous) {
-  element.className = "";
+  element.className = '';
 };
 
 /**
@@ -1036,11 +1036,11 @@ var isArray = Array.isArray;
 /**
  * This is a convenience function which preprocesses the value attribute/property
  * set on a select or select multiple virtual node. The value is first populated over
- * corresponding `<option>` by setting the `"selected"` attribute and then deleted
+ * corresponding `<option>` by setting the `'selected'` attribute and then deleted
  * from the node `attrs` & `props` field.
  */
 function selectValue(node) {
-  if (node.tagName !== "select") {
+  if (node.tagName !== 'select') {
     return;
   }
   var value = node.attrs && node.attrs.value;
@@ -1059,10 +1059,10 @@ function selectValue(node) {
     }
   }
   populateOptions(node, values);
-  if (node.attrs && node.attrs.hasOwnProperty("value")) {
+  if (node.attrs && node.attrs.hasOwnProperty('value')) {
     delete node.attrs.value;
   }
-  if (node.props && node.props.hasOwnProperty("value")) {
+  if (node.props && node.props.hasOwnProperty('value')) {
     delete node.props.value;
   }
 }
@@ -1074,7 +1074,7 @@ function selectValue(node) {
  * @param  Object values    The selected values to populate.
  */
 function populateOptions(node, values) {
-  if (node.tagName !== "option") {
+  if (node.tagName !== 'option') {
     for (var i = 0, len = node.children.length; i < len ; i++) {
       populateOptions(node.children[i], values);
     }
@@ -1087,7 +1087,7 @@ function populateOptions(node, values) {
     return;
   }
   node.attrs = node.attrs || {};
-  node.attrs.selected = "selected";
+  node.attrs.selected = 'selected';
   node.props = node.props || {};
   node.props.selected = true;
 }
@@ -1095,7 +1095,7 @@ function populateOptions(node, values) {
 module.exports = selectValue;
 
 },{}],19:[function(require,module,exports){
-var domElementCss = require("dom-element-css");
+var domElementCss = require('dom-element-css');
 
 /**
  * Maintains state of element style attribute.
@@ -1109,8 +1109,8 @@ function patch(element, previous, style) {
     return style;
   }
   var rule;
-  if (typeof style === "object") {
-    if (typeof previous === "object") {
+  if (typeof style === 'object') {
+    if (typeof previous === 'object') {
       for (rule in previous) {
         if (!style[rule]) {
           domElementCss(element, rule, null);
@@ -1119,12 +1119,12 @@ function patch(element, previous, style) {
       domElementCss(element, style);
     } else {
       if (previous) {
-        element.setAttribute("style", "");
+        element.setAttribute('style', '');
       }
       domElementCss(element, style);
     }
   } else {
-    element.setAttribute("style", style || "");
+    element.setAttribute('style', style || '');
   }
 }
 
@@ -1133,16 +1133,16 @@ module.exports = {
 };
 
 },{"dom-element-css":2}],20:[function(require,module,exports){
-var voidElements = require("void-elements");
-var attach = require("../tree/attach");
-var render = require("../tree/render");
-var update = require("../tree/update");
-var props = require("./patcher/props");
-var attrs = require("./patcher/attrs");
-var attrsNS = require("./patcher/attrs-n-s");
-var selectValue = require("./patcher/select-value");
-var stringifyAttrs = require("../util/stringify-attrs");
-var Text = require("./text");
+var voidElements = require('void-elements');
+var attach = require('../tree/attach');
+var render = require('../tree/render');
+var update = require('../tree/update');
+var props = require('./patcher/props');
+var attrs = require('./patcher/attrs');
+var attrsNS = require('./patcher/attrs-n-s');
+var selectValue = require('./patcher/select-value');
+var stringifyAttrs = require('../util/stringify-attrs');
+var Text = require('./text');
 
 /**
  * The Virtual Tag constructor.
@@ -1152,7 +1152,7 @@ var Text = require("./text");
  * @param  Array  children An array for children.
  */
 function Tag(tagName, config, children) {
-  this.tagName = tagName || "div";
+  this.tagName = tagName || 'div';
   config = config || {};
   this.children = children || [];
   this.props = config.props;
@@ -1170,7 +1170,7 @@ function Tag(tagName, config, children) {
   this.is = config.attrs && config.attrs.is || null;
 };
 
-Tag.prototype.type = "Tag";
+Tag.prototype.type = 'Tag';
 
 /**
  * Creates and return the corresponding DOM node.
@@ -1206,10 +1206,10 @@ Tag.prototype.render = function(container, parent) {
   this.parent = parent;
 
   if (!this.namespace) {
-    if (this.tagName === "svg" ) {
-      this.namespace = "http://www.w3.org/2000/svg";
-    } else if (this.tagName === "math") {
-      this.namespace = "http://www.w3.org/1998/Math/MathML";
+    if (this.tagName === 'svg' ) {
+      this.namespace = 'http://www.w3.org/2000/svg';
+    } else if (this.tagName === 'math') {
+      this.namespace = 'http://www.w3.org/1998/Math/MathML';
     } else if (parent) {
       this.namespace = parent.namespace;
     }
@@ -1221,7 +1221,7 @@ Tag.prototype.render = function(container, parent) {
     element.domLayerNode = this;
   }
 
-  if (this.tagName === "select") {
+  if (this.tagName === 'select') {
     selectValue(this);
   }
   if (this.props) {
@@ -1299,7 +1299,7 @@ Tag.prototype.patch = function(to) {
   to.element = this.element;
   to.parent = this.parent;
 
-  if (this.tagName === "select") {
+  if (this.tagName === 'select') {
     selectValue(to);
   }
   if (this.props || to.props) {
@@ -1359,7 +1359,7 @@ Tag.prototype.destroy = function() {
 };
 
 /**
- * Broadcasts the remove "event".
+ * Broadcasts the remove 'event'.
  */
 function broadcastRemove(node) {
   if (node.children) {
@@ -1395,7 +1395,7 @@ Tag.prototype.toHtml = function() {
 
   var attrs = stringifyAttrs(attributes, this.tagName);
   var attrsNS = stringifyAttrs(this.attrsNS, this.tagName);
-  var html = "<" + this.tagName + (attrs ? " " + attrs : "") + (attrsNS ? " " + attrsNS : "") + ">";
+  var html = '<' + this.tagName + (attrs ? ' ' + attrs : '') + (attrsNS ? ' ' + attrsNS : '') + '>';
 
   var len = children.length;
 
@@ -1408,7 +1408,7 @@ Tag.prototype.toHtml = function() {
       }
     }
   }
-  html += voidElements[this.tagName] ? "" : "</" + this.tagName + ">";
+  html += voidElements[this.tagName] ? '' : '</' + this.tagName + '>';
   return html;
 
 };
@@ -1416,7 +1416,7 @@ Tag.prototype.toHtml = function() {
 module.exports = Tag;
 
 },{"../tree/attach":22,"../tree/render":25,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":15,"./patcher/attrs-n-s":14,"./patcher/props":17,"./patcher/select-value":18,"./text":21,"void-elements":12}],21:[function(require,module,exports){
-var escapeHtml = require("escape-html");
+var escapeHtml = require('escape-html');
 
 /**
  * The Virtual Text constructor.
@@ -1430,7 +1430,7 @@ function Text(data) {
   this.parent = undefined;
 }
 
-Text.prototype.type = "Text";
+Text.prototype.type = 'Text';
 
 /**
  * Creates and return the corresponding DOM node.
@@ -1528,7 +1528,7 @@ module.exports = Text;
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
-  if (typeof nodes === "function") {
+  if (typeof nodes === 'function') {
     nodes = nodes(container, parent);
   }
   if (!isArray(nodes)) {
@@ -1545,7 +1545,7 @@ function attach(container, nodes, parent) {
       i++;
       continue;
     }
-    if (nodes[i].type !== "Text") {
+    if (nodes[i].type !== 'Text') {
       nodes[i].attach(childNodes[j], parent);
       i++;
     } else {
@@ -1564,7 +1564,7 @@ function attach(container, nodes, parent) {
       textLen = text.length;
       while (size < textLen && i < nodesLen) {
         size += nodes[i].data.length;
-        nodes[i].data = "";
+        nodes[i].data = '';
         i++;
       }
     }
@@ -1576,7 +1576,7 @@ function attach(container, nodes, parent) {
 module.exports = attach;
 
 },{}],23:[function(require,module,exports){
-var isEmpty = require("is-empty");
+var isEmpty = require('is-empty');
 
 var isArray = Array.isArray;
 
@@ -1584,7 +1584,7 @@ var isArray = Array.isArray;
  * Patches & Reorders child nodes of a container (i.e represented by `fromChildren`) to match `toChildren`.
  *
  * Since finding the longest common subsequence problem is NP-hard, this implementation
- * is a simple heuristic for reordering nodes with a "minimum" of moves in O(n).
+ * is a simple heuristic for reordering nodes with a 'minimum' of moves in O(n).
  *
  * @param Object container    The parent container.
  * @param Array  children     The current array of children.
@@ -1691,7 +1691,7 @@ module.exports = remove;
 var isArray = Array.isArray;
 
 function render(container, nodes, parent) {
-  if (typeof nodes === "function") {
+  if (typeof nodes === 'function') {
     nodes = nodes(container, parent);
   }
   if (!isArray(nodes)) {
@@ -1708,11 +1708,11 @@ function render(container, nodes, parent) {
 module.exports = render;
 
 },{}],26:[function(require,module,exports){
-var query = require("dom-query");
-var attach = require("./attach");
-var render = require("./render");
-var update = require("./update");
-var remove = require("./remove");
+var query = require('dom-query');
+var attach = require('./attach');
+var render = require('./render');
+var update = require('./update');
+var remove = require('./remove');
 var isArray = Array.isArray;
 
 function Tree() {
@@ -1724,13 +1724,13 @@ function Tree() {
  *
  * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
- * @param Object          data     Some extra data to attach to the mount.
+ * @param Object          mount    Some extra data to attach to the mount.
  */
-Tree.prototype.mount = function(selector, factory, data) {
-  data = data || {};
+Tree.prototype.mount = function(selector, factory, mount) {
+  mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
-    throw new Error("The selector must identify an unique DOM element");
+    throw new Error('The selector must identify an unique DOM element.');
   }
 
   var container = containers[0];
@@ -1738,14 +1738,24 @@ Tree.prototype.mount = function(selector, factory, data) {
     this.unmount(container.domLayerTreeId);
   }
 
-  var mountId = data.mountId ? data.mountId : this.uuid();
+  var mountId = mount.mountId ? mount.mountId : this.uuid();
   var fragment = document.createDocumentFragment();
-  data.container = container;
-  data.factory = factory;
-  data.children = render(fragment, factory, null);
-  container.appendChild(fragment);
-  this._mounted[mountId] = data;
-  return container.domLayerTreeId = mountId;
+
+  mount.factory = factory;
+  mount.children = render(fragment, factory, null);
+  if (mount.transclude) {
+    mount.transcluded = container;
+    if (fragment.childNodes.length !== 1) {
+      throw new Error('Transclusion requires a single DOMElement to transclude.');
+    }
+    mount.container = fragment.childNodes[0];
+    container.parentNode.replaceChild(mount.container, container);
+  } else {
+    container.appendChild(fragment);
+    mount.container = container;
+  }
+  this._mounted[mountId] = mount;
+  return mount.container.domLayerTreeId = mountId;
 };
 
 /**
@@ -1754,13 +1764,13 @@ Tree.prototype.mount = function(selector, factory, data) {
  * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point
  *                                 containing a previously rendered DOM tree.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
- * @param Object          data     Some extra data to attach to the mount.
+ * @param Object          mount    Some extra mount to attach to the mount.
  */
-Tree.prototype.attach = function(selector, factory, data) {
-  data = data || {};
+Tree.prototype.attach = function(selector, factory, mount) {
+  mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
-    throw new Error("The selector must identify an unique DOM element");
+    throw new Error('The selector must identify an unique DOM element.');
   }
 
   var container = containers[0];
@@ -1768,11 +1778,11 @@ Tree.prototype.attach = function(selector, factory, data) {
     this.unmount(container.domLayerTreeId);
   }
 
-  var mountId = data.mountId ? data.mountId : this.uuid();
-  data.container = container;
-  data.factory = factory;
-  data.children = attach(container, factory, null);
-  this._mounted[mountId] = data;
+  var mountId = mount.mountId ? mount.mountId : this.uuid();
+  mount.container = container;
+  mount.factory = factory;
+  mount.children = attach(container, factory, null);
+  this._mounted[mountId] = mount;
   return container.domLayerTreeId = mountId;
 };
 
@@ -1794,17 +1804,24 @@ Tree.prototype.uuid = function() {
  * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
  */
 Tree.prototype.unmount = function(mountId) {
-  if (arguments.length) {
+  if (!arguments.length) {
+    this.unmount(Object.keys(this._mounted));
+    return;
+  }
+  var mounted = Array.isArray(mountId) ? mountId : arguments;
+  var len = mounted.length;
+  for (var i = 0; i < len; i++) {
+    var mountId = mounted[i];
     var mount = this._mounted[mountId];
     if (mount) {
-      remove(mount.children);
+      if (mount.transclude) {
+        mount.container.parentNode.replaceChild(mount.transcluded, mount.container);
+      } else {
+        remove(mount.children);
+      }
       delete mount.container.domLayerTreeId;
       delete this._mounted[mountId];
     }
-    return;
-  }
-  for (mountId in this._mounted) {
-    this.unmount(mountId);
   }
 };
 
@@ -1847,12 +1864,12 @@ Tree.prototype.mounted = function(mountId) {
 module.exports = Tree;
 
 },{"./attach":22,"./remove":24,"./render":25,"./update":27,"dom-query":6}],27:[function(require,module,exports){
-var patch = require("./patch");
+var patch = require('./patch');
 
 var isArray = Array.isArray;
 
 function update(container, fromNodes, toNodes, parent) {
-  if (typeof toNodes === "function") {
+  if (typeof toNodes === 'function') {
     toNodes = toNodes(container, parent);
   }
   if (!isArray(toNodes)) {
@@ -1864,45 +1881,45 @@ function update(container, fromNodes, toNodes, parent) {
 module.exports = update;
 
 },{"./patch":23}],28:[function(require,module,exports){
-var stringifyStyle = require("./stringify-style");
-var stringifyClass = require("./stringify-class");
+var stringifyStyle = require('./stringify-style');
+var stringifyClass = require('./stringify-class');
 
 /**
- * Returns a `'key1="value1" key2="value2" ...'` string from
- * a `{ key1: "value1", key2: "value2" }` object.
+ * Returns a `'key1='value1' key2='value2' ...'` string from
+ * a `{ key1: 'value1', key2: 'value2' }` object.
  *
  * @param  Object attrs The keys/values object to stringify.
  * @return String       The corresponding string.
  */
 function stringifyAttrs(attrs, tagName) {
   if (!attrs) {
-    return "";
+    return '';
   }
   var attributes = [], value;
   for (var key in attrs) {
     value = attrs[key];
-    if (key === "style") {
+    if (key === 'style') {
       value = stringifyStyle(value);
-    } else if (key === "class") {
+    } else if (key === 'class') {
       value = stringifyClass(value);
     }
     attributes.push(key + '="' + String(value).replace(/"/g, '\\"') + '"');
   }
-  return attributes.join(" ");
+  return attributes.join(' ');
 }
 
 module.exports = stringifyAttrs;
 
 },{"./stringify-class":29,"./stringify-style":30}],29:[function(require,module,exports){
 /**
- * Returns a `'class1 class3" ...'` string from
+ * Returns a `'class1 class3' ...'` string from
  * a `{ class1: true, class2: false, class3: true }` object.
  *
  * @param  Object className The keys/values object to stringify.
  * @return String           The corresponding string.
  */
 function stringifyClass(classAttr) {
-  if (typeof classAttr === "string") {
+  if (typeof classAttr === 'string') {
     return classAttr;
   }
   var classes = [];
@@ -1911,28 +1928,28 @@ function stringifyClass(classAttr) {
       classes.push(key);
     }
   }
-  return classes.join(" ");
+  return classes.join(' ');
 }
 
 module.exports = stringifyClass;
 
 },{}],30:[function(require,module,exports){
 /**
- * Returns a `'key1:value1;key2:value2" ...'` string from
- * a `{ key1: "value1", key2: "value2" }` object.
+ * Returns a `'key1:value1;key2:value2' ...'` string from
+ * a `{ key1: 'value1', key2: 'value2' }` object.
  *
  * @param  Object attrs The keys/values object to stringify.
  * @return String       The corresponding string.
  */
 function stringifyStyle(style) {
-  if (typeof style === "string") {
+  if (typeof style === 'string') {
     return style;
   }
   var values = [];
   for (var key in style) {
     values.push(key + ':' + style[key]);
   }
-  return values.join(";");
+  return values.join(';');
 }
 
 module.exports = stringifyStyle;

@@ -2,8 +2,11 @@
 
 ## HEAD
 
+## 0.3.1 (2016-05-11)
+  * **Add:** allows transclusion for mounts.
+
 ## 0.3.0 (2016-05-08)
-  * **Bugfix:** ignores null children for HTML rendering
+  * **Bugfix:** ignores null children for HTML rendering.
 
 ## 0.2.9 (2016-05-06)
   * **Revert:** casts strings in `children` as Text node by default.
