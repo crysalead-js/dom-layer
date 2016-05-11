@@ -14,10 +14,10 @@ function Tree() {
  *
  * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
- * @param Object          data     Some extra data to attach to the mount.
+ * @param Object          mount    Some extra data to attach to the mount.
  */
-Tree.prototype.mount = function(selector, factory, data) {
-  data = data || {};
+Tree.prototype.mount = function(selector, factory, mount) {
+  mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
     throw new Error("The selector must identify an unique DOM element");
@@ -28,14 +28,24 @@ Tree.prototype.mount = function(selector, factory, data) {
     this.unmount(container.domLayerTreeId);
   }
 
-  var mountId = data.mountId ? data.mountId : this.uuid();
+  var mountId = mount.mountId ? mount.mountId : this.uuid();
   var fragment = document.createDocumentFragment();
-  data.container = container;
-  data.factory = factory;
-  data.children = render(fragment, factory, null);
-  container.appendChild(fragment);
-  this._mounted[mountId] = data;
-  return container.domLayerTreeId = mountId;
+
+  mount.factory = factory;
+  mount.children = render(fragment, factory, null);
+  if (mount.transclude) {
+    mount.transcluded = container;
+    if (fragment.childNodes.length !== 1) {
+      throw new Error('Transclusion requires a single DOMElement to transclude.');
+    }
+    mount.container = fragment.childNodes[0];
+    container.parentNode.replaceChild(mount.container, container);
+  } else {
+    container.appendChild(fragment);
+    mount.container = container;
+  }
+  this._mounted[mountId] = mount;
+  return mount.container.domLayerTreeId = mountId;
 };
 
 /**
@@ -44,10 +54,10 @@ Tree.prototype.mount = function(selector, factory, data) {
  * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point
  *                                 containing a previously rendered DOM tree.
  * @param Function|Object factory  A factory function which returns a virtual tree or the virtual tree itself.
- * @param Object          data     Some extra data to attach to the mount.
+ * @param Object          mount    Some extra mount to attach to the mount.
  */
-Tree.prototype.attach = function(selector, factory, data) {
-  data = data || {};
+Tree.prototype.attach = function(selector, factory, mount) {
+  mount = mount || {};
   var containers = query.all(selector);
   if (containers.length !== 1) {
     throw new Error("The selector must identify an unique DOM element");
@@ -58,11 +68,11 @@ Tree.prototype.attach = function(selector, factory, data) {
     this.unmount(container.domLayerTreeId);
   }
 
-  var mountId = data.mountId ? data.mountId : this.uuid();
-  data.container = container;
-  data.factory = factory;
-  data.children = attach(container, factory, null);
-  this._mounted[mountId] = data;
+  var mountId = mount.mountId ? mount.mountId : this.uuid();
+  mount.container = container;
+  mount.factory = factory;
+  mount.children = attach(container, factory, null);
+  this._mounted[mountId] = mount;
   return container.domLayerTreeId = mountId;
 };
 
@@ -84,17 +94,24 @@ Tree.prototype.uuid = function() {
  * @param String mountId An optionnal mount identifier or none to update all mounted virtual trees.
  */
 Tree.prototype.unmount = function(mountId) {
-  if (arguments.length) {
+  if (!arguments.length) {
+    this.unmount(Object.keys(this._mounted));
+    return;
+  }
+  var mounted = Array.isArray(mountId) ? mountId : arguments;
+  var len = mounted.length;
+  for (var i = 0; i < len; i++) {
+    var mountId = mounted[i];
     var mount = this._mounted[mountId];
     if (mount) {
-      remove(mount.children);
+      if (mount.transclude) {
+        mount.container.parentNode.replaceChild(mount.transcluded, mount.container);
+      } else {
+        remove(mount.children);
+      }
       delete mount.container.domLayerTreeId;
       delete this._mounted[mountId];
     }
-    return;
-  }
-  for (mountId in this._mounted) {
-    this.unmount(mountId);
   }
 };
 

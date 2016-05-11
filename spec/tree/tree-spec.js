@@ -4,12 +4,13 @@ var Tree = require("../../src/tree/tree");
 
 describe("Tree", function() {
 
-  var testBody, tree, mountPoint;
+  var testBody, tree, mountPoint, parentNode;
 
   beforeEach(function() {
     testBody = document.getElementById("test");
     testBody.innerHTML = '<div id="mount-point"></div>';
     mountPoint = document.getElementById("mount-point");
+    parentNode = mountPoint.parentNode;
     tree = new Tree();
   })
 
@@ -25,6 +26,17 @@ describe("Tree", function() {
       var mountId = tree.mount("#mount-point", h({}, ["#1", "#2", "#3"]));
       expect(mountPoint.textContent).toBe("#1#2#3");
       expect(mountPoint.domLayerTreeId).toBe(mountId);
+
+    });
+
+    it("mounts in a transcluded way", function() {
+
+      var mountId = tree.mount("#mount-point", function() { return h({}, ["#1", "#2", "#3"]); } , {
+        transclude: true
+      });
+      expect(mountPoint.parentNode).toBe(null);
+      expect(mountPoint.textContent).toBe("");
+      expect(parentNode.textContent).toBe("#1#2#3");
 
     });
 
@@ -57,6 +69,18 @@ describe("Tree", function() {
       expect(mountPoint.domLayerTreeId).toBe(mountId2);
 
       expect(Object.keys(tree.mounted())).toEqual([mountId2]);
+
+    });
+
+    it("throw an error when trying to transclude unsing a non unique DOM element", function() {
+
+      var closure = function() {
+        var mountId = tree.mount('#mount-point', function() { return [h({}, ['#1']), h({}, ['#2'])]; } , {
+          transclude: true
+        });
+      };
+
+      expect(closure).toThrow(new Error('Transclusion requires a single DOMElement to transclude.'));
 
     });
 
@@ -175,6 +199,19 @@ describe("Tree", function() {
       expect(mountPoint.textContent).toBe("#1#2#3");
 
       tree.unmount(mountId);
+      expect(mountPoint.textContent).toBe("");
+      expect(mountPoint.domLayerTreeId).toBe(undefined);
+
+    });
+
+    it("umounts a transcluded mount", function() {
+
+      var mountId = tree.mount("#mount-point", function() { return h({}, ["#1", "#2", "#3"]); } , {
+        transclude: true
+      });
+      tree.unmount(mountId);
+
+      expect(mountPoint.parentNode).toBe(parentNode);
       expect(mountPoint.textContent).toBe("");
       expect(mountPoint.domLayerTreeId).toBe(undefined);
 
