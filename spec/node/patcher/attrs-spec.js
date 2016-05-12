@@ -26,6 +26,25 @@ describe("attrs", function() {
 
     });
 
+    it("sets an event attribute as a string", function() {
+
+      var node = h({ tagName: 'input', attrs: { onclick: 'function(){}' } });
+      var element = node.render();
+
+      expect(element.getAttribute('onclick')).toBe('function(){}');
+
+    });
+
+    it("sets an event attribute as a function", function() {
+
+      var fct = function(){};
+      var node = h({ tagName: 'input', attrs: { onclick: fct } });
+      var element = node.render();
+
+      expect(element.onclick).toBe(fct);
+
+    });
+
     it("sets the `style` attribute using `null`", function() {
 
       var from = h({ tagName: 'div', attrs: { style: null } });
@@ -64,6 +83,61 @@ describe("attrs", function() {
       from.patch(to);
       expect(element.getAttribute('foo')).toBe('baz');
       expect(element.getAttribute('bar')).toBe('oops');
+
+    });
+
+    it("patches an event attribute as a string", function() {
+
+      var from = h({ attrs: { onclick: 'function(){}' } });
+      var to = h({ attrs: { onclick: 'return "Hello World"' } });
+      var element = from.render();
+      expect(element.getAttribute('onclick')).toBe('function(){}');
+
+      from.patch(to);
+      expect(element.getAttribute('onclick')).toBe('return "Hello World"');
+
+    });
+
+    it("patches an event attribute as a function", function() {
+
+      var fct1 = function(){ return 'Hello'; };
+      var from = h({ attrs: { onclick: fct1 } });
+      var element = from.render();
+      expect(element.onclick).toBe(fct1);
+
+      var fct2 = function(){ return 'Hello World'; };
+      var to = h({ attrs: { onclick: fct2 } });
+      from.patch(to);
+      expect(element.onclick).toBe(fct2);
+
+    });
+
+    it("patches an event attribute as a string to an event attribute as a function", function() {
+
+      var from = h({ attrs: { onclick: 'return "Hello World"' } });
+      var element = from.render();
+      expect(element.onclick()).toBe('Hello World');
+      expect(element.getAttribute('onclick')).toBe('return "Hello World"');
+
+      var fct = function(){ return 'Hello'; };
+      var to = h({ attrs: { onclick: fct } });
+      from.patch(to);
+      expect(element.getAttribute('onclick')).toBe(null);
+      expect(element.onclick).toBe(fct);
+
+    });
+
+    it("patches an event attribute as a function to an event attribute as a string", function() {
+
+      var fct = function(){ return 'Hello'; };
+      var from = h({ attrs: { onclick: fct } });
+      var element = from.render();
+      expect(element.onclick).toBe(fct);
+
+      var to = h({ attrs: { onclick: 'return "Hello World"' } });
+      from.patch(to);
+      expect(element.onclick()).toBe('Hello World');
+      expect(element.getAttribute('onclick')).toBe('return "Hello World"');
 
     });
 
@@ -369,6 +443,33 @@ describe("attrs", function() {
       expect(element.getAttribute('a')).toBe('1');
       expect(element.getAttribute('b')).toBe(null);
       expect(element.getAttribute('c')).toBe('3');
+
+    });
+
+    it("unsets event attributes as string", function() {
+
+      var from = h({ attrs: { onclick: 'return "Hello World"' } });
+      var to = h({ attrs: { } });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.getAttribute('onclick')).toBe(null);
+      expect(element.onclick).toBe(null);
+
+    });
+
+    it("unsets event attributes as function", function() {
+
+      var fct = function() { return 'Hello'; };
+      var from = h({ attrs: { onclick: fct } });
+      var to = h({ attrs: { } });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.getAttribute('onclick')).toBe(null);
+      expect(element.onclick).toBe(null);
 
     });
 

@@ -1,5 +1,7 @@
 var style = require('./style');
 var stringifyClass = require('../../util/stringify-class');
+var EventManager = require('dom-event-manager');
+var events = EventManager.events;
 
 /**
  * Maintains state of element attributes.
@@ -110,6 +112,32 @@ set.handlers.style = function(name, element, previous, attrs) {
 unset.handlers.style = function(name, element, previous) {
   style.patch(element, previous[name]);
 };
+
+/**
+ * Custom handlers for event attributes.
+ * When the event definition is a string, set it as an attribute.
+ * When the event definition is a function, set it as a property.
+ */
+for (var i = 0, len = events.length; i < len; i++) {
+  var name = 'on' + events[i];
+  set.handlers[name] = function(name, element, previous, attrs) {
+    if (typeof attrs[name] === 'function') {
+      if (typeof previous[name] !== 'function') {
+        element.removeAttribute(name);
+      }
+      element[name] = attrs[name];
+    } else if (attrs[name] != null && previous[name] !== attrs[name]) {
+      element.setAttribute(name, attrs[name]);
+    }
+  };
+  unset.handlers[name] = function(name, element, previous, attrs) {
+    if (typeof previous[name] === 'function') {
+      element[name] = null;
+    } else {
+      element.removeAttribute(name);
+    }
+  };
+}
 
 module.exports = {
   patch: patch,
