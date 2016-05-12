@@ -299,16 +299,22 @@ EventManager.prototype.binded = function() {
  * Binds some default events.
  */
 EventManager.prototype.bindDefaultEvents = function() {
-  for (var i = 0, len = EventManager.defaultEvents.length; i < len; i++) {
-    this.bind(EventManager.defaultEvents[i]);
+  for (var i = 0, len = EventManager.events.length; i < len; i++) {
+    this.bind(EventManager.events[i]);
   }
 };
 
 /**
- * List of default events.
+ * List of events.
  */
-EventManager.defaultEvents = [
+EventManager.events = [
+  'abort',
+  'animationstart',
+  'animationiteration',
+  'animationend',
   'blur',
+  'canplay',
+  'canplaythrough',
   'change',
   'click',
   'contextmenu',
@@ -323,11 +329,25 @@ EventManager.defaultEvents = [
   'dragover',
   'dragstart',
   'drop',
+  'durationchange',
+  'emptied',
+  'encrypted',
+  'ended',
+  'error',
   'focus',
   'input',
+  'invalid',
   'keydown',
   'keypress',
   'keyup',
+  'load',
+  'loadeddata',
+  'loadedmetadata',
+  'loadstart',
+  'pause',
+  'play',
+  'playing',
+  'progress',
   'mousedown',
   'mouseenter',
   'mouseleave',
@@ -336,12 +356,22 @@ EventManager.defaultEvents = [
   'mouseover',
   'mouseup',
   'paste',
+  'ratechange',
+  'reset',
   'scroll',
+  'seeked',
+  'seeking',
   'submit',
+  'stalled',
+  'suspend',
+  'timeupdate',
+  'transitionend',
   'touchcancel',
   'touchend',
   'touchmove',
   'touchstart',
+  'volumechange',
+  'waiting',
   'wheel'
 ];
 
@@ -764,6 +794,8 @@ module.exports = {
 },{}],15:[function(require,module,exports){
 var style = require('./style');
 var stringifyClass = require('../../util/stringify-class');
+var EventManager = require('dom-event-manager');
+var events = EventManager.events;
 
 /**
  * Maintains state of element attributes.
@@ -875,13 +907,39 @@ unset.handlers.style = function(name, element, previous) {
   style.patch(element, previous[name]);
 };
 
+/**
+ * Custom handlers for event attributes.
+ * When the event definition is a string, set it as an attribute.
+ * When the event definition is a function, set it as a property.
+ */
+for (var i = 0, len = events.length; i < len; i++) {
+  var name = 'on' + events[i];
+  set.handlers[name] = function(name, element, previous, attrs) {
+    if (typeof attrs[name] === 'function') {
+      if (typeof previous[name] !== 'function') {
+        element.removeAttribute(name);
+      }
+      element[name] = attrs[name];
+    } else if (attrs[name] != null && previous[name] !== attrs[name]) {
+      element.setAttribute(name, attrs[name]);
+    }
+  };
+  unset.handlers[name] = function(name, element, previous, attrs) {
+    if (typeof previous[name] === 'function') {
+      element[name] = null;
+    } else {
+      element.removeAttribute(name);
+    }
+  };
+}
+
 module.exports = {
   patch: patch,
   set: set,
   unset: unset
 };
 
-},{"../../util/stringify-class":29,"./style":19}],16:[function(require,module,exports){
+},{"../../util/stringify-class":29,"./style":19,"dom-event-manager":5}],16:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *

@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.3.2 (2016-05-11)
+  * **Add:** attaches event attributes which are function to the DOMElement properties directly.
+
 ## 0.3.1 (2016-05-11)
   * **Add:** allows transclusion for mounts.
 
