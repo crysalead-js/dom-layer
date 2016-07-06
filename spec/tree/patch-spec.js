@@ -144,4 +144,34 @@ describe("patch()", function() {
 
   });
 
+  it("ignores `null` from `toChildren` on reverting order", function() {
+
+    var from = _.buildNodes(['0', '1', '2']);
+    var to = _.buildNodes(['2', null, '1', '0']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('210');
+
+  });
+
+  it("ignores `null` from `toChildren` and don't try to remove its associated element", function() {
+
+    var from = _.buildNodes(['0', '1', null, '2']);
+    var to = _.buildNodes(['0']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('0');
+
+  });
+
 });
