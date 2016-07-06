@@ -1706,7 +1706,7 @@ function patch(container, children, toChildren, parent) {
     }
   }
   if (fromStartIndex > fromEndIndex) {
-    before = toChildren[toEndIndex + 1] === undefined ? null : toChildren[toEndIndex + 1].element;
+    before = toChildren[toEndIndex + 1] == undefined ? null : toChildren[toEndIndex + 1].element;
     for (; toStartIndex <= toEndIndex; toStartIndex++) {
       if (toChildren[toStartIndex] != undefined) {
         container.insertBefore(toChildren[toStartIndex].render(container, parent), before);
@@ -1714,7 +1714,7 @@ function patch(container, children, toChildren, parent) {
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {
-      if (fromChildren[fromStartIndex] !== undefined) {
+      if (fromChildren[fromStartIndex] != undefined) {
         fromChildren[fromStartIndex].remove();
       }
     }

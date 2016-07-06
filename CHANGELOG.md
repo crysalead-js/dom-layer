@@ -2,6 +2,12 @@
 
 ## HEAD
 
+## 0.3.4 (2016-07-06)
+  * **Bugfix:** fixes an issue related to virtual patching with `null` or `undefined` entries in children arrays.
+
+## 0.3.3 (2016-07-06)
+  * **Add:** allows `null` or `undefined` entries in children arrays.
+
 ## 0.3.2 (2016-05-11)
   * **Add:** attaches event attributes which are function to the DOMElement properties directly.
 
