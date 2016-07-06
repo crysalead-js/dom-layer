@@ -26,10 +26,14 @@ function patch(container, children, toChildren, parent) {
   var indexes, index, node, before;
 
   while (fromStartIndex <= fromEndIndex && toStartIndex <= toEndIndex) {
-    if (fromStartNode === undefined) {
+    if (fromStartNode == undefined) {
       fromStartNode = fromChildren[++fromStartIndex];
-    } else if (fromEndNode === undefined) {
+    } else if (fromEndNode == undefined) {
       fromEndNode = fromChildren[--fromEndIndex];
+    } else if (toStartNode == undefined) {
+      toStartNode = toChildren[++toStartIndex];
+    } else if (toEndNode == undefined) {
+      toEndNode = toChildren[--toEndIndex];
     } else if (fromStartNode.match(toStartNode)) {
       fromStartNode.patch(toStartNode);
       fromStartNode = fromChildren[++fromStartIndex];
@@ -68,7 +72,9 @@ function patch(container, children, toChildren, parent) {
   if (fromStartIndex > fromEndIndex) {
     before = toChildren[toEndIndex + 1] === undefined ? null : toChildren[toEndIndex + 1].element;
     for (; toStartIndex <= toEndIndex; toStartIndex++) {
-      container.insertBefore(toChildren[toStartIndex].render(container, parent), before);
+      if (toChildren[toStartIndex] != undefined) {
+        container.insertBefore(toChildren[toStartIndex].render(container, parent), before);
+      }
     }
   } else if (toStartIndex > toEndIndex) {
     for (; fromStartIndex <= fromEndIndex; fromStartIndex++) {

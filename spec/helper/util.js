@@ -43,7 +43,7 @@ _.buildNodes = function(array) {
       context.key = key;
     }
     context.attrs = { id: String(id) };
-    children.push(h(context, [context.attrs.id]));
+    children.push(key != null ? h(context, [context.attrs.id]) : key);
   }
 
   return h({ tagName : "div" }, children);

@@ -20,4 +20,128 @@ describe("patch()", function() {
 
   });
 
+  it("ignores `undefined` from `fromChildren` at the begining", function() {
+
+    var from = _.buildNodes([undefined, '0', '1', '2']);
+    var to = _.buildNodes(['1', '2']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('12');
+
+  });
+
+  it("ignores `null` from `fromChildren` at the begining", function() {
+
+    var from = _.buildNodes([null, '0', '1', '2']);
+    var to = _.buildNodes(['1', '2']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('12');
+
+  });
+
+  it("ignores `undefined` from `fromChildren` at the end", function() {
+
+    var from = _.buildNodes(['0', '1', '2', undefined]);
+    var to = _.buildNodes(['2', '1', '0', '3']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('2103');
+
+  });
+
+  it("ignores `null` from `fromChildren` at the end", function() {
+
+    var from = _.buildNodes(['0', '1', '2', null]);
+    var to = _.buildNodes(['2', '1', '0', '3']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('2103');
+
+  });
+
+  it("ignores `undefined` from `toChildren` at the begining", function() {
+
+    var from = _.buildNodes(['0', '1', '2', '3']);
+    var to = _.buildNodes([undefined, '0', '1']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+
+    expect(rootNode.textContent).toBe('01');
+
+  });
+
+  it("ignores `null` from `toChildren` at the begining", function() {
+
+    var from = _.buildNodes(['0', '1', '2', '3']);
+    var to = _.buildNodes([null, '0', '1']);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+
+    expect(rootNode.textContent).toBe('01');
+
+  });
+
+  it("ignores `undefined` from `toChildren` at the end", function() {
+
+    var from = _.buildNodes(['0', '1', '2']);
+    var to = _.buildNodes(['2', '1', '0', undefined]);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+
+    expect(rootNode.textContent).toBe('210');
+
+  });
+
+  it("ignores `null` from `toChildren` at the end", function() {
+
+    var from = _.buildNodes(['0', '1', '2']);
+    var to = _.buildNodes(['2', '1', '0', null]);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+
+    expect(rootNode.textContent).toBe('210');
+
+  });
+
 });
