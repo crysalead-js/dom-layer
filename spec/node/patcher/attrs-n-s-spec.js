@@ -83,7 +83,95 @@ describe("attrsNS", function() {
 
       var element = from.render();
       from.patch(to);
-      expect(element.getAttributeNS(namespaces['xlink'], 'href')).toBeFalsy();
+      expect(element.hasAttributeNS(namespaces['xlink'], 'href')).toBe(false);
+
+    });
+
+    it("unsets empty string `value` attributes", function() {
+
+      var from = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': 'test.jpg'
+        }
+      });
+
+      var to = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': ''
+        }
+      });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.hasAttributeNS(namespaces['xlink'], 'href')).toBe(false);
+
+    });
+
+    it("unsets `false` `value` attributes", function() {
+
+      var from = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': 'test.jpg'
+        }
+      });
+
+      var to = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': false
+        }
+      });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.hasAttributeNS(namespaces['xlink'], 'href')).toBe(false);
+
+    });
+
+    it("unsets `null` `value` attributes", function() {
+
+      var from = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': 'test.jpg'
+        }
+      });
+
+      var to = h({
+        tagName: 'image',
+        attrs: {
+          xmlns: 'http://www.w3.org/2000/svg'
+        },
+        attrsNS: {
+          'xlink:href': null
+        }
+      });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.hasAttributeNS(namespaces['xlink'], 'href')).toBe(false);
+
     });
 
   });

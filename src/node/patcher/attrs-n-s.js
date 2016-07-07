@@ -36,10 +36,12 @@ function patch(element, previous, attrs) {
     if (previous[attrName] === value) {
       continue;
     }
-    split = splitAttrName(attrName);
-    ns = namespaces[split[0]];
-    name = split[1];
-    element.setAttributeNS(ns, name, value);
+    if (value) {
+      split = splitAttrName(attrName);
+      ns = namespaces[split[0]];
+      name = split[1];
+      element.setAttributeNS(ns, name, value);
+    }
   }
   return attrs;
 }

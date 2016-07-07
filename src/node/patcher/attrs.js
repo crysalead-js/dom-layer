@@ -20,13 +20,17 @@ function patch(element, previous, attrs) {
   attrs = attrs || {};
 
   for (name in previous) {
-    if (!previous[name] || attrs[name] != null) {
-      continue;
+    if (previous[name] && !attrs[name]) {
+      unset(name, element, previous);
     }
-    unset(name, element, previous);
   }
   for (name in attrs) {
-    set(name, element, previous, attrs);
+    if (previous[name] === attrs[name]) {
+      continue;
+    }
+    if (attrs[name]) {
+      set(name, element, previous, attrs);
+    }
   }
   return attrs;
 }
