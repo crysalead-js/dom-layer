@@ -704,8 +704,35 @@ var EventManager = require('dom-event-manager');
 var eventManager;
 
 function eventHandler(name, e) {
-  var element = e.delegateTarget, eventName = 'on' + name;
-  if (!element.domLayerNode || !element.domLayerNode.events || !element.domLayerNode.events[eventName]) {
+  var element = e.delegateTarget;
+  if (!element.domLayerNode || !element.domLayerNode.events) {
+    return;
+  }
+
+  var events = []
+  var mouseClickEventName;
+  var bail = false;
+
+  if (name.substr(name.length - 5) === 'click') {
+    mouseClickEventName = 'onmouse' + name;
+    if (element.domLayerNode.events[mouseClickEventName]) {
+      events.push(mouseClickEventName);
+    }
+    // Do not call the `click` handler if it's not a left click.
+    if (e.button !== 0) {
+      bail = true;
+    }
+  }
+
+  var eventName;
+  if (!bail) {
+    eventName = 'on' + name;
+    if (element.domLayerNode.events[eventName]) {
+      events.push(eventName);
+    }
+  }
+
+  if (!events.length) {
     return;
   }
 
@@ -713,7 +740,10 @@ function eventHandler(name, e) {
   if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
     value = domElementValue(element);
   }
-  return element.domLayerNode.events[eventName](e, value, element.domLayerNode);
+
+  for (var i = 0, len = events.length; i < len ; i++) {
+    element.domLayerNode.events[events[i]](e, value, element.domLayerNode);
+  }
 }
 
 function getManager() {

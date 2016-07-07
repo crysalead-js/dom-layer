@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.3.6 (2016-07-07)
+  * **BC break:** the `click` handler is now called on left clicks only, use the fake `mouseclick` event otherwise.
+
 ## 0.3.5 (2016-07-07)
   * **BC break:** attributes are now removed when falsy.
 
