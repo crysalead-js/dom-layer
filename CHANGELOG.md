@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.3.5 (2016-07-07)
+  * **BC break:** attributes are now removed when falsy.
+
 ## 0.3.4 (2016-07-06)
   * **Bugfix:** fixes an issue related to virtual patching with `null` or `undefined` entries in children arrays.
 

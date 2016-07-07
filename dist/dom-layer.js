@@ -774,10 +774,12 @@ function patch(element, previous, attrs) {
     if (previous[attrName] === value) {
       continue;
     }
-    split = splitAttrName(attrName);
-    ns = namespaces[split[0]];
-    name = split[1];
-    element.setAttributeNS(ns, name, value);
+    if (value) {
+      split = splitAttrName(attrName);
+      ns = namespaces[split[0]];
+      name = split[1];
+      element.setAttributeNS(ns, name, value);
+    }
   }
   return attrs;
 }
@@ -814,13 +816,17 @@ function patch(element, previous, attrs) {
   attrs = attrs || {};
 
   for (name in previous) {
-    if (!previous[name] || attrs[name] != null) {
-      continue;
+    if (previous[name] && !attrs[name]) {
+      unset(name, element, previous);
     }
-    unset(name, element, previous);
   }
   for (name in attrs) {
-    set(name, element, previous, attrs);
+    if (previous[name] === attrs[name]) {
+      continue;
+    }
+    if (attrs[name]) {
+      set(name, element, previous, attrs);
+    }
   }
   return attrs;
 }
