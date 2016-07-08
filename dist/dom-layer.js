@@ -27,7 +27,7 @@ module.exports = {
   events: events
 };
 
-},{"./src/events":13,"./src/node/patcher/attrs":15,"./src/node/patcher/attrs-n-s":14,"./src/node/patcher/props":17,"./src/node/tag":20,"./src/node/text":21,"./src/tree/attach":22,"./src/tree/patch":23,"./src/tree/remove":24,"./src/tree/render":25,"./src/tree/tree":26,"./src/tree/update":27}],2:[function(require,module,exports){
+},{"./src/events":12,"./src/node/patcher/attrs":14,"./src/node/patcher/attrs-n-s":13,"./src/node/patcher/props":16,"./src/node/tag":19,"./src/node/text":20,"./src/tree/attach":21,"./src/tree/patch":22,"./src/tree/remove":23,"./src/tree/render":24,"./src/tree/tree":25,"./src/tree/update":26}],2:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 
 /**
@@ -57,114 +57,7 @@ function css(element, name, value) {
 
 module.exports = css;
 
-},{"to-camel-case":9}],3:[function(require,module,exports){
-/**
- * DOM element value Getter/Setter.
- */
-
-/**
- * Gets/sets DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object val     The value to set or none to get the current value.
- * @return mixed          The new/current DOM element value.
- */
-function value(element, val) {
-  if (arguments.length === 1) {
-    return get(element);
-  }
-  return set(element, val);
-}
-
-/**
- * Returns the type of a DOM element.
- *
- * @param  Object element A DOM element.
- * @return String         The DOM element type.
- */
-value.type = function(element) {
-  var name = element.nodeName.toLowerCase();
-  if (name !== "input") {
-    if (name === "select" && element.multiple) {
-      return "select-multiple";
-    }
-    return name;
-  }
-  var type = element.getAttribute('type');
-  if (!type) {
-    return "text";
-  }
-  return type.toLowerCase();
-}
-
-/**
- * Gets DOM element value.
- *
- * @param  Object element A DOM element
- * @return mixed          The DOM element value
- */
-function get(element) {
-  var name = value.type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      if (!element.checked) {
-        return false;
-      }
-      var val = element.getAttribute('value');
-      return val == null ? true : val;
-    case "select":
-    case "select-multiple":
-      var options = element.options;
-      var values = [];
-      for (var i = 0, len = options.length; i < len; i++) {
-        if (options[i].selected) {
-          values.push(options[i].value);
-        }
-      }
-      return name === "select-multiple" ? values : values[0];
-    default:
-      return element.value;
-  }
-}
-
-/**
- * Sets a DOM element value.
- *
- * @param  Object element A DOM element
- * @param  Object val     The value to set.
- * @return mixed          The new DOM element value.
- */
-function set(element, val) {
-  var name = value.type(element);
-  switch (name) {
-    case "checkbox":
-    case "radio":
-      return element.checked = val ? true : false;
-    case "select":
-    case "select-multiple":
-      var found;
-      var options = element.options;
-      var values = Array.isArray(val) ? val : [val];
-      for (var i = 0, leni = options.length; i < leni; i++) {
-        found = 0;
-        for (var j = 0, lenj = values.length; j < lenj; j++) {
-          found |= values[j] === options[i].value;
-        }
-        options[i].selected = (found === 1);
-      }
-      if (name === "select") {
-        return val;
-      }
-      return Array.isArray(val) ? val: [val];
-    default:
-      return element.value = val;
-  }
-}
-
-module.exports = value;
-
-},{}],4:[function(require,module,exports){
+},{"to-camel-case":8}],3:[function(require,module,exports){
 var bind, unbind, prefix = '';
 
 if (typeof window !== "undefined") {
@@ -211,7 +104,7 @@ event.unbind = function(el, type, fn, capture){
 
 module.exports = event;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var event = require("./event");
 
 var isArray = Array.isArray;
@@ -377,7 +270,7 @@ EventManager.events = [
 
 module.exports = EventManager;
 
-},{"./event":4}],6:[function(require,module,exports){
+},{"./event":3}],5:[function(require,module,exports){
 function query(selector, element) {
   return query.one(selector, element);
 }
@@ -435,7 +328,7 @@ query.engine = function(engine){
 
 module.exports = query;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
  * escape-html
  * Copyright(c) 2012-2013 TJ Holowaychuk
@@ -515,7 +408,7 @@ function escapeHtml(string) {
     : html;
 }
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
 /**
  * Expose `isEmpty`.
@@ -547,7 +440,7 @@ function isEmpty (val) {
   return true;
 }
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 var toSpace = require('to-space-case');
 
@@ -572,7 +465,7 @@ function toCamelCase (string) {
     return letter.toUpperCase();
   });
 }
-},{"to-space-case":11}],10:[function(require,module,exports){
+},{"to-space-case":10}],9:[function(require,module,exports){
 
 /**
  * Expose `toNoCase`.
@@ -647,7 +540,7 @@ function uncamelize (string) {
     return previous + ' ' + uppers.toLowerCase().split('').join(' ');
   });
 }
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 var clean = require('to-no-case');
 
@@ -672,7 +565,7 @@ function toSpaceCase (string) {
     return match ? ' ' + match : '';
   });
 }
-},{"to-no-case":10}],12:[function(require,module,exports){
+},{"to-no-case":9}],11:[function(require,module,exports){
 /**
  * This file automatically generated from `pre-publish.js`.
  * Do not manually edit.
@@ -697,8 +590,7 @@ module.exports = {
   "wbr": true
 };
 
-},{}],13:[function(require,module,exports){
-var domElementValue = require('dom-element-value');
+},{}],12:[function(require,module,exports){
 var EventManager = require('dom-event-manager');
 
 var eventManager;
@@ -736,13 +628,8 @@ function eventHandler(name, e) {
     return;
   }
 
-  var value;
-  if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
-    value = domElementValue(element);
-  }
-
   for (var i = 0, len = events.length; i < len ; i++) {
-    element.domLayerNode.events[events[i]](e, value, element.domLayerNode);
+    element.domLayerNode.events[events[i]](e, element.domLayerNode);
   }
 }
 
@@ -765,7 +652,7 @@ module.exports = {
   init: init
 };
 
-},{"dom-element-value":3,"dom-event-manager":5}],14:[function(require,module,exports){
+},{"dom-event-manager":4}],13:[function(require,module,exports){
 /**
  * SVG namespaces.
  */
@@ -823,7 +710,7 @@ module.exports = {
   namespaces: namespaces
 };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var style = require('./style');
 var stringifyClass = require('../../util/stringify-class');
 var EventManager = require('dom-event-manager');
@@ -975,7 +862,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":29,"./style":19,"dom-event-manager":5}],16:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./style":18,"dom-event-manager":4}],15:[function(require,module,exports){
 /**
  * Maintains state of element dataset.
  *
@@ -1012,7 +899,7 @@ module.exports = {
   patch: patch
 };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var dataset = require('./dataset');
 var stringifyClass = require('../../util/stringify-class');
 
@@ -1124,7 +1011,7 @@ module.exports = {
   unset: unset
 };
 
-},{"../../util/stringify-class":29,"./dataset":16}],18:[function(require,module,exports){
+},{"../../util/stringify-class":28,"./dataset":15}],17:[function(require,module,exports){
 var isArray = Array.isArray;
 
 /**
@@ -1188,7 +1075,7 @@ function populateOptions(node, values) {
 
 module.exports = selectValue;
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var domElementCss = require('dom-element-css');
 
 /**
@@ -1226,7 +1113,7 @@ module.exports = {
   patch: patch
 };
 
-},{"dom-element-css":2}],20:[function(require,module,exports){
+},{"dom-element-css":2}],19:[function(require,module,exports){
 var voidElements = require('void-elements');
 var attach = require('../tree/attach');
 var render = require('../tree/render');
@@ -1509,7 +1396,7 @@ Tag.prototype.toHtml = function() {
 
 module.exports = Tag;
 
-},{"../tree/attach":22,"../tree/render":25,"../tree/update":27,"../util/stringify-attrs":28,"./patcher/attrs":15,"./patcher/attrs-n-s":14,"./patcher/props":17,"./patcher/select-value":18,"./text":21,"void-elements":12}],21:[function(require,module,exports){
+},{"../tree/attach":21,"../tree/render":24,"../tree/update":26,"../util/stringify-attrs":27,"./patcher/attrs":14,"./patcher/attrs-n-s":13,"./patcher/props":16,"./patcher/select-value":17,"./text":20,"void-elements":11}],20:[function(require,module,exports){
 var escapeHtml = require('escape-html');
 
 /**
@@ -1618,7 +1505,7 @@ Text.prototype.toHtml = function() {
 }
 
 module.exports = Text;
-},{"escape-html":7}],22:[function(require,module,exports){
+},{"escape-html":6}],21:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function attach(container, nodes, parent) {
@@ -1669,7 +1556,7 @@ function attach(container, nodes, parent) {
 
 module.exports = attach;
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var isEmpty = require('is-empty');
 
 var isArray = Array.isArray;
@@ -1777,7 +1664,7 @@ function keysIndexes(children, startIndex, endIndex) {
 
 module.exports = patch;
 
-},{"is-empty":8}],24:[function(require,module,exports){
+},{"is-empty":7}],23:[function(require,module,exports){
 
 function remove(nodes, parent) {
   for (var i = 0, len = nodes.length; i < len; i++) {
@@ -1787,7 +1674,7 @@ function remove(nodes, parent) {
 
 module.exports = remove;
 
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var isArray = Array.isArray;
 
 function render(container, nodes, parent) {
@@ -1807,7 +1694,7 @@ function render(container, nodes, parent) {
 
 module.exports = render;
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var query = require('dom-query');
 var attach = require('./attach');
 var render = require('./render');
@@ -1963,7 +1850,7 @@ Tree.prototype.mounted = function(mountId) {
 
 module.exports = Tree;
 
-},{"./attach":22,"./remove":24,"./render":25,"./update":27,"dom-query":6}],27:[function(require,module,exports){
+},{"./attach":21,"./remove":23,"./render":24,"./update":26,"dom-query":5}],26:[function(require,module,exports){
 var patch = require('./patch');
 
 var isArray = Array.isArray;
@@ -1980,7 +1867,7 @@ function update(container, fromNodes, toNodes, parent) {
 
 module.exports = update;
 
-},{"./patch":23}],28:[function(require,module,exports){
+},{"./patch":22}],27:[function(require,module,exports){
 var stringifyStyle = require('./stringify-style');
 var stringifyClass = require('./stringify-class');
 
@@ -2010,7 +1897,7 @@ function stringifyAttrs(attrs, tagName) {
 
 module.exports = stringifyAttrs;
 
-},{"./stringify-class":29,"./stringify-style":30}],29:[function(require,module,exports){
+},{"./stringify-class":28,"./stringify-style":29}],28:[function(require,module,exports){
 /**
  * Returns a `'class1 class3' ...'` string from
  * a `{ class1: true, class2: false, class3: true }` object.
@@ -2033,7 +1920,7 @@ function stringifyClass(classAttr) {
 
 module.exports = stringifyClass;
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Returns a `'key1:value1;key2:value2' ...'` string from
  * a `{ key1: 'value1', key2: 'value2' }` object.
