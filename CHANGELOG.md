@@ -2,6 +2,12 @@
 
 ## HEAD
 
+## 0.3.8 (2016-07-08)
+  * **Bugfix:** fix specs dependencies.
+
+## 0.3.7 (2016-07-08)
+  * **BC break:** let the value extraction be the responsibility of the end user.
+
 ## 0.3.6 (2016-07-07)
   * **BC break:** the `click` handler is now called on left clicks only, use the fake `mouseclick` event otherwise.
 
