@@ -28,6 +28,7 @@
     "browserify-istanbul": "^2.0.0",
     "coveralls": "^2.11.9",
     "document-register-element": "^0.5.4",
+    "dom-element-value": "^1.0.2",
     "istanbul": "^0.4.4",
     "jasmine": "^2.4.1",
     "testem": "^1.9.1",
