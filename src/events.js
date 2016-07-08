@@ -1,4 +1,3 @@
-var domElementValue = require('dom-element-value');
 var EventManager = require('dom-event-manager');
 
 var eventManager;
@@ -36,13 +35,8 @@ function eventHandler(name, e) {
     return;
   }
 
-  var value;
-  if (/^(?:input|select|textarea|button)$/i.test(element.tagName)) {
-    value = domElementValue(element);
-  }
-
   for (var i = 0, len = events.length; i < len ; i++) {
-    element.domLayerNode.events[events[i]](e, value, element.domLayerNode);
+    element.domLayerNode.events[events[i]](e, element.domLayerNode);
   }
 }
 

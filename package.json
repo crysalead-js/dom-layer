@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "dom-element-css": "^1.0.3",
-    "dom-element-value": "^1.0.2",
     "dom-event-manager": "^1.1.0",
     "dom-query": "^1.0.1",
     "escape-html": "^1.0.3",
