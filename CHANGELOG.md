@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.3.9 (2016-08-10)
+  * **BC break:** allow transclusion through the `'created'` hook.
+
 ## 0.3.8 (2016-07-08)
   * **Bugfix:** fix specs dependencies.
 
