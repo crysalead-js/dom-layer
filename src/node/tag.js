@@ -105,7 +105,7 @@ Tag.prototype.render = function(container, parent) {
   render(element, this.children, this);
 
   if (this.hooks && this.hooks.created) {
-    this.hooks.created(this, element);
+    return this.hooks.created(this, element);
   }
   return element;
 };
@@ -127,7 +127,7 @@ Tag.prototype.attach = function(element, parent) {
   attach(element, this.children, this);
 
   if (this.hooks && this.hooks.created) {
-    this.hooks.created(this, element);
+    return this.hooks.created(this, element);
   }
   return element;
 }

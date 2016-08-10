@@ -161,8 +161,9 @@ describe("Tag", function() {
 
       var params;
 
-      var tag = h({ hooks: { created : function() {
+      var tag = h({ hooks: { created : function(node, element) {
         params = Array.prototype.slice.call(arguments);
+        return element;
       } } });
 
       var element = tag.render();
@@ -175,8 +176,9 @@ describe("Tag", function() {
 
       var params;
 
-      var tag = h({ hooks: { created : function() {
+      var tag = h({ hooks: { created : function(node, element) {
         params = Array.prototype.slice.call(arguments);
+        return element;
       } } });
 
       var element = tag.attach(document.createElement('div'));
