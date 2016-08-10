@@ -35,4 +35,17 @@ describe(".remove()", function() {
 
   });
 
+  it("remove tag with null children", function() {
+
+    var node = h({ tagName: 'div'}, [null, 'hello']);
+    var element = node.render();
+
+    container.appendChild(element);
+    expect(element.childNodes.length).toBe(1);
+
+    node.remove();
+    expect(container.childNodes.length).toBe(0);
+
+  });
+
 });
