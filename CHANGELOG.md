@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.4.0 (2016-08-11)
+  * **Bugfix:** fix an issue when children contain null values.
+
 ## 0.3.9 (2016-08-10)
   * **BC break:** allow transclusion through the `'created'` hook.
 

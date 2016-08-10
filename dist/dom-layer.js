@@ -1344,8 +1344,10 @@ Tag.prototype.destroy = function() {
  */
 function broadcastRemove(node) {
   if (node.children) {
-    for(var i = 0, len = node.children.length; i < len; i++) {
-      broadcastRemove(node.children[i]);
+    for (var i = 0, len = node.children.length; i < len; i++) {
+      if (node.children[i]) {
+        broadcastRemove(node.children[i]);
+      }
     }
   }
   if (node.hooks && node.hooks.remove) {
