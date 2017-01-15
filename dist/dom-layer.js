@@ -11,6 +11,8 @@ var attrs = require('./src/node/patcher/attrs');
 var attrsNS = require('./src/node/patcher/attrs-n-s');
 var props = require('./src/node/patcher/props');
 var events = require('./src/events');
+var stringifyClass = require('./src/util/stringify-class');
+var stringifyStyle = require('./src/util/stringify-style');
 
 module.exports = {
   Tree: Tree,
@@ -24,10 +26,12 @@ module.exports = {
   attrs: attrs,
   attrsNS: attrsNS,
   props: props,
-  events: events
+  events: events,
+  stringifyClass: stringifyClass,
+  stringifyStyle: stringifyStyle
 };
 
-},{"./src/events":12,"./src/node/patcher/attrs":14,"./src/node/patcher/attrs-n-s":13,"./src/node/patcher/props":16,"./src/node/tag":19,"./src/node/text":20,"./src/tree/attach":21,"./src/tree/patch":22,"./src/tree/remove":23,"./src/tree/render":24,"./src/tree/tree":25,"./src/tree/update":26}],2:[function(require,module,exports){
+},{"./src/events":12,"./src/node/patcher/attrs":14,"./src/node/patcher/attrs-n-s":13,"./src/node/patcher/props":16,"./src/node/tag":19,"./src/node/text":20,"./src/tree/attach":21,"./src/tree/patch":22,"./src/tree/remove":23,"./src/tree/render":24,"./src/tree/tree":25,"./src/tree/update":26,"./src/util/stringify-class":28,"./src/util/stringify-style":29}],2:[function(require,module,exports){
 var toCamelCase = require('to-camel-case');
 
 /**

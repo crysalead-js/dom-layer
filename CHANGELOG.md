@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.4.1 (2017-01-15)
+  * **Add:** expose `stringifyClass()` && `stringifyStyle()` as utiliy functions.
+
 ## 0.4.0 (2016-08-11)
   * **Bugfix:** fix an issue when children contain null values.
 
