@@ -10,6 +10,8 @@ var attrs = require('./src/node/patcher/attrs');
 var attrsNS = require('./src/node/patcher/attrs-n-s');
 var props = require('./src/node/patcher/props');
 var events = require('./src/events');
+var stringifyClass = require('./src/util/stringify-class');
+var stringifyStyle = require('./src/util/stringify-style');
 
 module.exports = {
   Tree: Tree,
@@ -23,5 +25,7 @@ module.exports = {
   attrs: attrs,
   attrsNS: attrsNS,
   props: props,
-  events: events
+  events: events,
+  stringifyClass: stringifyClass,
+  stringifyStyle: stringifyStyle
 };
