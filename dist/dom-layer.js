@@ -135,6 +135,7 @@ function EventManager(delegateHandler, container) {
   this._delegateHandler = delegateHandler;
   this._container = container || document;
   this._events = Object.create(null);
+  this._map = {};
 }
 
 /**
@@ -152,6 +153,7 @@ EventManager.prototype.bind = function(name) {
     }
     while(e.delegateTarget !== null && e.delegateTarget !== this._container.parentNode) {
       this._delegateHandler(name, e);
+      this._runHandlers(name, e);
       if (e.isPropagationStopped) {
         break;
       }
@@ -200,6 +202,72 @@ EventManager.prototype.bindDefaultEvents = function() {
     this.bind(EventManager.events[i]);
   }
 };
+
+/**
+ * Listen an event.
+ *
+ * @param String name    The event name listen.
+ * @param Object element The DOM element.
+ * @param String handler The handler.
+ */
+EventManager.prototype.on = function(event, element, handler) {
+  if (!this._map[event]) {
+    this._map[event] = new Map();
+  }
+  if (!this._map[event].has(element)) {
+    this._map[event].set(element, new Map());
+  }
+  this._map[event].get(element).set(handler, true);
+};
+
+
+/**
+ * Unlisten an event.
+ *
+ * @param String name    The event name listen.
+ * @param Object element The DOM element.
+ * @param String handler The handler.
+ */
+EventManager.prototype.off = function(event, element, handler) {
+  if (!this._map[event]) {
+    return;
+  }
+  if (arguments.length === 1) {
+    delete this._map[event];
+    return;
+  }
+  if (!this._map[event].has(element)) {
+    return;
+  }
+  if (arguments.length === 2) {
+    this._map[event].delete(element);
+    return;
+  }
+  var handlersMap = this._map[event].get(element);
+  if (!handlersMap.has(handler)) {
+    return;
+  }
+  handlersMap.delete(handler);
+};
+
+/**
+ * Unlisten an event.
+ *
+ * @param String name    The event name listen.
+ * @param Object element The DOM element.
+ * @param String handler The handler.
+ */
+EventManager.prototype._runHandlers = function(name, e) {
+  if (!this._map[name]) {
+    return;
+  }
+  if (!this._map[name].has(e.delegateTarget)) {
+    return;
+  }
+  this._map[name].get(e.delegateTarget).forEach(function(value, handler) {
+    handler(e);
+  });
+}
 
 /**
  * List of events.
@@ -584,9 +652,7 @@ module.exports = {
   "hr": true,
   "img": true,
   "input": true,
-  "keygen": true,
   "link": true,
-  "menuitem": true,
   "meta": true,
   "param": true,
   "source": true,
@@ -1166,13 +1232,13 @@ Tag.prototype.create = function() {
   var element;
   if (this.namespace) {
     if (this.is) {
-      element = document.createElementNS(this.namespace, this.tagName, this.is);
+      element = document.createElementNS(this.namespace, this.tagName, { is: this.is });
     } else {
       element = document.createElementNS(this.namespace, this.tagName);
     }
   } else {
     if (this.is) {
-      element = document.createElement(this.tagName, this.is);
+      element = document.createElement(this.tagName, { is: this.is });
     } else {
       element = document.createElement(this.tagName);
     }
@@ -1741,14 +1807,14 @@ Tree.prototype.mount = function(selector, factory, mount) {
     if (fragment.childNodes.length !== 1) {
       throw new Error('Transclusion requires a single DOMElement to transclude.');
     }
-    mount.container = fragment.childNodes[0];
-    container.parentNode.replaceChild(mount.container, container);
+    mount.element = fragment.childNodes[0];
+    container.parentNode.replaceChild(mount.element, container);
   } else {
     container.appendChild(fragment);
-    mount.container = container;
+    mount.element = container;
   }
   this._mounted[mountId] = mount;
-  return mount.container.domLayerTreeId = mountId;
+  return mount.element.domLayerTreeId = mountId;
 };
 
 /**
@@ -1772,7 +1838,7 @@ Tree.prototype.attach = function(selector, factory, mount) {
   }
 
   var mountId = mount.mountId ? mount.mountId : this.uuid();
-  mount.container = container;
+  mount.element = container;
   mount.factory = factory;
   mount.children = attach(container, factory, null);
   this._mounted[mountId] = mount;
@@ -1808,11 +1874,11 @@ Tree.prototype.unmount = function(mountId) {
     var mount = this._mounted[mountId];
     if (mount) {
       if (mount.transclude) {
-        mount.container.parentNode.replaceChild(mount.transcluded, mount.container);
+        mount.element.parentNode.replaceChild(mount.transcluded, mount.element);
       } else {
         remove(mount.children);
       }
-      delete mount.container.domLayerTreeId;
+      delete mount.element.domLayerTreeId;
       delete this._mounted[mountId];
     }
   }
@@ -1829,7 +1895,7 @@ Tree.prototype.update = function(mountId, tree) {
     var mount = this._mounted[mountId];
     if (mount) {
       var active = document.activeElement;
-      mount.children = update(mount.container, mount.children, tree ? tree : mount.factory, null);
+      mount.children = update(mount.element, mount.children, tree ? tree : mount.factory, null);
       if (document.activeElement !== active) {
         active.focus();
       }
