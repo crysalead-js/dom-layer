@@ -18,7 +18,6 @@ describe("Tree", function() {
     testBody.innerHTML = '';
   });
 
-
   describe(".mount()", function() {
 
     it("mounts a virtual tree", function() {
@@ -363,7 +362,7 @@ describe("Tree", function() {
 
       var mounted = tree.mounted(mountId);
 
-      expect(mounted.container).toBe(mountPoint);
+      expect(mounted.element).toBe(mountPoint);
       expect(mounted.factory).toBe(children);
       expect(mounted.custom).toBe('custom');
 
@@ -377,7 +376,7 @@ describe("Tree", function() {
 
       var mounted = tree.mounted();
 
-      expect(mounted[mountId].container).toBe(mountPoint);
+      expect(mounted[mountId].element).toBe(mountPoint);
       expect(mounted[mountId].factory).toBe(children);
       expect(mounted[mountId].custom).toBe('custom');
 
