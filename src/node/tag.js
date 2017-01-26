@@ -46,13 +46,13 @@ Tag.prototype.create = function() {
   var element;
   if (this.namespace) {
     if (this.is) {
-      element = document.createElementNS(this.namespace, this.tagName, this.is);
+      element = document.createElementNS(this.namespace, this.tagName, { is: this.is });
     } else {
       element = document.createElementNS(this.namespace, this.tagName);
     }
   } else {
     if (this.is) {
-      element = document.createElement(this.tagName, this.is);
+      element = document.createElement(this.tagName, { is: this.is });
     } else {
       element = document.createElement(this.tagName);
     }
