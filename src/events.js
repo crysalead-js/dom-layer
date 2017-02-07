@@ -4,6 +4,7 @@ var eventManager;
 
 function eventHandler(name, e) {
   var element = e.delegateTarget;
+
   if (!element.domLayerNode || !element.domLayerNode.events) {
     return;
   }

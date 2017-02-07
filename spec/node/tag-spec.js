@@ -194,7 +194,7 @@ describe("Tag", function() {
         params.push(Array.prototype.slice.call(arguments));
       } };
 
-      var from = h({ hooks: hooks });
+      var from = h();
       var element = from.render();
 
       var to1 = h({ hooks: hooks });
@@ -203,7 +203,7 @@ describe("Tag", function() {
       var to2 = h({ hooks: hooks });
       to1.patch(to2);
 
-      expect(params).toEqual([[to1, element], [to2, element]]);
+      expect(params).toEqual([[to1, from, element], [to2, to1, element]]);
 
     });
 

@@ -185,8 +185,8 @@ Tag.prototype.patch = function(to) {
     to.element.domLayerNode = undefined;
   }
 
-  if (this.hooks && this.hooks.updated) {
-    this.hooks.updated(this, to.element);
+  if (to.hooks && to.hooks.updated) {
+    to.hooks.updated(to, this, to.element);
   }
 
   return to.element;
