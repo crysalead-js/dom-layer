@@ -10,6 +10,22 @@ function Tree() {
 }
 
 /**
+ * Broadcasts the inserted 'event'.
+ */
+function broadcastInserted(node) {
+  if (node.hooks && node.hooks.inserted) {
+    return node.hooks.inserted(node, node.element);
+  }
+  if (node.children) {
+    for (var i = 0, len = node.children.length; i < len; i++) {
+      if (node.children[i]) {
+        broadcastInserted(node.children[i]);
+      }
+    }
+  }
+}
+
+/**
  * Mounts a virtual tree into a passed selector.
  *
  * @param String|Object   selector A CSS string selector or a DOMElement identifying the mounting point.
@@ -32,7 +48,7 @@ Tree.prototype.mount = function(selector, factory, mount) {
   var fragment = document.createDocumentFragment();
 
   mount.factory = factory;
-  mount.children = render(fragment, factory, null);
+  mount.children = render(fragment, factory, null, true);
   if (mount.transclude) {
     mount.transcluded = container;
     if (fragment.childNodes.length !== 1) {
@@ -43,6 +59,9 @@ Tree.prototype.mount = function(selector, factory, mount) {
   } else {
     container.appendChild(fragment);
     mount.element = container;
+  }
+  for (var i = 0, len = mount.children.length; i < len; i++) {
+    broadcastInserted(mount.children[i]);
   }
   this._mounted[mountId] = mount;
   return mount.element.domLayerTreeId = mountId;

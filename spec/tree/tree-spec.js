@@ -71,6 +71,21 @@ describe("Tree", function() {
 
     });
 
+    it("broadcast the `inserted` hook on mount", function() {
+
+      var params;
+
+      var tag = h({ hooks: {
+          inserted : function() {
+            params = Array.prototype.slice.call(arguments);
+          }
+        }
+      });
+
+      var mountId = tree.mount('#mount-point', tag);
+      expect(params).toEqual([tag, tag.element]);
+    });
+
     it("throw an error when trying to transclude unsing a non unique DOM element", function() {
 
       var closure = function() {

@@ -67,7 +67,7 @@ Tag.prototype.create = function() {
  * @param  Object  parent    A parent node.
  * @return Object            The rendered DOM element.
  */
-Tag.prototype.render = function(container, parent) {
+Tag.prototype.render = function(container, parent, isFragment) {
   this.parent = parent;
 
   if (!this.namespace) {
@@ -89,6 +89,11 @@ Tag.prototype.render = function(container, parent) {
   if (this.tagName === 'select') {
     selectValue(this);
   }
+
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
+  }
+
   if (this.props) {
     props.patch(element, {}, this.props);
   }
@@ -99,13 +104,17 @@ Tag.prototype.render = function(container, parent) {
     attrsNS.patch(element, {}, this.attrsNS);
   }
 
-  container = container ? container : document.createDocumentFragment();
+  if (!container) {
+    isFragment = true;
+    container = document.createDocumentFragment();
+  }
+
   container.appendChild(element);
 
-  render(element, this.children, this);
+  render(element, this.children, this, isFragment);
 
-  if (this.hooks && this.hooks.created) {
-    return this.hooks.created(this, element);
+  if (!isFragment && this.hooks && this.hooks.inserted) {
+    return this.hooks.inserted(this, element);
   }
   return element;
 };
@@ -122,12 +131,17 @@ Tag.prototype.attach = function(element, parent) {
   if (this.events || this.data) {
     element.domLayerNode = this;
   }
+
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
+  }
+
   props.patch(element, {}, this.props);
 
   attach(element, this.children, this);
 
-  if (this.hooks && this.hooks.created) {
-    return this.hooks.created(this, element);
+  if (this.hooks && this.hooks.inserted) {
+    return this.hooks.inserted(this, element);
   }
   return element;
 }
@@ -167,6 +181,11 @@ Tag.prototype.patch = function(to) {
   if (this.tagName === 'select') {
     selectValue(to);
   }
+
+  if (to.hooks && to.hooks.update) {
+    to.hooks.update(to, this, to.element);
+  }
+
   if (this.props || to.props) {
     props.patch(to.element, this.props, to.props);
   }

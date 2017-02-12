@@ -157,13 +157,12 @@ describe("Tag", function() {
       testBody.innerHTML = '';
     });
 
-    it("calls the `created` callback on creation", function() {
+    it("calls the `created` hook on creation", function() {
 
       var params;
 
       var tag = h({ hooks: { created : function(node, element) {
         params = Array.prototype.slice.call(arguments);
-        return element;
       } } });
 
       var element = tag.render();
@@ -172,11 +171,55 @@ describe("Tag", function() {
 
     });
 
-    it("calls the `created` callback on attachement", function() {
+    it("calls the `created` hook on attachement", function() {
 
       var params;
 
       var tag = h({ hooks: { created : function(node, element) {
+        params = Array.prototype.slice.call(arguments);
+      } } });
+
+      var element = tag.attach(document.createElement('div'));
+
+      expect(params).toEqual([tag, element]);
+
+    });
+
+    it("calls the `inserted` hook on creation", function() {
+
+      var params;
+
+      var tag = h({ hooks: { inserted : function(node, element) {
+        params = Array.prototype.slice.call(arguments);
+        return element;
+      } } });
+
+      var element = tag.render(mountPoint);
+
+      expect(params).toEqual([tag, element]);
+
+    });
+
+    it("doesn't calls the `inserted` hook on fragments", function() {
+
+      var params;
+
+      var tag = h({ hooks: { inserted : function(node, element) {
+        params = Array.prototype.slice.call(arguments);
+        return element;
+      } } });
+
+      var element = tag.render();
+
+      expect(params).toBe(undefined);
+
+    });
+
+    it("calls the `inserted` hook on attachement", function() {
+
+      var params;
+
+      var tag = h({ hooks: { inserted : function(node, element) {
         params = Array.prototype.slice.call(arguments);
         return element;
       } } });
@@ -204,6 +247,57 @@ describe("Tag", function() {
       to1.patch(to2);
 
       expect(params).toEqual([[to1, from, element], [to2, to1, element]]);
+
+    });
+
+    it("calls hooks in the correct order with the correct params", function() {
+
+      var hooks = [];
+
+      var from = h({
+        hooks: {
+          created : function(node, element) {
+            hooks.push({
+              hook: 'created',
+              params: Array.prototype.slice.call(arguments)
+            });
+          },
+          inserted : function(node, element) {
+            hooks.push({
+              hook: 'inserted',
+              params: Array.prototype.slice.call(arguments)
+            });
+            return element;
+          }
+        }
+      });
+
+      var element = from.render(mountPoint);
+
+      var to = h({
+        hooks: {
+          update : function(to, from, element) {
+            hooks.push({
+              hook: 'update',
+              params: Array.prototype.slice.call(arguments)
+            });
+          },
+          updated : function(to, from, element) {
+            hooks.push({
+              hook: 'updated',
+              params: Array.prototype.slice.call(arguments)
+            });
+          }
+        }
+      });
+      from.patch(to);
+
+      expect(hooks).toEqual([
+        { hook: 'created', params: [from, element] },
+        { hook: 'inserted', params: [from, element] },
+        { hook: 'update', params: [to, from, element] },
+        { hook: 'updated', params: [to, from, element] }
+      ]);
 
     });
 

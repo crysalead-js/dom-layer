@@ -2,6 +2,12 @@
 
 ## HEAD
 
+## 0.6.0 (2017-02-07)
+  * **BC break:** the `'update'` hook is now runned on the new node and take the new node, the old node and the element as parameter.
+
+## 0.5.0 (2017-01-26)
+  * **BC break:** rename container by element in mounts.
+
 ## 0.4.1 (2017-01-15)
   * **Add:** expose `stringifyClass()` && `stringifyStyle()` as utiliy functions.
 
