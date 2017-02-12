@@ -483,18 +483,20 @@ function escapeHtml(string) {
 },{}],7:[function(require,module,exports){
 
 /**
- * Expose `isEmpty`.
+ * Has own property.
+ *
+ * @type {Function}
  */
 
-module.exports = isEmpty;
-
+var has = Object.prototype.hasOwnProperty
 
 /**
- * Has.
+ * To string.
+ *
+ * @type {Function}
  */
 
-var has = Object.prototype.hasOwnProperty;
-
+var toString = Object.prototype.toString
 
 /**
  * Test whether a value is "empty".
@@ -503,14 +505,61 @@ var has = Object.prototype.hasOwnProperty;
  * @return {Boolean}
  */
 
-function isEmpty (val) {
-  if (null == val) return true;
-  if ('boolean' == typeof val) return false;
-  if ('number' == typeof val) return 0 === val;
-  if (undefined !== val.length) return 0 === val.length;
-  for (var key in val) if (has.call(val, key)) return false;
-  return true;
+function isEmpty(val) {
+  // Null and Undefined...
+  if (val == null) return true
+
+  // Booleans...
+  if ('boolean' == typeof val) return false
+
+  // Numbers...
+  if ('number' == typeof val) return val === 0
+
+  // Strings...
+  if ('string' == typeof val) return val.length === 0
+
+  // Functions...
+  if ('function' == typeof val) return val.length === 0
+
+  // Arrays...
+  if (Array.isArray(val)) return val.length === 0
+
+  // Errors...
+  if (val instanceof Error) return val.message === ''
+
+  // Objects...
+  if (val.toString == toString) {
+    switch (val.toString()) {
+
+      // Maps, Sets, Files and Errors...
+      case '[object File]':
+      case '[object Map]':
+      case '[object Set]': {
+        return val.size === 0
+      }
+
+      // Plain objects...
+      case '[object Object]': {
+        for (var key in val) {
+          if (has.call(val, key)) return false
+        }
+
+        return true
+      }
+    }
+  }
+
+  // Anything else...
+  return false
 }
+
+/**
+ * Export `isEmpty`.
+ *
+ * @type {Function}
+ */
+
+module.exports = isEmpty
 
 },{}],8:[function(require,module,exports){
 
@@ -1254,7 +1303,7 @@ Tag.prototype.create = function() {
  * @param  Object  parent    A parent node.
  * @return Object            The rendered DOM element.
  */
-Tag.prototype.render = function(container, parent) {
+Tag.prototype.render = function(container, parent, isFragment) {
   this.parent = parent;
 
   if (!this.namespace) {
@@ -1276,6 +1325,11 @@ Tag.prototype.render = function(container, parent) {
   if (this.tagName === 'select') {
     selectValue(this);
   }
+
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
+  }
+
   if (this.props) {
     props.patch(element, {}, this.props);
   }
@@ -1286,13 +1340,17 @@ Tag.prototype.render = function(container, parent) {
     attrsNS.patch(element, {}, this.attrsNS);
   }
 
-  container = container ? container : document.createDocumentFragment();
+  if (!container) {
+    isFragment = true;
+    container = document.createDocumentFragment();
+  }
+
   container.appendChild(element);
 
-  render(element, this.children, this);
+  render(element, this.children, this, isFragment);
 
-  if (this.hooks && this.hooks.created) {
-    return this.hooks.created(this, element);
+  if (!isFragment && this.hooks && this.hooks.inserted) {
+    return this.hooks.inserted(this, element);
   }
   return element;
 };
@@ -1309,12 +1367,17 @@ Tag.prototype.attach = function(element, parent) {
   if (this.events || this.data) {
     element.domLayerNode = this;
   }
+
+  if (this.hooks && this.hooks.created) {
+    this.hooks.created(this, element);
+  }
+
   props.patch(element, {}, this.props);
 
   attach(element, this.children, this);
 
-  if (this.hooks && this.hooks.created) {
-    return this.hooks.created(this, element);
+  if (this.hooks && this.hooks.inserted) {
+    return this.hooks.inserted(this, element);
   }
   return element;
 }
@@ -1354,6 +1417,11 @@ Tag.prototype.patch = function(to) {
   if (this.tagName === 'select') {
     selectValue(to);
   }
+
+  if (to.hooks && to.hooks.update) {
+    to.hooks.update(to, this, to.element);
+  }
+
   if (this.props || to.props) {
     props.patch(to.element, this.props, to.props);
   }
@@ -1750,7 +1818,7 @@ module.exports = remove;
 },{}],24:[function(require,module,exports){
 var isArray = Array.isArray;
 
-function render(container, nodes, parent) {
+function render(container, nodes, parent, isFragment) {
   if (typeof nodes === 'function') {
     nodes = nodes(container, parent);
   }
@@ -1759,7 +1827,7 @@ function render(container, nodes, parent) {
   }
   for (var i = 0, len = nodes.length; i < len; i++) {
     if (nodes[i]) {
-      nodes[i].render(container, parent);
+      nodes[i].render(container, parent, isFragment);
     }
   }
   return nodes;
@@ -1777,6 +1845,22 @@ var isArray = Array.isArray;
 
 function Tree() {
   this._mounted = Object.create(null);
+}
+
+/**
+ * Broadcasts the inserted 'event'.
+ */
+function broadcastInserted(node) {
+  if (node.hooks && node.hooks.inserted) {
+    return node.hooks.inserted(node, node.element);
+  }
+  if (node.children) {
+    for (var i = 0, len = node.children.length; i < len; i++) {
+      if (node.children[i]) {
+        broadcastInserted(node.children[i]);
+      }
+    }
+  }
 }
 
 /**
@@ -1802,7 +1886,7 @@ Tree.prototype.mount = function(selector, factory, mount) {
   var fragment = document.createDocumentFragment();
 
   mount.factory = factory;
-  mount.children = render(fragment, factory, null);
+  mount.children = render(fragment, factory, null, true);
   if (mount.transclude) {
     mount.transcluded = container;
     if (fragment.childNodes.length !== 1) {
@@ -1813,6 +1897,9 @@ Tree.prototype.mount = function(selector, factory, mount) {
   } else {
     container.appendChild(fragment);
     mount.element = container;
+  }
+  for (var i = 0, len = mount.children.length; i < len; i++) {
+    broadcastInserted(mount.children[i]);
   }
   this._mounted[mountId] = mount;
   return mount.element.domLayerTreeId = mountId;

@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.7.0 (2017-02-12)
+  * **BC break:** refactor the hooks behavior.
+
 ## 0.6.0 (2017-02-07)
   * **BC break:** the `'update'` hook is now runned on the new node and take the new node, the old node and the element as parameter.
 
