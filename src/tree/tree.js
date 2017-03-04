@@ -60,11 +60,12 @@ Tree.prototype.mount = function(selector, factory, mount) {
     container.appendChild(fragment);
     mount.element = container;
   }
+  mount.element.domLayerTreeId = mountId;
   for (var i = 0, len = mount.children.length; i < len; i++) {
     broadcastInserted(mount.children[i]);
   }
   this._mounted[mountId] = mount;
-  return mount.element.domLayerTreeId = mountId;
+  return mountId;
 };
 
 /**
