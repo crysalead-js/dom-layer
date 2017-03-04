@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.7.1 (2017-03-04)
+  * **Bugfix:** when the value attribute of an input is unsetted, set the corresponding property to an empty string.
+
 ## 0.7.0 (2017-02-12)
   * **BC break:** refactor the hooks behavior.
 
