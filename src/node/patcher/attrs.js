@@ -94,6 +94,14 @@ set.handlers.value = function(name, element, previous, attrs) {
 };
 
 /**
+ * Custom unset handler for the style attribute.
+ */
+unset.handlers.value = function(name, element, previous) {
+  element.removeAttribute(name);
+  element[name] = '';
+};
+
+/**
  * Custom set handler for the class attribute.
  */
 set.handlers['class'] = function(name, element, previous, attrs) {

@@ -386,6 +386,7 @@ describe("attrs", function() {
       from.patch(to);
 
       expect(element.hasAttribute('value')).toBe(false);
+      expect(element['value']).toBe('');
 
     });
 
