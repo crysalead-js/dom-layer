@@ -1,6 +1,6 @@
 {
   "name": "dom-layer",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Virtual DOM implementation.",
   "license": "MIT",
   "keywords": [
@@ -24,15 +24,15 @@
     "void-elements": "^3.1.0"
   },
   "devDependencies": {
-    "browserify": "^14.0.0",
+    "browserify": "^14.1.0",
     "browserify-istanbul": "^2.0.0",
-    "coveralls": "^2.11.16",
-    "document-register-element": "^1.3.0",
+    "coveralls": "^2.12.0",
+    "document-register-element": "^1.4.1",
     "dom-element-value": "^1.0.2",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.3",
     "testem": "^1.15.0",
-    "uglify-js": "^2.7.5"
+    "uglify-js": "^2.8.10"
   },
   "scripts": {
     "test": "testem ci -l firefox && jasmine",
