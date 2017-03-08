@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.7.2 (2017-03-09)
+  * **Add:** add a params entry for tag nodes.
+
 ## 0.7.1 (2017-03-04)
   * **Bugfix:** when the value attribute of an input is unsetted, set the corresponding property to an empty string.
 
