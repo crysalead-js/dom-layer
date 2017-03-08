@@ -26,6 +26,7 @@ function Tag(tagName, config, children) {
   this.events = config.events;
   this.hooks = config.hooks;
   this.data = config.data;
+  this.params = config.params;
   this.element = undefined;
   this.parent = undefined;
 

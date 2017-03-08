@@ -21,6 +21,7 @@ describe("Tag", function() {
     expect(tag.events).toBe(undefined);
     expect(tag.hooks).toBe(undefined);
     expect(tag.data).toBe(undefined);
+    expect(tag.params).toBe(undefined);
     expect(tag.element).toBe(undefined);
     expect(tag.parent).toBe(undefined);
     expect(tag.key).toBe(undefined);
@@ -90,6 +91,14 @@ describe("Tag", function() {
     var data = {};
     var tag = h({ data: data });
     expect(tag.data).toBe(data);
+
+  });
+
+  it("sets the `params` property", function() {
+
+    var params = {};
+    var tag = h({ params: params });
+    expect(tag.params).toBe(params);
 
   });
 
