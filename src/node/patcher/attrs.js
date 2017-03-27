@@ -77,9 +77,11 @@ set.handlers.type = function(name, element, previous, attrs) {
     return;
   }
   var value = element.getAttribute('value');
-  element.setAttribute(name, attrs[name]);
-  element.setAttribute('value', value);
-  element.value = value;
+  if (value) {
+    element.setAttribute(name, attrs[name]);
+    element.setAttribute('value', value);
+    element.value = value;
+  }
 };
 
 /**

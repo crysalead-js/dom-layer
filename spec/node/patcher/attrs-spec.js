@@ -431,6 +431,19 @@ describe("attrs", function() {
 
     });
 
+    it("keeps empty `value` when `type` is modified", function() {
+
+      var from = h({ tagName: 'input', attrs: {} });
+      var to = h({ tagName: 'input', attrs: { type: 'text' } });
+
+      var element = from.render();
+      from.patch(to);
+
+      expect(element.getAttribute('value')).toBe(null);
+      expect(element.type).toBe('text');
+
+    });
+
     it("bails out when `type` is not modified", function() {
 
       var from = h({ tagName: 'input', attrs: { type: 'text', value: 'hello' } });
