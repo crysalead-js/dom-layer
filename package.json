@@ -1,6 +1,6 @@
 {
   "name": "dom-layer",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Virtual DOM implementation.",
   "license": "MIT",
   "keywords": [

@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.7.3 (2017-03-28)
+  * **Bugfix:** leave empty value to be empty when the input type is changed.
+
 ## 0.7.2 (2017-03-09)
   * **Add:** add a params entry for tag nodes.
 
