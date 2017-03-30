@@ -377,7 +377,7 @@ describe("attrs", function() {
 
     });
 
-    it("sets empty string `value` attributes", function() {
+    it("unsets empty string `value` attributes", function() {
 
       var from = h({ tagName: 'input', attrs: { value: 'hello' } });
       var to = h({ tagName: 'input', attrs: { value: '' } });
@@ -385,12 +385,12 @@ describe("attrs", function() {
       var element = from.render();
       from.patch(to);
 
-      expect(element.hasAttribute('value')).toBe(true);
+      expect(element.hasAttribute('value')).toBe(false);
       expect(element['value']).toBe('');
 
     });
 
-    it("casts `false` `value` attributes as an empty string", function() {
+    it("unsets `false` `value` attributes", function() {
 
       var from = h({ tagName: 'input', attrs: { value: 'hello' } });
       var to = h({ tagName: 'input', attrs: { value: false } });
@@ -398,8 +398,7 @@ describe("attrs", function() {
       var element = from.render();
       from.patch(to);
 
-      expect(element.hasAttribute('value')).toBe(true);
-      expect(element['value']).toBe('');
+      expect(element.hasAttribute('value')).toBe(false);
 
     });
 
@@ -412,7 +411,6 @@ describe("attrs", function() {
       from.patch(to);
 
       expect(element.hasAttribute('value')).toBe(false);
-      expect(element['value']).toBe('');
 
     });
 
