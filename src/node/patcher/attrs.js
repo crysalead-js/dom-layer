@@ -28,7 +28,7 @@ function patch(element, previous, attrs) {
     if (previous[name] === attrs[name]) {
       continue;
     }
-    if (attrs[name]) {
+    if (attrs[name] || attrs[name] === '') {
       set(name, element, previous, attrs);
     }
   }

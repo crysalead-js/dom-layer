@@ -377,7 +377,7 @@ describe("attrs", function() {
 
     });
 
-    it("unsets empty string `value` attributes", function() {
+    it("sets empty string `value` attributes", function() {
 
       var from = h({ tagName: 'input', attrs: { value: 'hello' } });
       var to = h({ tagName: 'input', attrs: { value: '' } });
@@ -385,7 +385,7 @@ describe("attrs", function() {
       var element = from.render();
       from.patch(to);
 
-      expect(element.hasAttribute('value')).toBe(false);
+      expect(element.hasAttribute('value')).toBe(true);
       expect(element['value']).toBe('');
 
     });
