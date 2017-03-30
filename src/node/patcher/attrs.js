@@ -77,8 +77,8 @@ set.handlers.type = function(name, element, previous, attrs) {
     return;
   }
   var value = element.getAttribute('value');
-  if (value) {
-    element.setAttribute(name, attrs[name]);
+  element.setAttribute(name, attrs[name]);
+  if (value !== null) {
     element.setAttribute('value', value);
     element.value = value;
   }
