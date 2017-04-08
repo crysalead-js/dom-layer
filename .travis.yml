@@ -1,6 +1,14 @@
+sudo: false
+dist: trusty
+
 language: node_js
 node_js:
   - "6"
+
+addons:
+  apt:
+    packages:
+      - google-chrome-stable
 
 before_install:
   - "export DISPLAY=:99.0"
