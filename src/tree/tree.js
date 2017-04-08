@@ -40,7 +40,7 @@ Tree.prototype.mount = function(selector, factory, mount) {
   }
 
   var container = containers[0];
-  if (container.domLayerTreeId) {
+  if (container.domLayerTreeId && !mount.transclude) {
     this.unmount(container.domLayerTreeId);
   }
 
@@ -124,10 +124,15 @@ Tree.prototype.unmount = function(mountId) {
     var mountId = mounted[i];
     var mount = this._mounted[mountId];
     if (mount) {
+      var nodes = mount.children;
+      for (var i = 0, len = nodes.length; i < len; i++) {
+        nodes[i].remove(false);
+      }
       if (mount.transclude) {
         mount.element.parentNode.replaceChild(mount.transcluded, mount.element);
-      } else {
-        remove(mount.children);
+      }
+      for (var i = 0, len = nodes.length; i < len; i++) {
+        nodes[i].destroy();
       }
       delete mount.element.domLayerTreeId;
       delete this._mounted[mountId];

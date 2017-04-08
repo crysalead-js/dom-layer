@@ -39,6 +39,28 @@ describe("Tree", function() {
 
     });
 
+    it("mounts/unmounts nested transclusion", function() {
+
+      var mountId1 = tree.mount('#mount-point', function() { return h({ attrs: { id: 'mount-point2' } }); }, { transclude: true });
+      expect(parentNode.childNodes[0].id).toBe('mount-point2');
+
+      var mountId2 = tree.mount(parentNode.childNodes[0], function() { return h({ attrs: { id: 'mount-point3' } }); }, { transclude: true });
+      expect(parentNode.childNodes[0].id).toBe('mount-point3');
+
+      var mountId3 = tree.mount(parentNode.childNodes[0], function() { return h({ attrs: { id: 'mount-point4' } }); }, { transclude: true });
+      expect(parentNode.childNodes[0].id).toBe('mount-point4');
+
+      tree.unmount(mountId3);
+      expect(parentNode.childNodes[0].id).toBe('mount-point3');
+
+      tree.unmount(mountId2);
+      expect(parentNode.childNodes[0].id).toBe('mount-point2');
+
+      tree.unmount(mountId1);
+      expect(parentNode.childNodes[0].id).toBe('mount-point');
+
+    });
+
     it("mounts a virtual tree using a custom UUID identifier", function() {
 
       var bookedId = tree.uuid();
