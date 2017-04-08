@@ -2,7 +2,8 @@
   "framework": "jasmine2",
   "serve_files": ["spec/browserified.js"],
   "src_files": [
-    "./**/*.js"
+    "./src/**/*.js",
+    "./spec/**/*-spec.js"
   ],
   "test_page": "tests.html",
   "src_files_ignore": "node_modules/**/*",
