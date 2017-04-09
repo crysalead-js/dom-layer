@@ -2,6 +2,21 @@
 
 ## HEAD
 
+## 0.7.8 (2017-04-09)
+  * **Bugfix:** Fix nested transclusions.
+
+## 0.7.7 (2017-04-09)
+  * **Bugfix:** Fix a nested transclusion issue.
+
+## 0.7.6 (2017-03-30)
+  * **Bugfix:** Fix for real empty string value overriding.
+
+## 0.7.5 (2017-03-30)
+  * **Bugfix:** Fix empty string value overriding.
+
+## 0.7.4 (2017-03-30)
+  * **Bugfix:** Fix introduced bug related to input type attribute change.
+
 ## 0.7.3 (2017-03-28)
   * **Bugfix:** leave empty value to be empty when the input type is changed.
 
