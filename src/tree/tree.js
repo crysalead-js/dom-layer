@@ -40,15 +40,13 @@ Tree.prototype.mount = function(selector, factory, mount) {
   }
 
   var container = containers[0];
-  if (container.domLayerTreeId && !mount.transclude) {
-    this.unmount(container.domLayerTreeId);
-  }
 
   var mountId = mount.mountId ? mount.mountId : this.uuid();
   var fragment = document.createDocumentFragment();
 
   mount.factory = factory;
   mount.children = render(fragment, factory, null, true);
+  mount.transclusions = [];
   if (mount.transclude) {
     mount.transcluded = container;
     if (fragment.childNodes.length !== 1) {
@@ -56,15 +54,26 @@ Tree.prototype.mount = function(selector, factory, mount) {
     }
     mount.element = fragment.childNodes[0];
     container.parentNode.replaceChild(mount.element, container);
+    if (container.domLayerTreeId) {
+      var previousMount = this.mounted(container.domLayerTreeId);
+      mount.transclusions = previousMount.transclusions.slice();
+      mount.transclusions.push(previousMount.children[0]);
+    }
+    for (var i = 0, len = mount.transclusions.length; i < len; i++) {
+      mount.transclusions[i].element = mount.element;
+    }
   } else {
+    if (container.domLayerTreeId) {
+      this.unmount(container.domLayerTreeId);
+    }
     container.appendChild(fragment);
     mount.element = container;
   }
   mount.element.domLayerTreeId = mountId;
+  this._mounted[mountId] = mount;
   for (var i = 0, len = mount.children.length; i < len; i++) {
     broadcastInserted(mount.children[i]);
   }
-  this._mounted[mountId] = mount;
   return mountId;
 };
 
@@ -130,6 +139,9 @@ Tree.prototype.unmount = function(mountId) {
       }
       if (mount.transclude) {
         mount.element.parentNode.replaceChild(mount.transcluded, mount.element);
+        for (var i = 0, len = mount.transclusions.length; i < len; i++) {
+          mount.transclusions[i].element = mount.transcluded;
+        }
       }
       for (var i = 0, len = nodes.length; i < len; i++) {
         nodes[i].destroy();
