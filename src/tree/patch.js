@@ -62,9 +62,13 @@ function patch(container, children, toChildren, parent) {
         toStartNode = toChildren[++toStartIndex];
       } else {
         node = fromChildren[index];
-        node.patch(toStartNode);
-        fromChildren[index] = undefined;
-        container.insertBefore(node.element, fromStartNode.element);
+        if (!node.match(toStartNode)) {
+          container.insertBefore(toStartNode.render(node.element.parentNode, toStartNode.parent), fromStartNode.element);
+        } else {
+          node.patch(toStartNode);
+          fromChildren[index] = undefined;
+          container.insertBefore(node.element, fromStartNode.element);
+        }
         toStartNode = toChildren[++toStartIndex];
       }
     }

@@ -173,7 +173,6 @@ Tag.prototype.match = function(to) {
  */
 Tag.prototype.patch = function(to) {
   if (!this.match(to)) {
-    this.remove(false);
     return to.render(this.element.parentNode, to.parent);
   }
   to.element = this.element;

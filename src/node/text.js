@@ -69,7 +69,6 @@ Text.prototype.match = function(to) {
  */
 Text.prototype.patch = function(to) {
   if (!this.match(to)) {
-    this.remove(false);
     return to.render(this.element.parentNode, to.parent);
   }
   to.element = this.element;

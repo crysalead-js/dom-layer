@@ -4,6 +4,14 @@ var patch = require('../../src/tree/patch');
 
 describe(".patch()", function() {
 
+  function spanNum(n) {
+    if (typeof n === 'string') {
+      return h({ tagName: 'span' }, [n]);
+    } else {
+      return h({ tagName: 'span', key: n }, [n.toString()]);
+    }
+  }
+
   describe("when using regular nodes", function() {
 
     it("adds all nodes", function() {
@@ -386,6 +394,19 @@ describe(".patch()", function() {
       expect(newRoot, rootNode);
 
       expect(newRoot.textContent).toBe('425');
+
+    });
+
+    it('updates one child with same key but different tagName', function() {
+
+      var from = h({ tagName: 'span', key: 'span' }, [1, 2, 3].map(spanNum));
+      var to = h({ tagName: 'span', key: 'span' }, [spanNum(1), h({ tagName: 'i', key: 2 }, ['2']), spanNum(3)]);
+
+      var rootNode = from.render();
+      var newRoot = from.patch(to);
+
+      expect(newRoot.textContent).toBe('123');
+      expect(newRoot.children[1].tagName).toBe('I');
 
     });
 
