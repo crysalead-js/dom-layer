@@ -4,6 +4,58 @@ var Text = domLayer.Text;
 
 domLayer.events.init();
 
+/**
+ * Returns the type of a DOM element.
+ *
+ * @param  Object element A DOM element.
+ * @return String         The DOM element type.
+ */
+function elementType(element) {
+  var name = element.nodeName.toLowerCase();
+  if (name !== "input") {
+    if (name === "select" && element.multiple) {
+      return "select-multiple";
+    }
+    return name;
+  }
+  var type = element.getAttribute('type');
+  if (!type) {
+    return "text";
+  }
+  return type.toLowerCase();
+}
+
+/**
+ * Gets DOM element value.
+ *
+ * @param  Object element A DOM element
+ * @return mixed          The DOM element value
+ */
+function getValue(element) {
+  var name = elementType(element);
+  switch (name) {
+    case "checkbox":
+    case "radio":
+      if (!element.checked) {
+        return false;
+      }
+      var val = element.getAttribute('value');
+      return val == null ? true : val;
+    case "select":
+    case "select-multiple":
+      var options = element.options;
+      var values = [];
+      for (var i = 0, len = options.length; i < len; i++) {
+        if (options[i].selected) {
+          values.push(options[i].value);
+        }
+      }
+      return name === "select-multiple" ? values : values[0];
+    default:
+      return element.value;
+  }
+}
+
 function TextInput(value) {
   this._value = value;
 }
@@ -14,8 +66,8 @@ TextInput.prototype.render = function() {
   return new Tag("input", {
     attrs: { type: "text", value: this._value},
     events: {
-      oninput: function(e, value) {
-        this._value = value;
+      oninput: function(e, node) {
+        this._value = getValue(node.element);
         updateDom();
       }.bind(this)
     }
@@ -32,8 +84,8 @@ Textarea.prototype.render = function() {
   return new Tag("textarea", {
     attrs: { value: this._value},
     events: {
-      oninput: function(e, value) {
-        this._value = value;
+      oninput: function(e, node) {
+        this._value = getValue(node.element);
         updateDom();
       }.bind(this)
     }
@@ -55,8 +107,8 @@ CheckBox.prototype.render = function() {
     props: { id: "checkbox", checked: this.checked() },
     attrs: { type: "checkbox", value: this._value},
     events: {
-      onchange: function(e, value) {
-        this._currentValue = value;
+      onchange: function(e, node) {
+        this._currentValue = getValue(node.element);
         updateDom();
       }.bind(this)
     }
@@ -91,8 +143,8 @@ Radio.prototype.render = function() {
     props: { checked: this.checked() },
     attrs: { type: "radio" , name: this._group.name(), value: this._value},
     events: {
-      onchange: function(e, value) {
-        this._group.value(value);
+      onchange: function(e, node) {
+        this._group.value(getValue(node.element));
         updateDom();
       }.bind(this)
     }
@@ -110,8 +162,8 @@ Select.prototype.render = function() {
   return new Tag("select", {
       attrs: { name: this._name, value: this._value},
       events: {
-        onchange: function(e, value) {
-          this._value = value;
+        onchange: function(e, node) {
+          this._value = getValue(node.element);
           updateDom();
         }.bind(this)
       },
@@ -138,8 +190,8 @@ SelectMultiple.prototype.render = function() {
   return new Tag("select", {
       attrs: { multiple: "multiple" , name: this._name, value: this._value},
       events: {
-        onchange: function(e, value) {
-          this._value = value;
+        onchange: function(e, node) {
+          this._value = getValue(node.element);
           updateDom();
         }.bind(this)
       }
@@ -148,4 +200,22 @@ SelectMultiple.prototype.render = function() {
       return new Tag("option", { attrs: { value: i[0] } } , [new Text(i[1])]);
     })
   );
+}
+
+function InputRange(value) {
+  this._value = value;
+}
+InputRange.prototype.value = function() {
+  return this._value;
+}
+InputRange.prototype.render = function() {
+  return new Tag("input", {
+    attrs: { type: "range" , min: '0', max: '100', step: '10', value: this._value},
+    events: {
+      oninput: function(e, node) {
+        this._value = getValue(node.element);
+        updateDom();
+      }.bind(this)
+    }
+  });
 }

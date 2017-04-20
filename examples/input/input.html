@@ -35,6 +35,8 @@ var select = new Select("C", [["A", "Value A"], ["B", "Value B"], ["C", "Value C
 
 var selectMultiple = new SelectMultiple(["A", "C"], [["A", "Value A"], ["B", "Value B"], ["C", "Value C"]]);
 
+var inputRange =  new InputRange('40');
+
 function EventsExample() {}
 
 EventsExample.prototype.render = function() {
@@ -117,6 +119,16 @@ EventsExample.prototype.render = function() {
       ]),
       new Tag("div", {}, [
         new Text("value: "), new Text(selectMultiple.value().join(', '))
+      ]),
+    ]),
+
+    new Tag("b", {}, [new Text("Input range:")]),
+    new Tag("p", {}, [
+      new Tag("div", {}, [
+        inputRange.render()
+      ]),
+      new Tag("div", {}, [
+        new Text("value: "), new Text(inputRange.value())
       ]),
     ])
   ]);
