@@ -2,6 +2,9 @@
 
 ## HEAD
 
+## 0.7.9 (2018-01-17)
+  * **Bugfix:** Fix a patching issue.
+
 ## 0.7.8 (2017-04-09)
   * **Bugfix:** Fix nested transclusions.
 

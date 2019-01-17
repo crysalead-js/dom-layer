@@ -167,10 +167,8 @@ describe(".render()", function() {
 
   it("respects the type extension", function() {
 
-    var MegaButton = document.registerElement('mega-button', {
-      prototype: Object.create(HTMLButtonElement.prototype),
-      extends: 'button'
-    });
+    class MegaButton extends HTMLButtonElement {};
+    customElements.define('mega-button', MegaButton, { extends: 'button' });
 
     var node = h({ tagName: 'button' , attrs: { is: 'mega-button' } });
     var element = node.render();
@@ -178,25 +176,6 @@ describe(".render()", function() {
     expect(element instanceof MegaButton).toBe(true);
 
   });
-
-  it("respects the namespace and the type extension", function() {
-
-    var MegaCircle = document.registerElement('mega-circle', {
-      prototype: Object.create(SVGCircleElement.prototype),
-      extends: 'circle'
-    });
-
-    var svgURI = 'http://www.w3.org/2000/svg';
-    var node = h({ tagName: 'circle', attrs: { xmlns: svgURI, is: 'mega-circle' } });
-    var element = node.render();
-
-    expect(element.tagName.toLowerCase()).toBe('circle');
-    expect(element.namespaceURI).toBe(svgURI);
-    // `|| element instanceof SVGCircleElement` is required since the polyfill is bugged
-    expect(element instanceof MegaCircle || element instanceof SVGCircleElement).toBe(true);
-
-  });
-
 
   it("checks that `domLayerNode` is correctly set when `events` is defined", function() {
 
