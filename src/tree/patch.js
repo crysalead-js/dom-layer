@@ -99,9 +99,11 @@ function patch(container, children, toChildren, parent) {
 function keysIndexes(children, startIndex, endIndex) {
   var i, keys = Object.create(null), key;
   for (i = startIndex; i <= endIndex; ++i) {
-    key = children[i].key;
-    if (key !== undefined) {
-      keys[key] = i;
+    if (children[i]) {
+      key = children[i].key;
+      if (key !== undefined) {
+        keys[key] = i;
+      }
     }
   }
   return keys;

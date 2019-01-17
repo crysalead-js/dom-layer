@@ -174,4 +174,34 @@ describe("patch()", function() {
 
   });
 
+  it("ignores `null` from `fromChildren` when trying to build keys indexes", function() {
+
+    var from = h({ tagName : "div" }, [h({ tagName : "div" }, ['div1']), null, h({ tagName : "div" }, ['div2'])]);
+    var to = h({ tagName : "div" }, [h({ tagName : "span" }, ['span'])]);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('span');
+
+  });
+
+  it("ignores `undefined` from `fromChildren` when trying to build keys indexes", function() {
+
+    var from = h({ tagName : "div" }, [h({ tagName : "div" }, ['div1']), undefined, h({ tagName : "div" }, ['div2'])]);
+    var to = h({ tagName : "div" }, [h({ tagName : "span" }, ['span'])]);
+
+    var rootNode = from.render();
+    var childNodes = _.rewrap(rootNode.childNodes);
+
+    var toChildren = patch(rootNode, from.children, to.children);
+
+    expect(toChildren).toBe(to.children);
+    expect(rootNode.textContent).toBe('span');
+
+  });
+
 });
