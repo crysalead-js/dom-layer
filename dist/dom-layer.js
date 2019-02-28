@@ -1909,11 +1909,12 @@ Tree.prototype.mount = function(selector, factory, mount) {
     container.parentNode.replaceChild(mount.element, container);
     if (container.domLayerTreeId) {
       var previousMount = this.mounted(container.domLayerTreeId);
-      mount.transclusions = previousMount.transclusions.slice();
-      mount.transclusions.push(previousMount.children[0]);
+      mount.transclusions = previousMount.transclusions;
+      mount.transclusions.push(previousMount);
     }
     for (var i = 0, len = mount.transclusions.length; i < len; i++) {
       mount.transclusions[i].element = mount.element;
+      mount.transclusions[i].children[0].element = mount.element;
     }
   } else {
     if (container.domLayerTreeId) {
@@ -1994,7 +1995,9 @@ Tree.prototype.unmount = function(mountId) {
         mount.element.parentNode.replaceChild(mount.transcluded, mount.element);
         for (var i = 0, len = mount.transclusions.length; i < len; i++) {
           mount.transclusions[i].element = mount.transcluded;
+          mount.transclusions[i].children[0].element = mount.transcluded;
         }
+        mount.transclusions.pop();
       }
       for (var i = 0, len = nodes.length; i < len; i++) {
         nodes[i].destroy();
