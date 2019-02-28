@@ -47,38 +47,47 @@ describe("Tree", function() {
       expect(parentNode.childNodes[0].id).toBe('mount-point2');
 
       mounted = tree.mounted(mountId1);
+      expect(mounted.element).toBe(document.getElementById('mount-point2'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point2'));
 
       var mountId2 = tree.mount(parentNode.childNodes[0], function() { return h({ attrs: { id: 'mount-point3' } }); }, { transclude: true });
       expect(parentNode.childNodes[0].id).toBe('mount-point3');
 
       mounted = tree.mounted(mountId1);
+      expect(mounted.element).toBe(document.getElementById('mount-point3'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point3'));
       mounted = tree.mounted(mountId2);
+      expect(mounted.element).toBe(document.getElementById('mount-point3'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point3'));
 
       var mountId3 = tree.mount(parentNode.childNodes[0], function() { return h({ attrs: { id: 'mount-point4' } }); }, { transclude: true });
       expect(parentNode.childNodes[0].id).toBe('mount-point4');
 
       mounted = tree.mounted(mountId1);
+      expect(mounted.element).toBe(document.getElementById('mount-point4'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point4'));
       mounted = tree.mounted(mountId2);
+      expect(mounted.element).toBe(document.getElementById('mount-point4'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point4'));
       mounted = tree.mounted(mountId3);
+      expect(mounted.element).toBe(document.getElementById('mount-point4'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point4'));
 
       tree.unmount(mountId3);
       expect(parentNode.childNodes[0].id).toBe('mount-point3');
 
       mounted = tree.mounted(mountId1);
+      expect(mounted.element).toBe(document.getElementById('mount-point3'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point3'));
       mounted = tree.mounted(mountId2);
+      expect(mounted.element).toBe(document.getElementById('mount-point3'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point3'));
 
       tree.unmount(mountId2);
       expect(parentNode.childNodes[0].id).toBe('mount-point2');
 
       mounted = tree.mounted(mountId1);
+      expect(mounted.element).toBe(document.getElementById('mount-point2'));
       expect(mounted.children[0].element).toBe(document.getElementById('mount-point2'));
 
       tree.unmount(mountId1);
