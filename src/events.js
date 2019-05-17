@@ -19,7 +19,7 @@ function eventHandler(name, e) {
       events.push(mouseClickEventName);
     }
     // Do not call the `click` handler if it's not a left click.
-    if (e.button !== 0) {
+    if (e.button !== 0 && name.substr(0, 3) !== 'aux') {
       bail = true;
     }
   }
