@@ -151,7 +151,7 @@ EventManager.prototype.bind = function(name) {
     e.stopPropagation = function() {
       this.isPropagationStopped = true;
     }
-    while(e.delegateTarget !== null && e.delegateTarget !== this._container.parentNode) {
+    while(e.delegateTarget && e.delegateTarget !== this._container.parentNode) {
       this._delegateHandler(name, e);
       this._runHandlers(name, e);
       if (e.isPropagationStopped) {
@@ -277,6 +277,7 @@ EventManager.events = [
   'animationstart',
   'animationiteration',
   'animationend',
+  'auxclick',
   'blur',
   'canplay',
   'canplaythrough',
