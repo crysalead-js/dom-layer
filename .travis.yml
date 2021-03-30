@@ -1,23 +1,18 @@
-sudo: false
-dist: trusty
-
 language: node_js
 node_js:
-  - "10"
+  - "14"
+
+services:
+  - xvfb
 
 addons:
-  apt:
-    packages:
-      - google-chrome-stable
-
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  chrome: stable
 
 before_script:
   - node istanbul_coverage.js &
+
+script:
+  - xvfb-run --auto-servernum --server-num=1 --server-args="-screen 1 1024x768x24" npm test
 
 after_script:
   - npm run coverage-report
