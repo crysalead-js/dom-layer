@@ -152,8 +152,10 @@ EventManager.prototype.bind = function(name) {
       this.isPropagationStopped = true;
     }
     while(e.delegateTarget && e.delegateTarget !== this._container.parentNode) {
-      this._delegateHandler(name, e);
-      this._runHandlers(name, e);
+      if (name !== 'click' || !e.delegateTarget.disabled) {
+        this._delegateHandler(name, e);
+        this._runHandlers(name, e);
+      }
       if (e.isPropagationStopped) {
         break;
       }
