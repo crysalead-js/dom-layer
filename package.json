@@ -17,22 +17,22 @@
   },
   "dependencies": {
     "dom-element-css": "^1.0.3",
-    "dom-event-manager": "^1.1.4",
+    "dom-event-manager": "^1.1.5",
     "dom-query": "^1.0.1",
     "escape-html": "^1.0.3",
     "is-empty": "1.2.0",
     "void-elements": "^3.1.0"
   },
   "devDependencies": {
-    "browserify": "^16.2.3",
+    "browserify": "^17.0.0",
     "browserify-istanbul": "^3.0.1",
-    "coveralls": "^3.0.4",
+    "coveralls": "^3.1.0",
     "document-register-element": "^1.13.2",
     "dom-element-value": "^1.0.2",
     "istanbul": "^0.4.5",
-    "jasmine": "^3.4.0",
-    "testem": "^2.16.0",
-    "uglify-js": "^3.6.0"
+    "jasmine": "^3.7.0",
+    "testem": "^3.4.0",
+    "uglify-js": "^3.13.3"
   },
   "scripts": {
     "test": "testem ci -l chrome && jasmine",
