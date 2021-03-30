@@ -1,6 +1,6 @@
 # dom-layer
 
-[![Build Status](https://travis-ci.org/crysalead-js/dom-layer.svg?branch=master)](https://travis-ci.org/crysalead-js/dom-layer)
+[![Build Status](https://travis-ci.com/crysalead-js/dom-layer.svg?branch=master)](https://travis-ci.com/crysalead-js/dom-layer)
 [![Coverage Status](https://coveralls.io/repos/crysalead-js/dom-layer/badge.svg)](https://coveralls.io/r/crysalead-js/dom-layer)
 
 This library is a Virtual DOM implementation. If this implementation is not the fastest one (though close to the fastest according to [vdom-benchmark](http://vdom-benchmark.github.io/vdom-benchmark/)), it's probably the simplest one to dig into. It also provide a flexible API to be used as the foundation of your own front end solution.
