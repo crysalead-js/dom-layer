@@ -310,6 +310,28 @@ describe("attrs", function() {
 
     });
 
+    it("casts as string the `value` attribute using zero", function() {
+
+      var from = h({ tagName: 'input', attrs: { value: '0' } });
+      var element = from.render();
+
+      expect(element.hasAttribute('value')).toBe(true);
+      expect(element['value']).toBe('0');
+      expect(element.getAttribute('value')).toBe('0');
+
+    });
+
+    it("casts as string the `value` attribute using one", function() {
+
+      var from = h({ tagName: 'input', attrs: { value: 1 } });
+      var element = from.render();
+
+      expect(element.hasAttribute('value')).toBe(true);
+      expect(element['value']).toBe('1');
+      expect(element.getAttribute('value')).toBe('1');
+
+    });
+
     it("populates the `value` attribute on select", function() {
 
       var select = h({ tagName: 'select', attrs: { value: 'bar' } }, [

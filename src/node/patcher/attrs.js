@@ -28,7 +28,7 @@ function patch(element, previous, attrs) {
     if (previous[name] === attrs[name]) {
       continue;
     }
-    if (attrs[name] || attrs[name] === '') {
+    if (attrs[name] != null && attrs[name] !== false) {
       set(name, element, previous, attrs);
     }
   }
@@ -92,7 +92,7 @@ set.handlers.value = function(name, element, previous, attrs) {
     return;
   }
   element.setAttribute(name, attrs[name]);
-  element[name] = attrs[name] ? attrs[name] : '';
+  element[name] = attrs[name] != null && attrs[name] !== false ? attrs[name] : '';
 };
 
 /**
