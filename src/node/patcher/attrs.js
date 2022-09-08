@@ -96,11 +96,30 @@ set.handlers.value = function(name, element, previous, attrs) {
 };
 
 /**
- * Custom unset handler for the style attribute.
+ * Custom unset handler for the value attribute.
  */
 unset.handlers.value = function(name, element, previous) {
   element.removeAttribute(name);
   element[name] = '';
+};
+
+/**
+ * Custom set handler for the checked attribute.
+ */
+set.handlers.checked = function(name, element, previous, attrs) {
+  if (previous[name] === attrs[name]) {
+    return;
+  }
+  element.setAttribute(name, true);
+  element[name] = true;
+};
+
+/**
+ * Custom unset handler for the checked attribute.
+ */
+unset.handlers.checked = function(name, element, previous) {
+  element.removeAttribute(name);
+  element[name] = false;
 };
 
 /**

@@ -399,6 +399,21 @@ describe("attrs", function() {
 
     });
 
+    it("sets false as checked property for `checkbox`", function() {
+
+      var from = h({ tagName: 'input', attrs: { checked: true } });
+      var to = h({ tagName: 'input', attrs: { checked: false } });
+
+      var element = from.render();
+
+      expect(element.checked).toBe(true);
+
+      element = from.patch(to);
+
+      expect(element.checked).toBe(false);
+
+    });
+
     it("sets empty string `value` attributes", function() {
 
       var from = h({ tagName: 'input', attrs: { value: 'hello' } });
